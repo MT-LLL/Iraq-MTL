@@ -50,10 +50,21 @@ jobs:
           test -n "$CLOUDFLARE_ACCOUNT_ID"
           echo "Cloudflare credentials are present."
 
+      - name: Inspect D1 schema before migration
+        run: |
+          npx wrangler d1 execute mssd_mtl_prod --remote --command "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;"
+
+      - name: Apply D1 migrations
+        run: npm run d1:migrate:remote
+
+      - name: Verify required D1 tables
+        run: |
+          npx wrangler d1 execute mssd_mtl_prod --remote --command "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('users','opportunities','audit_logs','evidence','push_jobs','saved_views','lead_distributions','source_scan_runs') ORDER BY name;"
+
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           command: deploy --config wrangler.toml
 
       - name: Deployment verification marker
-        run: echo "Cloudflare Worker deployment command completed."
+        run: echo "Cloudflare Worker deployment and D1 migration commands completed."
