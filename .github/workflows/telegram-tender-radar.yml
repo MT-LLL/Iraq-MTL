@@ -1,0 +1,52 @@
+name: Telegram Tender Radar
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Every day 05:10 UTC / 08:10 Baghdad.
+    - cron: "10 5 * * *"
+
+concurrency:
+  group: telegram-tender-radar
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    name: Scan Telegram tender channels and sync tender leads
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install app dependencies
+        run: npm ci
+
+      - name: Run Telegram tender ingest
+        env:
+          TELEGRAM_CHANNELS: ${{ secrets.TELEGRAM_CHANNELS }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_BOT_DEFAULT_COUNTRY: ${{ secrets.TELEGRAM_BOT_DEFAULT_COUNTRY }}
+          TELEGRAM_INGEST_ENDPOINT: ${{ secrets.TELEGRAM_INGEST_ENDPOINT }}
+          NEWS_INGEST_TOKEN: ${{ secrets.NEWS_INGEST_TOKEN || secrets.MEED_INGEST_TOKEN }}
+          MSSD_SITE_URL: ${{ vars.MSSD_SITE_URL }}
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+          TELEGRAM_RECENT_DAYS: "7"
+          TELEGRAM_MAX_MESSAGES: "240"
+        run: node scripts/telegram-tender-ingest.mjs
+
+      - name: Upload Telegram ingest artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: telegram-tender-artifacts
+          path: artifacts/telegram
+          if-no-files-found: ignore
