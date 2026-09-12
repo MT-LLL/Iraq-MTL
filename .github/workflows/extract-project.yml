@@ -28,6 +28,11 @@ jobs:
           cp -a "$ROOT/." .
           rm -f read
 
+      - name: Preserve source workflows without pushing them from Actions
+        run: |
+          rm -f .github/workflows/meed-weekly-ingest.yml
+          rm -f .github/workflows/telegram-tender-radar.yml
+
       - name: Commit extracted project
         run: |
           git config user.name 'github-actions[bot]'
