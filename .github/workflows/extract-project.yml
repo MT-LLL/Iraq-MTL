@@ -1,0 +1,41 @@
+name: Extract project ZIP
+
+on:
+  push:
+    paths:
+      - 'iraq-mtl-marketing-platform-clean-source-20260910.zip'
+      - '.github/workflows/extract-project.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract project into repository root
+        run: |
+          rm -rf /tmp/iraq-mtl-extract
+          mkdir -p /tmp/iraq-mtl-extract
+          unzip -q 'iraq-mtl-marketing-platform-clean-source-20260910.zip' -d /tmp/iraq-mtl-extract
+          ROOT=$(find /tmp/iraq-mtl-extract -mindepth 1 -maxdepth 1 -type d | head -n 1)
+          test -n "$ROOT"
+          cp -a "$ROOT/." .
+          rm -f read
+
+      - name: Commit extracted project
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+          git commit -m 'Extract Iraq MTL project source'
+          git push
