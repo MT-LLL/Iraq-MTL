@@ -23,4 +23,4 @@ CF_ACCESS_AUD = "replace-with-access-application-audience"
 [[d1_databases]]
 binding = "DB"
 database_name = "mssd_mtl_prod"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "8def12cd-f8fd-4578-9e88-5e5e80c92a0c"
