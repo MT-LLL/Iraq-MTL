@@ -54,3 +54,6 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           command: deploy --config wrangler.toml
+
+      - name: Deployment verification marker
+        run: echo "Cloudflare Worker deployment command completed."
