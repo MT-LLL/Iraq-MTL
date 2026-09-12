@@ -1,0 +1,26 @@
+name = "mssd-mtl"
+main = "dist/server/index.js"
+compatibility_date = "2026-05-15"
+compatibility_flags = ["nodejs_compat"]
+
+[assets]
+directory = "dist/client"
+binding = "ASSETS"
+
+[observability]
+enabled = true
+
+[triggers]
+crons = ["0 4 * * 1"]
+
+[vars]
+MSSD_SITE_URL = "https://your-worker.your-subdomain.workers.dev"
+ZHIPU_MODEL = "glm-5.3"
+ZHIPU_API_BASE_URL = "https://open.bigmodel.cn/api/paas/v4"
+CF_ACCESS_TEAM_DOMAIN = "your-team.cloudflareaccess.com"
+CF_ACCESS_AUD = "replace-with-access-application-audience"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mssd_mtl_prod"
+database_id = "00000000-0000-0000-0000-000000000000"

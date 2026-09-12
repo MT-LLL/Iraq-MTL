@@ -1,0 +1,1 @@
+ALTER TABLE `push_jobs` ADD `metadata` text DEFAULT '{}' NOT NULL;
