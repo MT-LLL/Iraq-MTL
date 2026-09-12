@@ -1,0 +1,59 @@
+name: MEED Weekly Ingest
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Every Monday 04:20 UTC / 07:20 Baghdad.
+    - cron: "20 4 * * 1"
+
+concurrency:
+  group: meed-weekly-ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    name: Login to MEED, export Excel, and sync opportunities
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install app dependencies
+        run: npm ci
+
+      - name: Install Playwright browser
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Run MEED ingest
+        env:
+          MEED_USERNAME: ${{ secrets.MEED_USERNAME }}
+          MEED_PASSWORD: ${{ secrets.MEED_PASSWORD }}
+          MEED_PROJECT_SEARCH_URL: ${{ secrets.MEED_PROJECT_SEARCH_URL }}
+          MEED_INGEST_ENDPOINT: ${{ secrets.MEED_INGEST_ENDPOINT }}
+          MEED_INGEST_TOKEN: ${{ secrets.MEED_INGEST_TOKEN }}
+          MSSD_SITE_URL: ${{ vars.MSSD_SITE_URL }}
+          MEED_USERNAME_SELECTOR: ${{ secrets.MEED_USERNAME_SELECTOR }}
+          MEED_PASSWORD_SELECTOR: ${{ secrets.MEED_PASSWORD_SELECTOR }}
+          MEED_LOGIN_BUTTON_SELECTOR: ${{ secrets.MEED_LOGIN_BUTTON_SELECTOR }}
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+          MEED_PROMOTE_LIMIT: "120"
+        run: node scripts/meed-github-ingest.mjs
+
+      - name: Upload MEED ingest artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: meed-ingest-artifacts
+          path: artifacts/meed
+          if-no-files-found: ignore
