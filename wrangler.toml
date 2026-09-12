@@ -18,7 +18,7 @@ MSSD_SITE_URL = "https://iraq-mtl.lihui9329.workers.dev/"
 ZHIPU_MODEL = "glm-5.3"
 ZHIPU_API_BASE_URL = "https://open.bigmodel.cn/api/paas/v4"
 CF_ACCESS_TEAM_DOMAIN = "mssd-mtl.cloudflareaccess.com"
-CF_ACCESS_AUD = "f580f01d138"
+CF_ACCESS_AUD = "f3144e4eade7b67fdbdec54246840de39c04bad74c593da34f7553e5e245e0da"
 
 [[d1_databases]]
 binding = "DB"
