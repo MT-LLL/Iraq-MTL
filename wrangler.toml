@@ -14,11 +14,11 @@ enabled = true
 crons = ["0 4 * * 1"]
 
 [vars]
-MSSD_SITE_URL = "https://your-worker.your-subdomain.workers.dev"
+MSSD_SITE_URL = "https://iraq-mtl.lihui9329.workers.dev/"
 ZHIPU_MODEL = "glm-5.3"
 ZHIPU_API_BASE_URL = "https://open.bigmodel.cn/api/paas/v4"
-CF_ACCESS_TEAM_DOMAIN = "your-team.cloudflareaccess.com"
-CF_ACCESS_AUD = "replace-with-access-application-audience"
+CF_ACCESS_TEAM_DOMAIN = "mssd-mtl.cloudflareaccess.com"
+CF_ACCESS_AUD = "f580f01d138"
 
 [[d1_databases]]
 binding = "DB"
