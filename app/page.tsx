@@ -1,6 +1,7 @@
 import { OpsConsole } from "./OpsConsole";
 import { AccountGate } from "./AccountGate";
 import { PartnerPortal, type PartnerOpportunityView } from "./PartnerPortal";
+import { LogoutButton } from "./LogoutButton";
 import { getNotificationConfiguration } from "./notifications";
 import { getCurrentAccountState, getLeadDistributions, getManualOpportunities, getPushJobs, getSourceScanRuns } from "./actions";
 import { opportunities } from "./data";
@@ -35,7 +36,7 @@ function partnerSafeOpportunities(): PartnerOpportunityView[] {
       })),
       contact: {
         status: { zh: zh.contactDetails.status, en: en.contactDetails.status },
-        name: { zh: zh.contactDetails.name, en: en.contactDetails.name },
+        name: { zh: zh.contactDetails.name, en: zh.contactDetails.name },
         role: { zh: zh.contactDetails.role, en: en.contactDetails.role },
         company: { zh: zh.contactDetails.company, en: en.contactDetails.company },
         email: { zh: zh.contactDetails.email, en: en.contactDetails.email },
@@ -54,8 +55,8 @@ export default async function Home() {
     return <AccountGate authUser={accountState.authUser} profile={accountState.profile}/>;
   }
   if (accountState.profile.identityType === "partner") {
-    return <PartnerPortal profile={accountState.profile} items={partnerSafeOpportunities()}/>;
+    return <><PartnerPortal profile={accountState.profile} items={partnerSafeOpportunities()}/><LogoutButton /></>;
   }
   const [manualOpportunities, leadDistributions, sourceScanRuns, pushJobs] = await Promise.all([getManualOpportunities(), getLeadDistributions(), getSourceScanRuns(), getPushJobs()]);
-  return <OpsConsole authUser={accountState.authUser} initialProfile={accountState.profile} initialPending={accountState.pending} initialManualOpportunities={manualOpportunities} initialLeadDistributions={leadDistributions} initialSourceScanRuns={sourceScanRuns} initialPushJobs={pushJobs} deliveryStatus={getNotificationConfiguration()}/>;
+  return <><OpsConsole authUser={accountState.authUser} initialProfile={accountState.profile} initialPending={accountState.pending} initialManualOpportunities={manualOpportunities} initialLeadDistributions={leadDistributions} initialSourceScanRuns={sourceScanRuns} initialPushJobs={pushJobs} deliveryStatus={getNotificationConfiguration()}/><LogoutButton /></>;
 }
