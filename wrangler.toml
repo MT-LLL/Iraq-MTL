@@ -15,6 +15,7 @@ crons = ["0 4 * * 1"]
 
 [vars]
 MSSD_SITE_URL = "https://iraq-mtl.lihui9329.workers.dev/"
+MSSD_ADMIN_EMAILS = "lihui302@huawei.com"
 ZHIPU_MODEL = "glm-5.3"
 ZHIPU_API_BASE_URL = "https://open.bigmodel.cn/api/paas/v4"
 CF_ACCESS_TEAM_DOMAIN = "mssd-mtl.cloudflareaccess.com"
