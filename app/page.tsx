@@ -36,7 +36,7 @@ function partnerSafeOpportunities(): PartnerOpportunityView[] {
       })),
       contact: {
         status: { zh: zh.contactDetails.status, en: en.contactDetails.status },
-        name: { zh: zh.contactDetails.name, en: zh.contactDetails.name },
+        name: { zh: zh.contactDetails.name, en: en.contactDetails.name },
         role: { zh: zh.contactDetails.role, en: en.contactDetails.role },
         company: { zh: zh.contactDetails.company, en: en.contactDetails.company },
         email: { zh: zh.contactDetails.email, en: en.contactDetails.email },
