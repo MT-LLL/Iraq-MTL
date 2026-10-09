@@ -67,6 +67,7 @@ export type SourceScanRunView = {
   updatedLeadCount: number;
   promotedCount: number;
   summary: string;
+  metadata: string;
   startedAt: string;
   finishedAt: string;
   nextRunAt: string;
@@ -382,6 +383,7 @@ function toSourceScanRunView(row: StoredSourceScanRun): SourceScanRunView {
     updatedLeadCount: row.updatedLeadCount,
     promotedCount: row.promotedCount,
     summary: row.summary,
+    metadata: row.metadata,
     startedAt: row.startedAt.toISOString(),
     finishedAt: row.finishedAt?.toISOString() ?? "",
     nextRunAt: row.nextRunAt?.toISOString() ?? "",

@@ -117,7 +117,7 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
   if (!country || !meedId || !title) return { skipped: true, existing: false };
 
   const id = `MEED-${country.code}-${meedId}`;
-  const existing = await db.prepare("SELECT id FROM opportunities WHERE id = ?").bind(id).first<{ id: string }>();
+  const existing = await db.prepare("SELECT id, title, country, industry, stage, priority, score, project_value, bid_deadline FROM opportunities WHERE id = ?").bind(id).first<{ id: string; title: string; country: string; industry: string; stage: string; priority: string; score: number; project_value: number | null; bid_deadline: number | null }>();
   const industry = normalizeIndustry(record);
   const stage = safeText(record.stage || record.status, "待核实");
   const city = safeText(record.city, country.fallbackCity);
@@ -126,6 +126,7 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
   const sourceUrl = safeText(record.sourceUrl || "");
   const summary = `GitHub Actions从MEED自动采集：${title}，当前阶段${stage}，行业${industry}。需人工复核资金路径、ICT工作包、联系人和截标日期后进入正式经营。`;
   const updatedAt = dateToMs(record.updatedOn) ?? now;
+  const changedFields = existing ? ([["title", existing.title, title], ["country", existing.country, country.zh], ["industry", existing.industry, industry], ["stage", existing.stage, stage], ["priority", existing.priority, priority], ["score", existing.score, score], ["projectValue", existing.project_value, projectValue], ["bidDeadline", existing.bid_deadline, dateToMs(record.awardDate)]] as const).filter(([, before, after]) => (before ?? null) !== (after ?? null)).map(([field]) => field) : [];
 
   await db.prepare(`
     INSERT INTO opportunities (
@@ -185,7 +186,7 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     updatedAt,
   ).run();
 
-  return { skipped: false, existing: Boolean(existing), id };
+  return { skipped: false, existing: Boolean(existing), changedFields, id, title, country: country.zh, industry, priority, score, projectValue };
 }
 
 export async function POST(request: Request) {
@@ -207,22 +208,29 @@ export async function POST(request: Request) {
   let updated = 0;
   let skipped = 0;
   const opportunityIds: string[] = [];
+  const changedOpportunities: Array<{ id: string; title: string; changedFields: string[] }> = [];
+  const newlyAdded: Array<{ id: string; title: string; country: string; industry: string; priority: string; score: number; projectValue: number | null }> = [];
 
   for (const record of records) {
     const result = await upsertOpportunity(db, record, now);
     if (result.skipped) {
       skipped += 1;
     } else if (result.existing) {
-      updated += 1;
+      if (result.changedFields.length > 0) {
+        updated += 1;
+        changedOpportunities.push({ id: result.id, title: result.title, changedFields: result.changedFields });
+      }
     } else {
       inserted += 1;
+      newlyAdded.push({ id: result.id, title: result.title, country: result.country, industry: result.industry, priority: result.priority, score: result.score, projectValue: result.projectValue });
     }
     if ("id" in result && result.id) opportunityIds.push(result.id);
   }
 
   const stats = payload.stats ?? {};
   const sourceCount = 1;
-  const status = payload.status === "failed" ? "failed" : payload.status === "partial" ? "partial" : "completed";
+  const hasErrors = Array.isArray(payload.errors) && payload.errors.length > 0;
+  const status = payload.status === "failed" ? "failed" : payload.status === "partial" || hasErrors || records.length === 0 ? "partial" : "completed";
   const finishedAt = Date.now();
   const nextRunAt = finishedAt + 7 * 86400000;
   const metadata = JSON.stringify({
@@ -234,11 +242,18 @@ export async function POST(request: Request) {
     updated,
     skipped,
     opportunityIds,
+    changedOpportunities,
+    newlyAddedCount: inserted,
+    changedCount: updated,
+    comparisonAvailable: status === "completed",
+    newlyAddedTop5: status === "completed" ? newlyAdded.sort((a, b) => b.score - a.score).slice(0, 5) : [],
     errors: payload.errors ?? [],
   });
   const summary = status === "failed"
     ? `GitHub Actions MEED采集失败：${(payload.errors ?? ["unknown error"]).join("; ").slice(0, 480)}`
-    : `GitHub Actions MEED采集完成：新增${inserted}条，更新${updated}条，跳过${skipped}条；源文件${stats.sourceRows ?? records.length}条，候选${stats.promotedCount ?? records.length}条。`;
+    : status === "partial"
+      ? `GitHub Actions MEED采集部分完成（结果不作为完整对比）：暂新增${inserted}条，检测到变化${updated}条，跳过${skipped}条。`
+      : `GitHub Actions MEED清单刷新完成：新增${inserted}条，实际变化${updated}条，跳过${skipped}条；源文件${stats.sourceRows ?? records.length}条，候选${stats.promotedCount ?? records.length}条。`;
 
   await db.prepare("INSERT INTO source_scan_runs (id, trigger, status, source_count, new_lead_count, updated_lead_count, promoted_count, summary, metadata, started_at, finished_at, next_run_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
     .bind(runId, "github_actions", status, sourceCount, inserted, updated, stats.promotedCount ?? opportunityIds.length, summary, metadata, now, finishedAt, nextRunAt)
