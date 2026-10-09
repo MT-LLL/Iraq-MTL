@@ -224,6 +224,7 @@ function toClientOpportunity(row: StoredOpportunity, ownerName = "Manual Import"
     owner: ownerName,
     ownerInitials: ownerName.split(/\s+/).map(part => part[0]).join("").slice(0, 2).toUpperCase() || "MI",
     source,
+    sourceUrl: row.sourceUrl || undefined,
     updated: row.updatedAt.toISOString().slice(0, 10),
     funding: row.fundingStatus || "待核实",
     participation: (row.participationSpace || "中") as Opportunity["participation"],
