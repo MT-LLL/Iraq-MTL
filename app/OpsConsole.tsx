@@ -221,7 +221,7 @@ function OpportunityList({ items, activeId, selectedIds, lang, canInternal, onSe
         const contact = contactStatus(item, lang);
         return (
         <div className="opportunity-row-wrap" key={item.id}>
-          <label className="op-select" title={tr(lang,"选择用于批量推送","Select for bulk push")}><input type="checkbox" checked={selectedIds.has(item.id)} onChange={() => onToggle(item)}/><span></span></label>
+          <label className="op-select" title={tr(lang,"选择此机会用于批量操作","Select this opportunity for bulk actions")}><input type="checkbox" aria-label={tr(lang,`选择机会：${item.title}`,`Select opportunity: ${item.titleEn || item.title}`)} checked={selectedIds.has(item.id)} onChange={event => { event.stopPropagation(); onToggle(item); }}/><span aria-hidden="true"></span></label>
           <button className={`opportunity-row ${activeId === item.id ? "active" : ""}`} onClick={() => onSelect(item)}>
             <span className={`priority-pill ${canInternal ? priorityClass[item.priority] : "watch"}`}>{canInternal ? item.priority : tr(lang,"共享","Shared")}</span>
             <span className="op-main"><strong>{lang === "zh" ? item.title : item.titleEn}</strong><small>{localTerm(lang,item.country)} · {localTerm(lang,item.industry)} · {localTerm(lang,item.stage)}</small><em className={`contact-status-badge ${contact.className}`}>{contact.label}</em></span>
