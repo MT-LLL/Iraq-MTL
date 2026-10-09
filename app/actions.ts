@@ -4,7 +4,7 @@ import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getDb } from "../db";
-import { auditLogs, leadDistributions, opportunities as storedOpportunities, pushJobs, savedViews, sourceScanRuns, users } from "../db/schema";
+import { auditLogs, leadDistributions, opportunities as storedOpportunities, opportunityTracking, pushJobs, savedViews, sourceScanRuns, users } from "../db/schema";
 import { industryDispatchDirectory, opportunities as catalogOpportunities, partnerDirectory, sourceConnectorConfig, sourceCoverage, type Country, type Opportunity, type Priority } from "./data";
 import { getChatGPTUser } from "./chatgpt-auth";
 import { deliverNotification, NotificationError } from "./notifications";
@@ -447,6 +447,42 @@ export async function saveOpportunityView(input: { name: string; filters: Record
   if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) throw new Error("FORBIDDEN");
   await db.insert(savedViews).values({ id: crypto.randomUUID(), ownerId: profile.id, name: input.name, filters: JSON.stringify(input.filters), createdAt: new Date() });
   return { ok: true };
+}
+
+export type OpportunityTrackingView = {
+  opportunityId: string;
+  status: "tracked" | "archived";
+  reason: string;
+  updatedBy: string;
+  updatedAt: string;
+};
+
+export async function getOpportunityTracking(): Promise<OpportunityTrackingView[]> {
+  const { profile, db } = await currentIdentity();
+  if (!profile || profile.status !== "approved") return [];
+  const rows = await db.select().from(opportunityTracking);
+  return rows.map(row => ({ opportunityId: row.opportunityId, status: row.status === "archived" ? "archived" : "tracked", reason: row.reason, updatedBy: row.updatedBy, updatedAt: row.updatedAt.toISOString() }));
+}
+
+export async function setOpportunityTracking(input: { opportunityIds: string[]; status: "tracked" | "archived"; reason?: string }) {
+  const { profile, db } = await currentIdentity();
+  if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) throw new Error("FORBIDDEN");
+  const opportunityIds = [...new Set(input.opportunityIds.map(id => id.trim()).filter(Boolean))].slice(0, 100);
+  if (!opportunityIds.length) throw new Error("NO_OPPORTUNITIES");
+  const reason = (input.reason ?? "").trim().slice(0, 1000);
+  if (input.status === "archived" && !reason) throw new Error("ARCHIVE_REASON_REQUIRED");
+  const now = new Date();
+  const all = await allAvailableOpportunities(db);
+  const titleById = new Map(all.map(item => [item.id, item.title]));
+  for (const opportunityId of opportunityIds) {
+    if (!titleById.has(opportunityId)) continue;
+    const existing = await db.select().from(opportunityTracking).where(eq(opportunityTracking.opportunityId, opportunityId)).limit(1);
+    const values = { opportunityId, status: input.status, reason: input.status === "archived" ? reason : "", updatedBy: profile.name || profile.email || profile.id, updatedAt: now };
+    if (existing[0]) await db.update(opportunityTracking).set(values).where(eq(opportunityTracking.opportunityId, opportunityId));
+    else await db.insert(opportunityTracking).values(values);
+    await db.insert(auditLogs).values({ id: crypto.randomUUID(), actorId: profile.id, action: input.status === "archived" ? "opportunity.tracking.archived" : "opportunity.tracking.restored", entityType: "opportunity", entityId: opportunityId, metadata: JSON.stringify({ title: titleById.get(opportunityId), reason: input.status === "archived" ? reason : "", previousStatus: existing[0]?.status ?? "tracked", status: input.status }), createdAt: now });
+  }
+  return { ok: true as const, status: input.status, opportunityIds };
 }
 
 export async function getManualOpportunities() {

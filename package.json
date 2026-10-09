@@ -15,7 +15,7 @@
     "telegram:tender-ingest": "node scripts/telegram-tender-ingest.mjs",
     "db:generate": "drizzle-kit generate",
     "deploy:cloudflare": "npm run build && wrangler deploy --config wrangler.toml",
-    "d1:migrate:remote": "wrangler d1 execute mssd_mtl_prod --file=drizzle/0000_yellow_vulcan.sql --remote && wrangler d1 execute mssd_mtl_prod --file=drizzle/0001_sticky_revanche.sql --remote && wrangler d1 execute mssd_mtl_prod --file=drizzle/0002_tiresome_tarot.sql --remote && wrangler d1 execute mssd_mtl_prod --file=drizzle/0003_lead_distributions.sql --remote && wrangler d1 execute mssd_mtl_prod --file=drizzle/0004_source_scan_runs.sql --remote"
+    "d1:migrate:remote": "wrangler d1 execute mssd_mtl_prod --file=drizzle/0000_yellow_vulcan.sql --remote && wrangler d1 execute mssd_mtl_prod --file=drizzle/0001_sticky_revanche.sql --remote && wrangler d1 execute mssd_mtl_prod --file=drizzle/0002_tiresome_tarot.sql --remote && wrangler d1 execute mssd_mtl_prod --file=drizzle/0003_lead_distributions.sql --remote && wrangler d1 execute mssd_mtl_prod --file=drizzle/0004_source_scan_runs.sql --remote && wrangler d1 execute mssd_mtl_prod --file=drizzle/0005_opportunity_tracking.sql --remote"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",

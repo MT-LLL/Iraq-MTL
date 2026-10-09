@@ -125,6 +125,14 @@ export const sourceScanRuns = sqliteTable("source_scan_runs", {
   nextRunAt: integer("next_run_at", { mode: "timestamp_ms" }),
 });
 
+export const opportunityTracking = sqliteTable("opportunity_tracking", {
+  opportunityId: text("opportunity_id").primaryKey(),
+  status: text("status").notNull().default("tracked"),
+  reason: text("reason").notNull().default(""),
+  updatedBy: text("updated_by").notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+});
+
 export const savedViews = sqliteTable("saved_views", {
   id: text("id").primaryKey(),
   ownerId: text("owner_id").notNull(),

@@ -50,9 +50,12 @@ jobs:
           test -n "$CLOUDFLARE_ACCOUNT_ID"
           echo "Cloudflare credentials are present."
 
+      - name: Apply opportunity tracking migration
+        run: npx wrangler d1 execute mssd_mtl_prod --file=drizzle/0005_opportunity_tracking.sql --remote
+
       - name: Verify D1 schema
         run: |
-          npx wrangler d1 execute mssd_mtl_prod --remote --command "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('users','opportunities','audit_logs','evidence','push_jobs','saved_views','lead_distributions','source_scan_runs') ORDER BY name;"
+          npx wrangler d1 execute mssd_mtl_prod --remote --command "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('users','opportunities','audit_logs','evidence','push_jobs','saved_views','lead_distributions','source_scan_runs','opportunity_tracking') ORDER BY name;"
 
       - name: Deploy to Cloudflare Workers
         run: npx wrangler deploy --config wrangler.toml
