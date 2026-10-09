@@ -242,12 +242,17 @@ export async function POST(request: Request) {
     skipped,
     opportunityIds,
     changedOpportunities,
-    newlyAddedTop5: newlyAdded.sort((a, b) => b.score - a.score).slice(0, 5),
+    newlyAddedCount: inserted,
+    changedCount: updated,
+    comparisonAvailable: status === "completed",
+    newlyAddedTop5: status === "completed" ? newlyAdded.sort((a, b) => b.score - a.score).slice(0, 5) : [],
     errors: payload.errors ?? [],
   });
   const summary = status === "failed"
     ? `GitHub Actions MEED采集失败：${(payload.errors ?? ["unknown error"]).join("; ").slice(0, 480)}`
-    : `GitHub Actions MEED采集完成：新增${inserted}条，更新${updated}条，跳过${skipped}条；源文件${stats.sourceRows ?? records.length}条，候选${stats.promotedCount ?? records.length}条。`;
+    : status === "partial"
+      ? `GitHub Actions MEED采集部分完成（结果不作为完整对比）：暂新增${inserted}条，检测到变化${updated}条，跳过${skipped}条。`
+      : `GitHub Actions MEED清单刷新完成：新增${inserted}条，实际变化${updated}条，跳过${skipped}条；源文件${stats.sourceRows ?? records.length}条，候选${stats.promotedCount ?? records.length}条。`;
 
   await db.prepare("INSERT INTO source_scan_runs (id, trigger, status, source_count, new_lead_count, updated_lead_count, promoted_count, summary, metadata, started_at, finished_at, next_run_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
     .bind(runId, "github_actions", status, sourceCount, inserted, updated, stats.promotedCount ?? opportunityIds.length, summary, metadata, now, finishedAt, nextRunAt)
