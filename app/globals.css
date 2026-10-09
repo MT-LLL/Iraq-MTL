@@ -56,6 +56,10 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .main-area { min-width:0; flex:1; margin-left:230px; }
 .topbar { height:68px; border-bottom:1px solid #e3e6e2; background:rgba(255,254,250,.92); backdrop-filter:blur(12px); display:flex; align-items:center; justify-content:space-between; padding:0 30px; position:sticky; top:0; z-index:15; }
 .breadcrumb { display:flex; align-items:center; gap:9px; font-size:12px; }
+.opportunity-refresh-date { display:flex; align-items:center; gap:7px; padding:7px 10px; border:1px solid #dfe7e3; border-radius:9px; background:#f7faf8; color:#52666a; font-size:10px; line-height:1.2; white-space:nowrap; }
+.opportunity-refresh-date strong { color:#173f4b; font-size:11px; font-weight:750; font-variant-numeric:tabular-nums; }
+.refresh-date-dot { width:7px; height:7px; flex:0 0 7px; border-radius:50%; background:#199b78; box-shadow:0 0 0 3px rgba(25,155,120,.12); }
+.partner-refresh-date { margin-left:auto; margin-right:18px; }
 .breadcrumb span { color:#829096; }.breadcrumb b{font-weight:400;color:#c3c9c8}.breadcrumb strong{font-weight:650}
 .top-actions { display:flex; align-items:center; gap:10px; }
 .global-search, .inline-search { height:36px; min-width:275px; border:1px solid #dfe4e1; background:#f8f8f4; border-radius:8px; display:flex; align-items:center; padding:0 10px; gap:8px; }

@@ -556,6 +556,16 @@ export async function getSourceScanRuns() {
   return rows.sort((a, b) => b.startedAt.getTime() - a.startedAt.getTime()).slice(0, 10).map(toSourceScanRunView);
 }
 
+export async function getLatestOpportunityRefreshAt(): Promise<string | null> {
+  const { profile, db } = await currentIdentity();
+  if (!profile || profile.status !== "approved") return null;
+  const rows = await db.select().from(sourceScanRuns);
+  const latest = rows
+    .filter(row => row.trigger === "github_actions" && row.status === "completed" && row.finishedAt)
+    .sort((a, b) => (b.finishedAt?.getTime() ?? 0) - (a.finishedAt?.getTime() ?? 0))[0];
+  return latest?.finishedAt?.toISOString() ?? null;
+}
+
 export async function runWeeklySourceScan(input?: { trigger?: "manual" | "scheduled" }) {
   const { profile, db } = await currentIdentity();
   if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) throw new Error("FORBIDDEN");

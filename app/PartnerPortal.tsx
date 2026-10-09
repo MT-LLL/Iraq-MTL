@@ -33,7 +33,7 @@ export type PartnerOpportunityView = {
 
 type Profile = { name: string; organization: string };
 
-export function PartnerPortal({ profile, items }: { profile: Profile; items: PartnerOpportunityView[] }) {
+export function PartnerPortal({ profile, items, latestOpportunityRefreshAt }: { profile: Profile; items: PartnerOpportunityView[]; latestOpportunityRefreshAt: string | null }) {
   const [lang, setLang] = useState<"zh" | "en">("zh");
   const [search, setSearch] = useState("");
   const [country, setCountry] = useState("all");
@@ -46,10 +46,14 @@ export function PartnerPortal({ profile, items }: { profile: Profile; items: Par
   }), [country, items, search]);
   const selected = items.find(item => item.id === selectedId) ?? filtered[0] ?? items[0];
   const t = (zh: string, en: string) => lang === "zh" ? zh : en;
+  const opportunityRefreshDate = latestOpportunityRefreshAt
+    ? new Intl.DateTimeFormat(lang === "zh" ? "zh-CN" : "en-GB", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Baghdad" }).format(new Date(latestOpportunityRefreshAt))
+    : t("暂无记录", "No record");
 
   return <div className="partner-portal-shell">
     <header className="partner-portal-topbar">
       <div className="partner-portal-brand"><span>MT</span><div><strong>{t("伊拉克代表处面向伙伴MTL营销作战平台","Iraq Partner MTL Marketing War-room")}</strong><small>PARTNER COLLABORATION PORTAL</small></div></div>
+      <div className="opportunity-refresh-date partner-refresh-date" title={t("最近一次成功的 MEED 机会点同步日期","Date of the latest successful MEED opportunity sync")}><span className="refresh-date-dot" aria-hidden="true"/><span>{t("最新机会点更新","Latest opportunity refresh")}</span><strong>{opportunityRefreshDate}</strong></div>
       <div className="partner-portal-user"><div><strong>{profile.name}</strong><small>{profile.organization} · {t("已批准伙伴","Approved partner")}</small></div><button onClick={() => setLang(lang === "zh" ? "en" : "zh")}>{lang === "zh" ? "中 / EN" : "EN / 中"}</button><a href="/signout-with-chatgpt?return_to=/">{t("退出","Sign out")}</a></div>
     </header>
     <main className="partner-portal-main">
