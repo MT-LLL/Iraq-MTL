@@ -434,122 +434,81 @@ function CommandView({ lang, items, openOpportunity, quickPush, openCountry }: {
 }
 
 function UpdatesView({ lang, scanRuns }: { lang: Lang; scanRuns: SourceScanRunView[] }) {
-  const latest = releaseUpdateLog[0];
   const refreshRuns = scanRuns.filter(run => run.trigger === "github_actions").slice(0, 10);
-  const statusLabel = (status: "published" | "review" | "planned") =>
-    status === "published" ? tr(lang, "已发布", "Published") : status === "review" ? tr(lang, "复核中", "In review") : tr(lang, "计划中", "Planned");
+  const fieldLabel = (field: string) => {
+    if (lang !== "zh") return field.replace(/([A-Z])/g, " $1").toLowerCase();
+    const labels: Record<string, string> = { title: "项目名称", country: "国家", industry: "行业", stage: "阶段", priority: "优先级", score: "评分", projectValue: "项目金额", bidDeadline: "投标截止日期" };
+    return labels[field] || field;
+  };
   return <div className="workspace-view updates-view">
-    <div className="view-intro">
+    <div className="view-intro refresh-view-intro">
       <div>
-        <span className="section-kicker">RELEASE NOTES</span>
-        <h1>{tr(lang, "每期更新纪要", "Issue-by-issue release notes")}</h1>
-        <p>{tr(lang, "沉淀每一期数据增量、重点机会、功能变化和下一步动作，方便经营复盘与汇报。", "Tracks each issue's data delta, key opportunities, product changes and next actions for review and reporting.")}</p>
+        <span className="section-kicker">OPPORTUNITY INTELLIGENCE</span>
+        <h1>{tr(lang, "机会清单刷新纪要", "Opportunity Refresh Digest")}</h1>
+        <p>{tr(lang, "每次成功刷新形成独立快照：查看新增机会、已有项目变化和重点新增项目。", "Each refresh gets its own snapshot of new opportunities, meaningful changes and top new projects.")}</p>
       </div>
-      <div className="release-hero-badge">
-        <small>{tr(lang, "最新一期", "Latest issue")}</small>
-        <strong>{tr(lang, latest.period, latest.periodEn)}</strong>
+      <div className="refresh-summary-badge">
+        <strong>{refreshRuns.length}</strong>
+        <span>{tr(lang, "次最近刷新", "recent refreshes")}</span>
       </div>
     </div>
-
-    <section className="panel release-overview-card">
-      <div className="panel-head"><div>
-        <span className="section-kicker">OPPORTUNITY REFRESH</span>
-        <h2>{tr(lang, "机会清单刷新对比", "Opportunity-list refresh digest")}</h2>
-        <span>{tr(lang, "按每次 MEED 清单刷新记录新增机会、实际变化及新增项目 Top 5。部分或失败的刷新不作为完整对比。", "Each MEED refresh records newly added opportunities, meaningful changes and the top five new projects. Partial or failed runs are not treated as complete comparisons.")}</span>
-      </div></div>
+    <section className="panel refresh-digest-panel">
+      <div className="panel-head refresh-panel-head">
+        <div>
+          <span className="section-kicker">REFRESH HISTORY</span>
+          <h2>{tr(lang, "刷新历史", "Refresh history")}</h2>
+          <span>{tr(lang, "保留最近 10 次刷新记录；不完整或失败的刷新会明确标记，避免误读。", "The latest 10 refresh records are retained. Incomplete or failed runs are clearly marked.")}</span>
+        </div>
+      </div>
       {refreshRuns.length === 0
-        ? <p>{tr(lang, "暂无可展示的清单刷新记录。", "No opportunity-list refresh records yet.")}</p>
-        : <div className="release-timeline">
-          {refreshRuns.map(run => {
+        ? <div className="refresh-empty"><strong>{tr(lang, "暂无刷新记录", "No refresh records yet")}</strong><p>{tr(lang, "下一次 MEED 清单刷新完成后，摘要会显示在这里。", "The digest will appear here after the next MEED list refresh.")}</p></div>
+        : <div className="refresh-run-list">
+          {refreshRuns.map((run, index) => {
             let details: { comparisonAvailable?: boolean; newlyAddedTop5?: Array<{ id: string; title: string; country: string; industry: string; priority: string; score: number; projectValue: number | null }>; changedOpportunities?: Array<{ id: string; title: string; changedFields: string[] }> } = {};
             try { details = JSON.parse(run.metadata || "{}"); } catch { details = {}; }
             const complete = run.status === "completed" && details.comparisonAvailable === true;
-            return <article className="release-card" key={run.id}><div className="release-body">
-              <header><div>
-                <span className="section-kicker">{run.id} · {run.finishedAt ? new Date(run.finishedAt).toLocaleString(lang === "zh" ? "zh-CN" : "en-US") : run.startedAt}</span>
-                <h2>{tr(lang, "本次机会清单刷新", "Opportunity-list refresh")}</h2>
-                <small>{run.summary}</small>
-              </div><em className={"status " + (complete ? "active" : "review")}>{complete ? tr(lang, "完整对比", "Full comparison") : tr(lang, "结果待核实", "Needs review")}</em></header>
-              <div className="release-mini-stats">
-                <div><strong>{run.newLeadCount}</strong><span>{tr(lang, "新增机会", "New opportunities")}</span></div>
-                <div><strong>{run.updatedLeadCount}</strong><span>{tr(lang, "实际变化", "Meaningful changes")}</span></div>
-                <div><strong>{run.promotedCount}</strong><span>{tr(lang, "候选机会", "Candidate opportunities")}</span></div>
+            const added = Number(run.newLeadCount || 0);
+            const changed = Number(run.updatedLeadCount || 0);
+            return <article className="refresh-run-card" key={run.id}>
+              <div className="refresh-run-topline">
+                <div className="refresh-run-date">
+                  <span className="refresh-run-number">{String(index + 1).padStart(2, "0")}</span>
+                  <div><strong>{run.finishedAt ? new Date(run.finishedAt).toLocaleString(lang === "zh" ? "zh-CN" : "en-US") : run.startedAt}</strong><small>{run.id}</small></div>
+                </div>
+                <em className={"status " + (complete ? "active" : "review")}>{complete ? tr(lang, "对比完整", "Comparison complete") : tr(lang, "待核实", "Needs review")}</em>
+              </div>
+              <p className="refresh-run-summary">{run.summary}</p>
+              <div className="refresh-metric-grid">
+                <div className="refresh-metric"><span>{tr(lang, "新增机会", "New opportunities")}</span><strong>{added}</strong></div>
+                <div className="refresh-metric"><span>{tr(lang, "已有项目变化", "Existing projects changed")}</span><strong>{changed}</strong></div>
+                <div className="refresh-metric"><span>{tr(lang, "候选机会", "Candidate opportunities")}</span><strong>{run.promotedCount}</strong></div>
               </div>
               {complete && (details.newlyAddedTop5 || []).length > 0
-                ? <section><h3>{tr(lang, "本次新增 Top 5", "Top 5 newly added projects")}</h3>
-                  {(details.newlyAddedTop5 || []).map(item => <p key={item.id}>• <strong>{item.title}</strong> — {item.country} · {item.industry} · {item.priority} · {tr(lang, "评分", "Score")} {item.score}{item.projectValue == null ? "" : " · USD " + item.projectValue + "M"}</p>)}
-                </section>
-                : <p>{tr(lang, "本次记录未提供可确认的新增 Top 5；请勿将其视为完整排名。", "No verified new-project top-five list is available for this run.")}</p>}
-                {complete && (details.changedOpportunities || []).length > 0 && <section>
-                  <h3>{tr(lang, "发生变化的已有项目", "Existing projects with changes")}</h3>
-                  {(details.changedOpportunities || []).slice(0, 10).map(item => <p key={item.id}>• <strong>{item.title}</strong> — {item.changedFields.join(", ")}</p>)}
-                </section>}
-            </div></article>;
+                ? <section className="refresh-detail-section">
+                    <h3>{tr(lang, "新增项目 · Top 5", "New projects · Top 5")}</h3>
+                    <div className="refresh-project-list">
+                      {(details.newlyAddedTop5 || []).map((item, rank) => <div className="refresh-project-row" key={item.id}>
+                        <span className="refresh-rank">{rank + 1}</span>
+                        <div className="refresh-project-main"><strong>{item.title || tr(lang, "未命名项目", "Untitled project")}</strong><small>{[item.country, item.industry].filter(Boolean).join(" · ") || "—"}</small></div>
+                        <span className={"priority-pill " + (priorityClass[item.priority] || "watch")}>{item.priority || "—"}</span>
+                        <div className="refresh-project-score"><strong>{item.score ?? "—"}</strong><small>{tr(lang, "评分", "Score")}</small></div>
+                        <span className="refresh-project-value">{item.projectValue == null ? "—" : "USD " + item.projectValue + "M"}</span>
+                      </div>)}
+                    </div>
+                  </section>
+                : <p className="refresh-note">{tr(lang, "没有可验证的新增项目排名。", "No verified new-project ranking is available.")}</p>}
+              {complete && (details.changedOpportunities || []).length > 0 && <section className="refresh-detail-section">
+                <h3>{tr(lang, "发生变化的已有项目", "Existing projects with changes")}</h3>
+                <div className="refresh-changed-list">
+                  {(details.changedOpportunities || []).slice(0, 10).map(item => <div className="refresh-changed-row" key={item.id}>
+                    <strong>{item.title || item.id}</strong><div>{item.changedFields.map(field => <span className="refresh-field-chip" key={field}>{fieldLabel(field)}</span>)}</div>
+                  </div>)}
+                </div>
+              </section>}
+            </article>;
           })}
         </div>}
     </section>
-    <section className="panel release-overview-card">
-      <div className="panel-head">
-        <div>
-          <span className="section-kicker">{latest.id} · {latest.publishedAt}</span>
-          <h2>{tr(lang, latest.title, latest.titleEn)}</h2>
-          <span>{tr(lang, latest.dataSource, latest.dataSourceEn)}</span>
-        </div>
-        <em className={`status ${latest.status === "published" ? "active" : "review"}`}>{statusLabel(latest.status)}</em>
-      </div>
-      <div className="release-stat-grid">
-        {latest.stats.map(stat => <div key={stat.label}>
-          <strong>{stat.value}</strong>
-          <span>{tr(lang, stat.label, stat.labelEn)}</span>
-          <small>{tr(lang, stat.note, stat.noteEn)}</small>
-        </div>)}
-      </div>
-      <div className="release-highlight-grid">
-        {(lang === "zh" ? latest.highlights : latest.highlightsEn).map((highlight, index) => <p key={highlight}><b>0{index + 1}</b>{highlight}</p>)}
-      </div>
-    </section>
-
-    <div className="release-timeline">
-      {releaseUpdateLog.map((issue, index) => <article className="release-card" key={issue.id}>
-        <div className="release-index"><span>{String(index + 1).padStart(2, "0")}</span><i></i></div>
-        <div className="release-body">
-          <header>
-            <div>
-              <span className="section-kicker">{issue.id} · {tr(lang, issue.period, issue.periodEn)}</span>
-              <h2>{tr(lang, issue.title, issue.titleEn)}</h2>
-              <small>{tr(lang, "数据源：", "Data source: ")}{tr(lang, issue.dataSource, issue.dataSourceEn)}</small>
-            </div>
-            <em className={`status ${issue.status === "published" ? "active" : "review"}`}>{statusLabel(issue.status)}</em>
-          </header>
-          <div className="release-mini-stats">
-            {issue.stats.map(stat => <div key={stat.label}><strong>{stat.value}</strong><span>{tr(lang, stat.label, stat.labelEn)}</span></div>)}
-          </div>
-          <div className="release-sections">
-            <section>
-              <h3>{tr(lang, "本期更新内容", "What changed")}</h3>
-              {(lang === "zh" ? issue.highlights : issue.highlightsEn).map(text => <p key={text}>✓ {text}</p>)}
-            </section>
-            <section>
-              <h3>{tr(lang, "平台功能变化", "Platform updates")}</h3>
-              {(lang === "zh" ? issue.platformUpdates : issue.platformUpdatesEn).map(text => <p key={text}>• {text}</p>)}
-            </section>
-          </div>
-          <div className="release-opportunity-table">
-            <div className="release-opportunity-head"><span>{tr(lang, "重点机会", "Key opportunity")}</span><span>{tr(lang, "金额", "Value")}</span><span>{tr(lang, "优先级", "Priority")}</span><span>{tr(lang, "动作建议", "Recommended action")}</span></div>
-            {issue.keyOpportunities.map(opportunity => <div className="release-opportunity-row" key={opportunity.id}>
-              <span><strong>{lang === "zh" ? opportunity.title : opportunity.titleEn}</strong><small>{opportunity.id}</small></span>
-              <span>{opportunity.value}</span>
-              <span><em className={priorityClass[opportunity.priority]}>{opportunity.priority}</em></span>
-              <span>{tr(lang, opportunity.action, opportunity.actionEn)}</span>
-            </div>)}
-          </div>
-          <div className="release-next-actions">
-            <strong>{tr(lang, "下一步计划", "Next actions")}</strong>
-            {(lang === "zh" ? issue.nextActions : issue.nextActionsEn).map(action => <span key={action}>{action}</span>)}
-          </div>
-        </div>
-      </article>)}
-    </div>
   </div>;
 }
 
