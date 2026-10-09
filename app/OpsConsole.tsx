@@ -433,8 +433,9 @@ function CommandView({ lang, items, openOpportunity, quickPush, openCountry }: {
   </>;
 }
 
-function UpdatesView({ lang }: { lang: Lang }) {
+function UpdatesView({ lang, scanRuns }: { lang: Lang; scanRuns: SourceScanRunView[] }) {
   const latest = releaseUpdateLog[0];
+  const refreshRuns = scanRuns.filter(run => run.trigger === "github_actions").slice(0, 10);
   const statusLabel = (status: "published" | "review" | "planned") =>
     status === "published" ? tr(lang, "已发布", "Published") : status === "review" ? tr(lang, "复核中", "In review") : tr(lang, "计划中", "Planned");
   return <div className="workspace-view updates-view">
@@ -450,6 +451,39 @@ function UpdatesView({ lang }: { lang: Lang }) {
       </div>
     </div>
 
+    <section className="panel release-overview-card">
+      <div className="panel-head"><div>
+        <span className="section-kicker">OPPORTUNITY REFRESH</span>
+        <h2>{tr(lang, "机会清单刷新对比", "Opportunity-list refresh digest")}</h2>
+        <span>{tr(lang, "按每次 MEED 清单刷新记录新增机会、实际变化及新增项目 Top 5。部分或失败的刷新不作为完整对比。", "Each MEED refresh records newly added opportunities, meaningful changes and the top five new projects. Partial or failed runs are not treated as complete comparisons.")}</span>
+      </div></div>
+      {refreshRuns.length === 0
+        ? <p>{tr(lang, "暂无可展示的清单刷新记录。", "No opportunity-list refresh records yet.")}</p>
+        : <div className="release-timeline">
+          {refreshRuns.map(run => {
+            let details: { comparisonAvailable?: boolean; newlyAddedTop5?: Array<{ id: string; title: string; country: string; industry: string; priority: string; score: number; projectValue: number | null }> } = {};
+            try { details = JSON.parse(run.metadata || "{}"); } catch { details = {}; }
+            const complete = run.status === "completed" && details.comparisonAvailable === true;
+            return <article className="release-card" key={run.id}><div className="release-body">
+              <header><div>
+                <span className="section-kicker">{run.id} · {run.finishedAt ? new Date(run.finishedAt).toLocaleString(lang === "zh" ? "zh-CN" : "en-US") : run.startedAt}</span>
+                <h2>{tr(lang, "本次机会清单刷新", "Opportunity-list refresh")}</h2>
+                <small>{run.summary}</small>
+              </div><em className={"status " + (complete ? "active" : "review")}>{complete ? tr(lang, "完整对比", "Full comparison") : tr(lang, "结果待核实", "Needs review")}</em></header>
+              <div className="release-mini-stats">
+                <div><strong>{run.newLeadCount}</strong><span>{tr(lang, "新增机会", "New opportunities")}</span></div>
+                <div><strong>{run.updatedLeadCount}</strong><span>{tr(lang, "实际变化", "Meaningful changes")}</span></div>
+                <div><strong>{run.promotedCount}</strong><span>{tr(lang, "候选机会", "Candidate opportunities")}</span></div>
+              </div>
+              {complete && (details.newlyAddedTop5 || []).length > 0
+                ? <section><h3>{tr(lang, "本次新增 Top 5", "Top 5 newly added projects")}</h3>
+                  {(details.newlyAddedTop5 || []).map(item => <p key={item.id}>• <strong>{item.title}</strong> — {item.country} · {item.industry} · {item.priority} · {tr(lang, "评分", "Score")} {item.score}{item.projectValue == null ? "" : " · USD " + item.projectValue + "M"}</p>)}
+                </section>
+                : <p>{tr(lang, "本次记录未提供可确认的新增 Top 5；请勿将其视为完整排名。", "No verified new-project top-five list is available for this run.")}</p>}
+            </div></article>;
+          })}
+        </div>}
+    </section>
     <section className="panel release-overview-card">
       <div className="panel-head">
         <div>
@@ -1346,7 +1380,7 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
       <div className="content">
         {view==='command'&&<CommandView lang={lang} items={activeOpportunities} openOpportunity={openOpportunity} quickPush={quickPush} openCountry={openCountry}/>}
         {view==='radar'&&<div className="workspace-view radar-view"><div className="view-intro compact"><div><span className="section-kicker">OPPORTUNITY RADAR</span><h1>{isPartnerUser ? tr(lang,"伙伴线索视图","Partner Lead View") : tr(lang,"机会雷达","Opportunity Radar")}</h1><p>{isPartnerUser ? tr(lang,"仅展示伙伴可见的项目公开信息、联系人、采购入口和协同方案","Shows partner-visible public project information, contacts, procurement entry and collaboration solutions only") : tr(lang,"以证据、窗口与方案匹配为核心排序","Ranked by evidence, timing and solution fit")}</p></div><div className="radar-actions">{canInternal ? <button onClick={saveView}>{tr(lang,"保存视图","Save view")}</button> : null}{canInternal ? <button className="primary" onClick={()=>setManualImportOpen(true)}>＋ {tr(lang,"手工录入机会","Manual entry")}</button> : null}</div></div>{isPartnerUser ? <div className="partner-access-notice top"><strong>{tr(lang,"伙伴访问范围已限制","Partner access is restricted")}</strong><span>{tr(lang,"你可以查看线索公开全貌和协同动作，但内部经营评分、赢单判断、竞争策略、Owner、金种子和其他伙伴信息不会展示。","You can view the partner-safe lead overview and collaboration actions; internal scores, win assessment, competitive strategy, owner, golden seed and other partner information are not shown.")}</span></div> : null}<div className="filter-bar"><div className="inline-search"><span>⌕</span><input placeholder={tr(lang,"搜索机会","Search opportunities")} value={search} onChange={e=>setSearch(e.target.value)}/></div><select value={country} onChange={e=>setCountry(e.target.value)}><option value="全部国家">{tr(lang,"全部国家","All countries")}</option><option value="伊拉克">{localTerm(lang,"伊拉克")}</option><option value="约旦">{localTerm(lang,"约旦")}</option><option value="黎巴嫩">{localTerm(lang,"黎巴嫩")}</option></select>{canInternal ? <select value={priority} onChange={e=>setPriority(e.target.value)}><option value="全部优先级">{tr(lang,"全部优先级","All priorities")}</option><option>P0</option><option>P1</option><option>P2</option><option>WATCH</option></select> : null}<select value={industry} onChange={e=>setIndustry(e.target.value)}><option value="全部行业">{tr(lang,"全部行业","All industries")}</option>{Array.from(new Set(allOpportunities.map(x=>x.industry))).map(x=><option key={x} value={x}>{localTerm(lang,x)}</option>)}</select>{canInternal ? <select aria-label={tr(lang,"跟踪状态","Tracking status")} value={trackingFilter} onChange={e=>{setTrackingFilter(e.target.value as "tracked"|"archived"|"all");setBulkIds(new Set());}}><option value="tracked">{tr(lang,"跟踪中","Tracked")}</option><option value="archived">{tr(lang,"已归档","Archived")}</option><option value="all">{tr(lang,"全部状态","All statuses")}</option></select> : null}<button onClick={()=>showToast(tr(lang,'采购窗口筛选需导入完整里程碑后启用','Procurement window filter needs complete milestone data'))}>{tr(lang,"采购窗口","Procurement window")} ▾</button><span className="result-count">{filtered.length} {tr(lang,"个机会","opportunities")}</span>{canInternal ? <button className={`select-filtered ${allFilteredSelected?'active':''}`} onClick={toggleFiltered}>✓ {allFilteredSelected?tr(lang,"取消筛选结果","Clear filtered"):tr(lang,"选择筛选结果","Select filtered")}</button> : null}{canInternal && trackingFilter !== "archived" ? <button className="bulk-archive" disabled={!bulkIds.size || trackingSaving} onClick={openArchiveModal}>⊖ {tr(lang,"退出跟踪","Stop tracking")} {bulkIds.size?`(${bulkIds.size})`:''}</button> : null}{canInternal ? <button className="bulk-dispatch" disabled={!bulkIds.size} onClick={openBulkDispatch}>⇄ {tr(lang,"批量分发","Bulk dispatch")} {bulkIds.size?`(${bulkIds.size})`:''}</button> : null}{canInternal ? <button className="bulk-push" disabled={!bulkIds.size} onClick={openBulkPush}>↗ {tr(lang,"批量推送","Bulk push")} {bulkIds.size?`(${bulkIds.size})`:''}</button> : null}</div>{trackingFilter === "archived" && canInternal ? <section className="panel archive-records"><div className="panel-head"><div><span className="section-kicker">ARCHIVE &amp; AUDIT</span><h2>{tr(lang,"已归档机会点","Archived opportunities")}</h2><span>{tr(lang,"归档不会删除原始机会资料；退出跟踪和恢复操作均保留在审计日志中。","Archiving preserves source opportunity data; archive and restore actions are retained in the audit log.")}</span></div><em className="status">{filtered.length} {tr(lang,"条归档","archived")}</em></div>{filtered.length ? filtered.map(item=>{const record=trackingById.get(item.id);return <article className="archive-record" key={item.id}><div className="archive-record-main"><strong>{lang==="zh"?item.title:item.titleEn}</strong><small>{item.id} · {localTerm(lang,item.country)} · {localTerm(lang,item.industry)}</small><p>{record?.reason || tr(lang,"未记录理由","No reason recorded")}</p><span>{tr(lang,"操作人","By")}：{record?.updatedBy || "—"} · {record?.updatedAt ? new Date(record.updatedAt).toLocaleString(lang==="zh"?"zh-CN":"en-GB") : "—"}</span></div><button disabled={trackingSaving} onClick={()=>void submitTrackingChange("tracked",[item.id])}>{tr(lang,"恢复跟踪","Restore tracking")}</button></article>}) : <div className="dispatch-empty-state">{tr(lang,"暂无归档机会点","No archived opportunities")}</div>}</section> : null}<div className="radar-layout" style={{display:trackingFilter === "archived" && canInternal ? "none" : undefined}}><section className="panel radar-list-panel"><div className="list-labels"><span>{canInternal ? tr(lang,"优先级 / 项目","Priority / project") : tr(lang,"共享 / 项目","Shared / project")}</span><span>{canInternal ? tr(lang,"可服务空间","Addressable") : tr(lang,"项目金额","Project value")}</span><span>{tr(lang,"时间窗口","Window")}</span><span>{canInternal ? tr(lang,"评分","Score") : tr(lang,"范围","Scope")}</span></div><OpportunityList items={filtered} activeId={selected.id} selectedIds={bulkIds} lang={lang} canInternal={canInternal} onSelect={item=>{setSelected(item);setDetailOpen(true)}} onPush={quickPush} onToggle={toggleBulk}/></section>{detailOpen&&<DetailPanel item={{...selected,golden:goldenIds.has(selected.id)}} lang={lang} canInternal={canInternal} onShare={()=>quickPush(selected)} onDispatch={()=>quickDispatch(selected)} onGolden={toggleGolden} onClose={()=>setDetailOpen(false)}/>}</div></div>}
-        {canInternal && view==='updates'&&<UpdatesView lang={lang}/>}
+        {canInternal && view==='updates'&&<UpdatesView lang={lang} scanRuns={sourceScanRuns}/>}
         {canInternal && view==='mtl'&&<MtlContentView lang={lang} assets={mtlAssets} opportunities={allOpportunities} onCreate={rows=>setMtlAssets(current=>[...rows,...current])} onToast={showToast} onOpenPush={pushHighPriority}/>}
         {canInternal && view==='dispatch'&&<DispatchView lang={lang} queue={leadDistributions} onToast={showToast} onRespond={respondDistribution}/>}
         {canInternal && view==='partners'&&<PartnersView lang={lang} items={allOpportunities} onToast={showToast} onPush={pushItems}/>}
