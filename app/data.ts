@@ -298,6 +298,7 @@ export type Opportunity = {
   owner: string;
   ownerInitials: string;
   source: string;
+  sourceUrl?: string;
   updated: string;
   funding: string;
   participation: "极高" | "高" | "中" | "低";
