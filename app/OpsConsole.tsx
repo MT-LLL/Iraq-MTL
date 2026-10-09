@@ -1210,9 +1210,9 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
   }).sort((a,b)=>priorityRank[a.priority]-priorityRank[b.priority]||b.score-a.score), [allOpportunities,trackingById,trackingFilter,country,priority,industry,search]);
   const openOpportunity = (item: Opportunity) => { setSelected(item); setDetailOpen(true); setView('radar'); };
   const openCountry = (countryValue: Country) => { setCountry(countryValue); setView('radar'); setDetailOpen(false); };
-  const quickPush = (item: Opportunity) => { setSelected(item); setShareItems([item]); setShareOpen(true); };
-  const pushHighPriority = () => { setShareItems(allOpportunities.filter(item => item.priority === "P0" || item.priority === "P1")); setShareOpen(true); };
-  const quickDispatch = (item: Opportunity) => { setSelected(item); setDispatchItems([item]); setDispatchOpen(true); };
+  const quickPush = (item: Opportunity) => { if (trackingById.get(item.id)?.status === "archived") { showToast(tr(lang,"该机会已归档，请先恢复跟踪后再推送","This opportunity is archived; restore tracking before pushing")); return; } setSelected(item); setShareItems([item]); setShareOpen(true); };
+  const pushHighPriority = () => { setShareItems(activeOpportunities.filter(item => item.priority === "P0" || item.priority === "P1")); setShareOpen(true); };
+  const quickDispatch = (item: Opportunity) => { if (trackingById.get(item.id)?.status === "archived") { showToast(tr(lang,"该机会已归档，请先恢复跟踪后再分发","This opportunity is archived; restore tracking before dispatch")); return; } setSelected(item); setDispatchItems([item]); setDispatchOpen(true); };
   const toggleBulk = (item: Opportunity) => { const next = new Set(bulkIds); if(next.has(item.id)){next.delete(item.id);}else{next.add(item.id);} setBulkIds(next); };
   const allFilteredSelected = filtered.length > 0 && filtered.every(item => bulkIds.has(item.id));
   const toggleFiltered = () => { const next = new Set(bulkIds); filtered.forEach(item => allFilteredSelected ? next.delete(item.id) : next.add(item.id)); setBulkIds(next); };
@@ -1253,7 +1253,7 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
       showToast(tr(lang,"邮件发送失败或当前角色无权限","Email delivery failed or current role lacks permission"));
     }
   };
-  const openBulkDispatch = () => { const items = allOpportunities.filter(item => bulkIds.has(item.id)); if(!items.length){showToast(tr(lang,'请先选择机会','Select opportunities first'));return;} setDispatchItems(items); setDispatchOpen(true); };
+  const openBulkDispatch = () => { const items = activeOpportunities.filter(item => bulkIds.has(item.id)); if(!items.length){showToast(tr(lang,'请先选择跟踪中的机会','Select tracked opportunities first'));return;} setDispatchItems(items); setDispatchOpen(true); };
   const openExport = () => { const items=bulkIds.size?allOpportunities.filter(item=>bulkIds.has(item.id)):filtered; setExportItems(items); setExportOpen(true); };
   const acceptManualOpportunity = (item: Opportunity) => { setManualOpportunities(current=>[item,...current.filter(existing=>existing.id!==item.id)]); setSelected(item); setCountry('全部国家'); setPriority('全部优先级'); setIndustry('全部行业'); setSearch(''); setView('radar'); setDetailOpen(true); };
   const saveView = async () => { try { await saveOpportunityView({ name: `${country}-${industry}-${priority}`, filters: { country, industry, priority, search } }); showToast(tr(lang,'当前筛选视图已保存','Current filtered view saved')); } catch { showToast(tr(lang,'保存失败：请确认账户已获批','Save failed: confirm account approval')); } };
