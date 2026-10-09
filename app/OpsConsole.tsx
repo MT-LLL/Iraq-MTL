@@ -461,7 +461,7 @@ function UpdatesView({ lang, scanRuns }: { lang: Lang; scanRuns: SourceScanRunVi
         ? <p>{tr(lang, "暂无可展示的清单刷新记录。", "No opportunity-list refresh records yet.")}</p>
         : <div className="release-timeline">
           {refreshRuns.map(run => {
-            let details: { comparisonAvailable?: boolean; newlyAddedTop5?: Array<{ id: string; title: string; country: string; industry: string; priority: string; score: number; projectValue: number | null }> } = {};
+            let details: { comparisonAvailable?: boolean; newlyAddedTop5?: Array<{ id: string; title: string; country: string; industry: string; priority: string; score: number; projectValue: number | null }>; changedOpportunities?: Array<{ id: string; title: string; changedFields: string[] }> } = {};
             try { details = JSON.parse(run.metadata || "{}"); } catch { details = {}; }
             const complete = run.status === "completed" && details.comparisonAvailable === true;
             return <article className="release-card" key={run.id}><div className="release-body">
@@ -480,6 +480,10 @@ function UpdatesView({ lang, scanRuns }: { lang: Lang; scanRuns: SourceScanRunVi
                   {(details.newlyAddedTop5 || []).map(item => <p key={item.id}>• <strong>{item.title}</strong> — {item.country} · {item.industry} · {item.priority} · {tr(lang, "评分", "Score")} {item.score}{item.projectValue == null ? "" : " · USD " + item.projectValue + "M"}</p>)}
                 </section>
                 : <p>{tr(lang, "本次记录未提供可确认的新增 Top 5；请勿将其视为完整排名。", "No verified new-project top-five list is available for this run.")}</p>}
+                {complete && (details.changedOpportunities || []).length > 0 && <section>
+                  <h3>{tr(lang, "发生变化的已有项目", "Existing projects with changes")}</h3>
+                  {(details.changedOpportunities || []).slice(0, 10).map(item => <p key={item.id}>• <strong>{item.title}</strong> — {item.changedFields.join(", ")}</p>)}
+                </section>}
             </div></article>;
           })}
         </div>}
