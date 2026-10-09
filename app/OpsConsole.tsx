@@ -155,6 +155,44 @@ function standardDispatchIndustry(item: Opportunity) {
   return "Government Sector";
 }
 
+
+function normalizedIndustryKey(value: string) {
+  const normalized = value.trim().toLowerCase();
+  if (/油气|石油|天然气|oil\s*(?:&|and)\s*gas|petroleum|refinery/.test(normalized)) return "Oil & Gas";
+  if (/交通|道路|公路|road|traffic|highway/.test(normalized)) return "Road";
+  if (/铁路|轨交|railway|metro|\brail\b/.test(normalized)) return "Railway";
+  if (/水运|港口|航运|water transport|harbou?r|marine|port/.test(normalized)) return "Water Transport";
+  if (/电力|电网|electricity|\bpower\b|solar|substation/.test(normalized)) return "Electricity";
+  if (/医疗|医院|卫生|healthcare|hospital|medical/.test(normalized)) return "Healthcare";
+  if (/教育|学校|大学|education|school|university/.test(normalized)) return "Education";
+  if (/政府|government/.test(normalized)) return "Government Sector";
+  if (/机械|电子|工业|制造|machinery|electronic|industry|manufacturing/.test(normalized)) return "Machinery & Electronic";
+  if (/零售|批发|商业|retail|wholesale|commercial/.test(normalized)) return "Retail & Wholesale";
+  return value;
+}
+
+function explicitOpportunityIndustry(item: Opportunity) {
+  const title = `${item.title} ${item.titleEn}`.toLowerCase();
+  // Use project-title evidence before a possibly incorrect imported industry label.
+  // Oil & gas takes precedence over generic transport/infrastructure wording.
+  if (/油气|石油|天然气|炼油|炼化|油田|气田|油库|石化|petroleum|oil\s*(?:&|and)\s*gas|refinery|oilfield|gas field|hydrocarbon/.test(title)) return "Oil & Gas";
+  if (/铁路|轨道交通|地铁|railway|metro|\brail\b/.test(title)) return "Railway";
+  if (/港口|航运|水运|海运|water transport|harbou?r|marine|\bport\b/.test(title)) return "Water Transport";
+  if (/智慧交通|交通控制|道路交通|公路|高速公路|收费站|红绿灯|traffic control|intelligent traffic|highway|\broad\b|\btraffic\b/.test(title)) return "Road";
+  if (/医疗|医院|卫生|healthcare|hospital|medical/.test(title)) return "Healthcare";
+  if (/教育|学校|大学|education|school|university/.test(title)) return "Education";
+  if (/电力|电网|变电站|光伏|储能|electricity|power grid|substation|solar|bess/.test(title)) return "Electricity";
+  if (/零售|批发|商场|商业中心|retail|wholesale|shopping mall/.test(title)) return "Retail & Wholesale";
+  if (/机械|电子|制造|工业园|machinery|electronics|manufacturing|industrial park/.test(title)) return "Machinery & Electronic";
+  return null;
+}
+
+function industryFilterMatches(item: Opportunity, selectedIndustry: string) {
+  const explicitIndustry = explicitOpportunityIndustry(item);
+  if (explicitIndustry) return explicitIndustry === normalizedIndustryKey(selectedIndustry);
+  return item.industry === selectedIndustry;
+}
+
 function matchedDispatchOwners(tags: string[]) {
   return industryDispatchDirectory.filter(owner => tags.includes(owner.industry));
 }
@@ -1219,7 +1257,7 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
   const showToast = (message: string) => { setToast(message); window.setTimeout(() => setToast(''), 2800); };
   const filtered = useMemo(() => allOpportunities.filter(item => {
     const status = trackingById.get(item.id)?.status ?? "tracked";
-    return (trackingFilter === "all" || status === trackingFilter) && (country==='全部国家'||item.country===country) && (priority==='全部优先级'||item.priority===priority) && (industry==='全部行业'||item.industry===industry) && (!search||`${item.title}${item.titleEn}${item.industry}`.toLowerCase().includes(search.toLowerCase()));
+    return (trackingFilter === "all" || status === trackingFilter) && (country==='全部国家'||item.country===country) && (priority==='全部优先级'||item.priority===priority) && (industry==='全部行业'||industryFilterMatches(item,industry)) && (!search||`${item.title}${item.titleEn}${item.industry}`.toLowerCase().includes(search.toLowerCase()));
   }).sort((a,b)=>priorityRank[a.priority]-priorityRank[b.priority]||b.score-a.score), [allOpportunities,trackingById,trackingFilter,country,priority,industry,search]);
   const openOpportunity = (item: Opportunity) => { setSelected(item); setDetailOpen(true); setView('radar'); };
   const openCountry = (countryValue: Country) => { setCountry(countryValue); setView('radar'); setDetailOpen(false); };
