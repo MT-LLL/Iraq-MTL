@@ -117,7 +117,7 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
   if (!country || !meedId || !title) return { skipped: true, existing: false };
 
   const id = `MEED-${country.code}-${meedId}`;
-  const existing = await db.prepare("SELECT id FROM opportunities WHERE id = ?").bind(id).first<{ id: string }>();
+  const existing = await db.prepare("SELECT id, title, country, industry, stage, priority, score, project_value, bid_deadline FROM opportunities WHERE id = ?").bind(id).first<{ id: string; title: string; country: string; industry: string; stage: string; priority: string; score: number; project_value: number | null; bid_deadline: number | null }>();
   const industry = normalizeIndustry(record);
   const stage = safeText(record.stage || record.status, "待核实");
   const city = safeText(record.city, country.fallbackCity);
@@ -126,6 +126,7 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
   const sourceUrl = safeText(record.sourceUrl || "");
   const summary = `GitHub Actions从MEED自动采集：${title}，当前阶段${stage}，行业${industry}。需人工复核资金路径、ICT工作包、联系人和截标日期后进入正式经营。`;
   const updatedAt = dateToMs(record.updatedOn) ?? now;
+  const changedFields = existing ? ([["title", existing.title, title], ["country", existing.country, country.zh], ["industry", existing.industry, industry], ["stage", existing.stage, stage], ["priority", existing.priority, priority], ["score", existing.score, score], ["projectValue", existing.project_value, projectValue], ["bidDeadline", existing.bid_deadline, dateToMs(record.awardDate)]] as const).filter(([, before, after]) => (before ?? null) !== (after ?? null)).map(([field]) => field) : [];
 
   await db.prepare(`
     INSERT INTO opportunities (
@@ -185,7 +186,7 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     updatedAt,
   ).run();
 
-  return { skipped: false, existing: Boolean(existing), id };
+  return { skipped: false, existing: Boolean(existing), changedFields, id, title, country: country.zh, industry, priority, score, projectValue };
 }
 
 export async function POST(request: Request) {
@@ -207,15 +208,21 @@ export async function POST(request: Request) {
   let updated = 0;
   let skipped = 0;
   const opportunityIds: string[] = [];
+  const changedOpportunities: Array<{ id: string; title: string; changedFields: string[] }> = [];
+  const newlyAdded: Array<{ id: string; title: string; country: string; industry: string; priority: string; score: number; projectValue: number | null }> = [];
 
   for (const record of records) {
     const result = await upsertOpportunity(db, record, now);
     if (result.skipped) {
       skipped += 1;
     } else if (result.existing) {
-      updated += 1;
+      if (result.changedFields.length > 0) {
+        updated += 1;
+        changedOpportunities.push({ id: result.id, title: result.title, changedFields: result.changedFields });
+      }
     } else {
       inserted += 1;
+      newlyAdded.push({ id: result.id, title: result.title, country: result.country, industry: result.industry, priority: result.priority, score: result.score, projectValue: result.projectValue });
     }
     if ("id" in result && result.id) opportunityIds.push(result.id);
   }
@@ -234,6 +241,8 @@ export async function POST(request: Request) {
     updated,
     skipped,
     opportunityIds,
+    changedOpportunities,
+    newlyAddedTop5: newlyAdded.sort((a, b) => b.score - a.score).slice(0, 5),
     errors: payload.errors ?? [],
   });
   const summary = status === "failed"
