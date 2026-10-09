@@ -192,6 +192,15 @@ function ScoreRing({ value, size = "normal" }: { value: number; size?: "normal" 
   );
 }
 
+function getOpportunitySourceUrl(item: Opportunity) {
+  const directUrl = item.sourceUrl || [item.source, ...(item.evidence ?? [])]
+    .map(value => value.match(/https?:\/\/[^\s)]+/i)?.[0])
+    .find(Boolean);
+  if (directUrl && /^https?:\/\//i.test(directUrl)) return { url: directUrl.replace(/[.,;，。；]+$/, ""), direct: true };
+  const query = [item.title, item.titleEn, item.source].filter(Boolean).join(" ");
+  return { url: "https://www.google.com/search?q=" + encodeURIComponent(query), direct: false };
+}
+
 function contactStatus(item: Opportunity, lang: Lang) {
   const contacts = item.contacts ?? [];
   const hasEmail = contacts.some(contact => Boolean(contact.email));
@@ -303,7 +312,10 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
       </div>}
 
       {tab === "evidence" && <div className="tab-content evidence-view">
-        <div className="source-card"><span className="source-logo">M+</span><div><strong>{item.source}</strong><small>{tr(lang,"最近校验","Last verified")}：{item.updated} · {tr(lang,"原始记录受许可策略控制","Original record governed by license policy")}</small></div><button>{tr(lang,"查看原始记录","View source")} ↗</button></div>
+        {(() => {
+          const sourceLink = getOpportunitySourceUrl(item);
+          return <div className="source-card"><span className="source-logo">M+</span><div><strong>{item.source}</strong><small>{tr(lang,"最近校验","Last verified")}：{item.updated} · {sourceLink.direct ? tr(lang,"已匹配原始来源链接","Original source URL available") : tr(lang,"未保存直达链接，将按项目名称检索原始记录","No direct URL saved; search original records by project name")}</small></div><a className="source-open" href={sourceLink.url} target="_blank" rel="noopener noreferrer">{sourceLink.direct ? tr(lang,"查看原始记录","View source") : tr(lang,"搜索原始记录","Search source")} ↗</a></div>;
+        })()}
         {item.evidence.map((evidence, index) => <div className="evidence-item" key={evidence}><span>{String(index + 1).padStart(2,'0')}</span><p>{exportText(lang,evidence)}</p><small>{tr(lang,"已引用","Cited")}</small></div>)}
         <div className="evidence-note">{tr(lang,"AI 只基于已保存证据生成判断。缺失字段会降低置信度，不会被自动补全。","AI conclusions use saved evidence only. Missing fields lower confidence and are never fabricated.")}</div>
       </div>}
