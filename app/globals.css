@@ -52,6 +52,11 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .user-card strong { color:white; font-size:12px; }
 .user-card small { font-size:10px; color:#7f99a3; margin-top:3px; }
 .user-card button { background:transparent; border:0; color:#77929c; cursor:pointer; }
+.user-card-info { display:flex; flex-direction:column; min-width:0; flex:1; gap:2px; }
+.user-card-info strong { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sidebar-logout { display:inline-flex; align-items:center; gap:5px; width:max-content; max-width:100%; margin-top:5px; padding:4px 7px; border:1px solid rgba(148,163,184,.25); border-radius:6px; background:rgba(255,255,255,.045); color:#b8cbd0; text-decoration:none; font-size:10px; line-height:1.2; font-weight:650; transition:background .18s ease,color .18s ease,border-color .18s ease; }
+.sidebar-logout:hover { background:rgba(100,211,202,.12); border-color:rgba(100,211,202,.45); color:#fff; }
+.sidebar-logout span:first-child { font-size:13px; }
 
 .main-area { min-width:0; flex:1; margin-left:230px; }
 .topbar { height:68px; border-bottom:1px solid #e3e6e2; background:rgba(255,254,250,.92); backdrop-filter:blur(12px); display:flex; align-items:center; justify-content:space-between; padding:0 30px; position:sticky; top:0; z-index:15; }
