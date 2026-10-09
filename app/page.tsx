@@ -1,7 +1,6 @@
 import { OpsConsole } from "./OpsConsole";
 import { AccountGate } from "./AccountGate";
 import { PartnerPortal, type PartnerOpportunityView } from "./PartnerPortal";
-import { LogoutButton } from "./LogoutButton";
 import { getNotificationConfiguration } from "./notifications";
 import { getCurrentAccountState, getLatestOpportunityRefreshAt, getLeadDistributions, getManualOpportunities, getOpportunityTracking, getPushJobs, getSourceScanRuns } from "./actions";
 import { opportunities } from "./data";
@@ -57,8 +56,8 @@ export default async function Home() {
   const [latestOpportunityRefreshAt, opportunityTracking] = await Promise.all([getLatestOpportunityRefreshAt(), getOpportunityTracking()]);
   const archivedIds = new Set(opportunityTracking.filter(row => row.status === "archived").map(row => row.opportunityId));
   if (accountState.profile.identityType === "partner") {
-    return <><PartnerPortal profile={accountState.profile} items={partnerSafeOpportunities().filter(item => !archivedIds.has(item.id))} latestOpportunityRefreshAt={latestOpportunityRefreshAt}/><LogoutButton /></>;
+    return <PartnerPortal profile={accountState.profile} items={partnerSafeOpportunities().filter(item => !archivedIds.has(item.id))} latestOpportunityRefreshAt={latestOpportunityRefreshAt}/>;
   }
   const [manualOpportunities, leadDistributions, sourceScanRuns, pushJobs] = await Promise.all([getManualOpportunities(), getLeadDistributions(), getSourceScanRuns(), getPushJobs()]);
-  return <><OpsConsole authUser={accountState.authUser} initialProfile={accountState.profile} initialPending={accountState.pending} initialManualOpportunities={manualOpportunities} initialLeadDistributions={leadDistributions} initialSourceScanRuns={sourceScanRuns} initialPushJobs={pushJobs} initialOpportunityTracking={opportunityTracking} latestOpportunityRefreshAt={latestOpportunityRefreshAt} deliveryStatus={getNotificationConfiguration()}/><LogoutButton /></>;
+  return <OpsConsole authUser={accountState.authUser} initialProfile={accountState.profile} initialPending={accountState.pending} initialManualOpportunities={manualOpportunities} initialLeadDistributions={leadDistributions} initialSourceScanRuns={sourceScanRuns} initialPushJobs={pushJobs} initialOpportunityTracking={opportunityTracking} latestOpportunityRefreshAt={latestOpportunityRefreshAt} deliveryStatus={getNotificationConfiguration()}/>;
 }
