@@ -229,7 +229,8 @@ export async function POST(request: Request) {
 
   const stats = payload.stats ?? {};
   const sourceCount = 1;
-  const status = payload.status === "failed" ? "failed" : payload.status === "partial" ? "partial" : "completed";
+  const hasErrors = Array.isArray(payload.errors) && payload.errors.length > 0;
+  const status = payload.status === "failed" ? "failed" : payload.status === "partial" || hasErrors || records.length === 0 ? "partial" : "completed";
   const finishedAt = Date.now();
   const nextRunAt = finishedAt + 7 * 86400000;
   const metadata = JSON.stringify({
