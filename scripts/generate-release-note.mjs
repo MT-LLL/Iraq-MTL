@@ -18,8 +18,8 @@ const changedSummaryEn = shownFiles.length ? shownFiles.join(", ") : "Generated 
 const q = value => JSON.stringify(value);
 const generated = [
   "// Auto-generated at build time. Do not edit by hand.",
-  \"import type { ReleaseUpdate } from \\\"./data\\\";\",
-  "export const autoReleaseUpdate: ReleaseUpdate = {
+  'import type { ReleaseUpdate } from "./data";',
+  'export const autoReleaseUpdate: ReleaseUpdate = {',
   "  id: " + q("AUTO-" + shortSha) + ",",
   "  period: " + q("第" + week + "周 · " + date + " · 版本 " + shortSha) + ",",
   "  periodEn: " + q("Week " + week + " · " + date + " · version " + shortSha) + ",",
