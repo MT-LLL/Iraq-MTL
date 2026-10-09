@@ -19,6 +19,10 @@ on:
       - ".github/workflows/deploy-cloudflare.yml"
   workflow_dispatch:
 
+concurrency:
+  group: deploy-cloudflare-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
