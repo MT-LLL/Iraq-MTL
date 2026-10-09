@@ -490,7 +490,7 @@ function UpdatesView({ lang, scanRuns }: { lang: Lang; scanRuns: SourceScanRunVi
                       {(details.newlyAddedTop5 || []).map((item, rank) => <div className="refresh-project-row" key={item.id}>
                         <span className="refresh-rank">{rank + 1}</span>
                         <div className="refresh-project-main"><strong>{item.title || tr(lang, "未命名项目", "Untitled project")}</strong><small>{[item.country, item.industry].filter(Boolean).join(" · ") || "—"}</small></div>
-                        <span className={"priority-pill " + (priorityClass[item.priority] || "watch")}>{item.priority || "—"}</span>
+                        <span className={"priority-pill " + (priorityClass[item.priority as keyof typeof priorityClass] || "watch")}>{item.priority || "—"}</span>
                         <div className="refresh-project-score"><strong>{item.score ?? "—"}</strong><small>{tr(lang, "评分", "Score")}</small></div>
                         <span className="refresh-project-value">{item.projectValue == null ? "—" : "USD " + item.projectValue + "M"}</span>
                       </div>)}
