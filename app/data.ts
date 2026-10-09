@@ -1,4 +1,5 @@
 import { meedContactDirectory } from "./meed-contacts";
+import { autoReleaseUpdate } from "./generated-release-note";
 
 export type Priority = "P0" | "P1" | "P2" | "WATCH";
 export type Country = "伊拉克" | "约旦" | "黎巴嫩";
@@ -1304,6 +1305,7 @@ export const meedLatestIngestion = {
 };
 
 export const releaseUpdateLog: ReleaseUpdate[] = [
+  autoReleaseUpdate,
   {
     id: "ISSUE-2026-W37-ACCESS",
     period: "第37周 · 2026-09-10",
