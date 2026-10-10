@@ -495,6 +495,25 @@ export async function getManualOpportunities() {
   return rows.map(row => toClientOpportunity(row));
 }
 
+/**
+ * Returns only D1 opportunities explicitly cleared for external partner sharing.
+ * MEED imports default to reviewStatus="pending" and an internal-use license, so
+ * they remain visible to Huawei users but are never exposed to partner browsers
+ * until an authorized review changes both fields to an approved state.
+ */
+export async function getPartnerShareableOpportunities(): Promise<Opportunity[]> {
+  const { profile, db } = await currentIdentity();
+  if (!profile || profile.status !== "approved" || profile.identityType !== "partner") return [];
+
+  const rows = await db.select().from(storedOpportunities);
+  return rows
+    .filter(row =>
+      row.reviewStatus === "verified" &&
+      (row.sourceLicense === "partner-approved" || row.sourceLicense === "public")
+    )
+    .map(row => toClientOpportunity(row, "Partner-safe feed"));
+}
+
 export async function createManualOpportunity(input: ManualOpportunityInput) {
   const { profile, db } = await currentIdentity();
   if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) throw new Error("FORBIDDEN");
