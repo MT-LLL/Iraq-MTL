@@ -31,7 +31,7 @@ function partnerSafeOpportunities(catalog: Opportunity[]): PartnerOpportunityVie
       source: { zh: zh.source, en: en.source },
       updated: { zh: zh.updated, en: en.updated },
       solutions: item.solutions.slice(0, 4).map((_, index) => ({
-        domain: { zh: zh.solutionItems[index]?.domain ?? "华为方案", en: zh.solutionItems[index]?.domain ?? "Huawei solution" },
+        domain: { zh: zh.solutionItems[index]?.domain ?? "华为方案", en: en.solutionItems[index]?.domain ?? "Huawei solution" },
         name: { zh: zh.solutionItems[index]?.name ?? "待匹配", en: en.solutionItems[index]?.name ?? "To be scoped" },
         role: { zh: zh.solutionItems[index]?.role ?? "结合招标范围进一步澄清。", en: en.solutionItems[index]?.role ?? "Refine against the tender scope." },
       })),
