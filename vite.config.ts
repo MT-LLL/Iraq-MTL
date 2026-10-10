@@ -10,7 +10,8 @@ const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 
 const localBindingConfig = {
   main: "./worker/index.ts",
-  compatibility_flags: ["nodejs_compat"],
+  // Compatibility flags are defined in wrangler.toml. Keeping them here too
+  // causes the generated Wrangler config to contain duplicate flags.
   r2_buckets: r2
     ? [
         {
