@@ -398,7 +398,7 @@ function CommandView({ lang, items, openOpportunity, quickPush, openCountry }: {
     return { ...row, count: matched.length, heat: matched.length ? Math.round(matched.reduce((sum, item) => sum + item.score, 0) / matched.length) : 0 };
   });
   const priorityReviewCount = items.filter(item => item.priority === "P0" || item.priority === "P1").length;
-  const preAwardCount = items.filter(item => !/awarded|construction|在建|授标|完工|cancelled|cancelled|取消/i.test(item.stage)).length;
+  const preAwardCount = items.filter(item => !/awarded|construction|在建|授标|完工|cancelled|取消/i.test(item.stage)).length;
   const awardedOrConstructionCount = items.filter(item => /awarded|construction|在建|授标/i.test(item.stage)).length;
   return <>
     <section className="command-hero">
@@ -438,7 +438,7 @@ function CommandView({ lang, items, openOpportunity, quickPush, openCountry }: {
       </section>
     </div>
     <div className="dashboard-grid lower">
-      <section className="panel sector-panel"><div className="panel-head"><div><span className="section-kicker">SOLUTION FIT</span><h2>{tr(lang,"行业 × 方案热度","Industry × solution heat")}</h2></div></div><div className="sector-list">
+      <section className="panel sector-panel"><div className="panel-head"><div><span className="section-kicker">SOLUTION FIT</span><h2>{tr(lang,"行业机会分布","Opportunity distribution by sector")}</h2></div></div><div className="sector-list">
         {sectorRows.map(row => <div key={row.zh}><span><strong>{lang === "zh" ? row.zh : row.en}</strong><small>{lang === "zh" ? row.zhSolutions : row.enSolutions}</small></span><i><b style={{width:`${row.heat}%`}}></b></i><em>{row.count} {tr(lang,"项","items")}</em></div>)}
       </div></section>
       <section className="panel activity-panel"><div className="panel-head"><div><span className="section-kicker">LIVE FEED</span><h2>{tr(lang,"协同动态","Collaboration feed")}</h2></div><button>{tr(lang,"全部记录","All records")} →</button></div><div className="activity-list">{activity.map(item => <div key={item.action}><i className={item.tone}></i><p><strong>{item.actor}</strong><span>{localText(lang, item.action, "Activity update")}</span><small>{localText(lang, item.time, "just now")}</small></p></div>)}</div></section>
