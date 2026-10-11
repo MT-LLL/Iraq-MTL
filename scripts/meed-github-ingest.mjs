@@ -165,6 +165,28 @@ function isPreAward(stage) {
 }
 
 function toRecords(entries) {
+  // MEED exports both Old ProjectId and New ProjectId. UltimateProjectId
+  // points to the root project's New ProjectId, so translate it back to the
+  // selected meedId before the ingest API performs parent/child roll-up.
+  const idByNewProjectId = new Map();
+  const idByOldProjectId = new Map();
+  const idByAnyProjectId = new Map();
+
+  for (const entry of entries) {
+    const meedId = pick(entry, [/^id$/, /projectid|meedid|recordid/]);
+    const oldProjectId = pick(entry, [/^oldprojectid$/]);
+    const newProjectId = pick(entry, [/^newprojectid$/]);
+    if (meedId) idByAnyProjectId.set(meedId, meedId);
+    if (oldProjectId && meedId) {
+      idByOldProjectId.set(oldProjectId, meedId);
+      idByAnyProjectId.set(oldProjectId, meedId);
+    }
+    if (newProjectId && meedId) {
+      idByNewProjectId.set(newProjectId, meedId);
+      idByAnyProjectId.set(newProjectId, meedId);
+    }
+  }
+
   return entries.map((entry) => {
     const title = pick(entry, [/^project$/, /^projectname$/, /^meedtitle$/, /projecttitle/]);
     const country = pick(entry, [/^country$/, /^meedcountry$/]);
@@ -177,10 +199,20 @@ function toRecords(entries) {
     const updatedOn = parseDate(pick(entry, [/lastupdated|updatedon|updated/]));
     const awardDate = parseDate(pick(entry, [/maincontractaward|award/]));
     const completionDate = parseDate(pick(entry, [/maincontractcompletion|completion/]));
-    const meedId = pick(entry, [/^id$/, /projectid|meedid|recordid/]) || title.replace(/\W+/g, "-").slice(0, 60);
+    const meedId = pick(entry, [/^id$/, /projectid|meedid|recordid/]) || title.replace(/\\W+/g, "-").slice(0, 60);
+    const oldProjectId = pick(entry, [/^oldprojectid$/]);
+    const newProjectId = pick(entry, [/^newprojectid$/]);
+    const ultimateProjectId = pick(entry, [/^ultimateprojectid$/]);
+    const explicitParentId = pick(entry, [/parentprojectid/, /parentmeedid/, /^parentid$/]);
+    const parentReference = explicitParentId || ultimateProjectId;
+    const isSelfReference = [meedId, oldProjectId, newProjectId].filter(Boolean).includes(parentReference);
+    const parentMeedId = !parentReference || isSelfReference
+      ? ""
+      : idByNewProjectId.get(parentReference) || idByOldProjectId.get(parentReference) || idByAnyProjectId.get(parentReference) || parentReference;
+
     return {
       meedId,
-      parentMeedId: pick(entry, [/parentprojectid/, /parentmeedid/, /^parentid$/]),
+      parentMeedId,
       title,
       country,
       city,
