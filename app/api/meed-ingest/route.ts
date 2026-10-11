@@ -122,7 +122,8 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
   const stage = safeText(record.stage || record.status, "待核实");
   const city = safeText(record.city, country.fallbackCity);
   const { score, priority } = scoreRecord(record);
-  const projectValue = Number.isFinite(Number(record.valueUsdM)) ? Number(record.valueUsdM) : null;
+  const hasProjectValue = record.valueUsdM !== null && record.valueUsdM !== undefined && String(record.valueUsdM).trim() !== "";
+  const projectValue = hasProjectValue && Number.isFinite(Number(record.valueUsdM)) ? Number(record.valueUsdM) : null;
   const sourceUrl = safeText(record.sourceUrl || "");
   const summary = `GitHub Actions从MEED自动采集：${title}，当前阶段${stage}，行业${industry}。需人工复核资金路径、ICT工作包、联系人和截标日期后进入正式经营。`;
   const updatedAt = dateToMs(record.updatedOn) ?? now;
