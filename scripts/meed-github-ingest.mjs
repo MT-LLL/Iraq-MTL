@@ -108,17 +108,25 @@ function objectRows(rows) {
 
 function pick(entry, patterns) {
   const keys = Object.keys(entry);
-  const found = keys.find((key) => patterns.some((pattern) => pattern.test(normalizeHeader(key))));
-  return found ? text(entry[found]) : "";
+  // Pattern order is intentional: prefer NetValue over ProjectValue/ContractValue.
+  for (const pattern of patterns) {
+    const found = keys.find((key) => pattern.test(normalizeHeader(key)));
+    if (found) return text(entry[found]);
+  }
+  return "";
 }
 
 function parseUsdM(value) {
   const raw = text(value);
-  if (!raw) return null;
-  const normalized = raw.replace(/,/g, "").replace(/\$/g, "");
-  const number = Number(normalized.match(/-?\d+(\.\d+)?/)?.[0] ?? NaN);
+  if (!raw || /^(?:n\\/?a|none|null|-)$/i.test(raw)) return null;
+  const normalized = raw.replace(/[,$]/g, "").replace(/\\s+/g, " ").trim();
+  const number = Number(normalized.match(/-?\\d+(?:\\.\\d+)?/)?.[0] ?? NaN);
   if (!Number.isFinite(number)) return null;
-  if (/bn|billion|b$/i.test(normalized)) return number * 1000;
+  // D1 stores values in USD millions. Explicit suffixes are normalized to that unit.
+  if (/(?:bn|b|billion)$/i.test(normalized)) return number * 1000;
+  if (/\\b(?:mn|m|million)\\b/i.test(normalized)) return number;
+  if (/\\b(?:tn|trillion)\\b/i.test(normalized)) return number * 1_000_000;
+  if (/\\b(?:thousand|k)\\b/i.test(normalized)) return number / 1000;
   return number;
 }
 
@@ -172,6 +180,7 @@ function toRecords(entries) {
     const meedId = pick(entry, [/^id$/, /projectid|meedid|recordid/]) || title.replace(/\W+/g, "-").slice(0, 60);
     return {
       meedId,
+      parentMeedId: pick(entry, [/parentprojectid/, /parentmeedid/, /^parentid$/]),
       title,
       country,
       city,
