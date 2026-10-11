@@ -386,16 +386,23 @@ function CommandView({ lang, items, openOpportunity, quickPush, openCountry }: {
   }
   const countryCounts = { 伊拉克: items.filter(item=>item.country==='伊拉克').length, 约旦: items.filter(item=>item.country==='约旦').length, 黎巴嫩: items.filter(item=>item.country==='黎巴嫩').length };
   const maxCountryCount = Math.max(...Object.values(countryCounts),1);
-  const sectorRows = [
-    { zh: "政府 / 数字政府", en: "Government / Digital Government", zhSolutions: "云 · 存储 · 数据通信", enSolutions: "Cloud · Storage · Datacom", heat: 88, count: 5 },
-    { zh: "油气 / 石化", en: "Oil & Gas / Petrochemicals", zhSolutions: "无线 · 数通 · 边缘计算", enSolutions: "Wireless · Datacom · Edge Computing", heat: 79, count: 4 },
-    { zh: "交通", en: "Transport", zhSolutions: "数据通信 · 云 · 存储", enSolutions: "Datacom · Cloud · Storage", heat: 84, count: 3 },
-    { zh: "电力 / 新能源", en: "Power / New Energy", zhSolutions: "数通 · 运维 · 数字能源", enSolutions: "Datacom · O&M · Digital Energy", heat: 61, count: 3 },
-    { zh: "医疗 / 金融", en: "Healthcare / Finance", zhSolutions: "全光 · 存储 · 协作", enSolutions: "All-optical · Storage · Collaboration", heat: 73, count: 3 },
+  const sectorDefinitions = [
+    { zh: "政府 / 数字政府", en: "Government / Digital Government", zhSolutions: "云 · 存储 · 数据通信", enSolutions: "Cloud · Storage · Datacom", matches: (item: Opportunity) => /政府|government|public sector/i.test(`${item.industry} ${item.title} ${item.titleEn}`) },
+    { zh: "油气 / 石化", en: "Oil & Gas / Petrochemicals", zhSolutions: "无线 · 数通 · 边缘计算", enSolutions: "Wireless · Datacom · Edge Computing", matches: (item: Opportunity) => /油气|oil|gas|petroleum|refinery/i.test(`${item.industry} ${item.title} ${item.titleEn}`) },
+    { zh: "交通", en: "Transport", zhSolutions: "数据通信 · 云 · 存储", enSolutions: "Datacom · Cloud · Storage", matches: (item: Opportunity) => /交通|transport|road|railway|traffic|port/i.test(`${item.industry} ${item.title} ${item.titleEn}`) },
+    { zh: "电力 / 新能源", en: "Power / New Energy", zhSolutions: "数通 · 运维 · 数字能源", enSolutions: "Datacom · O&M · Digital Energy", matches: (item: Opportunity) => /电力|electricity|power|solar|energy/i.test(`${item.industry} ${item.title} ${item.titleEn}`) },
+    { zh: "医疗 / 金融", en: "Healthcare / Finance", zhSolutions: "全光 · 存储 · 协作", enSolutions: "All-optical · Storage · Collaboration", matches: (item: Opportunity) => /医疗|health|hospital|金融|finance|bank/i.test(`${item.industry} ${item.title} ${item.titleEn}`) },
   ];
+  const sectorRows = sectorDefinitions.map(row => {
+    const matched = items.filter(row.matches);
+    return { ...row, count: matched.length, heat: matched.length ? Math.round(matched.reduce((sum, item) => sum + item.score, 0) / matched.length) : 0 };
+  });
+  const priorityReviewCount = items.filter(item => item.priority === "P0" || item.priority === "P1").length;
+  const preAwardCount = items.filter(item => !/awarded|construction|在建|授标|完工|cancelled|cancelled|取消/i.test(item.stage)).length;
+  const awardedOrConstructionCount = items.filter(item => /awarded|construction|在建|授标/i.test(item.stage)).length;
   return <>
     <section className="command-hero">
-      <div className="hero-copy"><span className="live-dot">{tr(lang,"MTL作战底座已上线","MTL WAR-ROOM ONLINE")}</span><h1>{tr(lang,"先看值得赢的，","Focus on what is winnable.")}<br/><em>{tr(lang,"再决定怎么打。","Then decide how to engage.")}</em></h1><p>{tr(lang,`已审计 ${meedAudit.validCountryRecords.toLocaleString()} 条三国记录；${meedAudit.activeOrWatch.toLocaleString()} 条进入活跃/观察池，${meedAudit.preAward} 条处于招标前窗口。机会、纪要、物料和活动统一进入伙伴营销作战闭环。`,`Audited ${meedAudit.validCountryRecords.toLocaleString()} three-country records; ${meedAudit.activeOrWatch.toLocaleString()} entered the active/watch pool and ${meedAudit.preAward} are in pre-award stages. Opportunities, minutes, materials and events now run through one partner marketing loop.`)}</p><div className="hero-buttons"><button onClick={() => openOpportunity(focus)}>{tr(lang,"查看机会工作台","Open opportunity workspace")} <span>↗</span></button><button className="hero-push" onClick={() => quickPush(focus)}>↗ {tr(lang,"一键推送","1-click push")}</button></div></div>
+      <div className="hero-copy"><span className="live-dot">{tr(lang,"MTL作战底座已上线","MTL WAR-ROOM ONLINE")}</span><h1>{tr(lang,"先看值得赢的，","Focus on what is winnable.")}<br/><em>{tr(lang,"再决定怎么打。","Then decide how to engage.")}</em></h1><p>{tr(lang,`当前数据库已入库 ${items.length.toLocaleString()} 条机会；其中 ${priorityReviewCount} 条为 P0/P1，${preAwardCount} 条处于授标/在建前阶段。演示样例不参与经营统计。`,`The database contains ${items.length.toLocaleString()} persisted opportunities; ${priorityReviewCount} are P0/P1 and ${preAwardCount} are pre-award. Demo samples are excluded from operational metrics.`)}</p><div className="hero-buttons"><button onClick={() => openOpportunity(focus)}>{tr(lang,"查看机会工作台","Open opportunity workspace")} <span>↗</span></button><button className="hero-push" onClick={() => quickPush(focus)}>↗ {tr(lang,"一键推送","1-click push")}</button></div></div>
       <div className="hero-spotlight">
         <div className="spotlight-top"><span>{tr(lang,"今日首要机会","TODAY'S TOP OPPORTUNITY")}</span><span className="signal">{tr(lang,"强信号","Strong signal")}</span></div>
         <h3>{lang === "zh" ? focus.title : focus.titleEn}</h3><p>{opportunityInsight(focus, lang)}</p>
@@ -405,10 +412,10 @@ function CommandView({ lang, items, openOpportunity, quickPush, openCountry }: {
     </section>
 
     <section className="stats-strip">
-      <div><span className="stat-icon cyan">↑</span><p><small>{tr(lang,"三国有效记录","Valid 3-country records")}</small><strong>{meedAudit.validCountryRecords.toLocaleString()}</strong><em>{tr(lang,"已完成去重","Deduplicated")}</em></p></div>
-      <div><span className="stat-icon coral">◆</span><p><small>{tr(lang,"优先人工复核","Priority human review")}</small><strong>{meedAudit.candidates.length}</strong><em>{tr(lang,"非正式 P0","Not formal P0")}</em></p></div>
-      <div><span className="stat-icon violet">◫</span><p><small>{tr(lang,"招标前窗口","Pre-award window")}</small><strong>{meedAudit.preAward}</strong><em>{tr(lang,"需补充截标日","Bid dates needed")}</em></p></div>
-      <div><span className="stat-icon green">⇄</span><p><small>{tr(lang,"授标 / 在建","Awarded / construction")}</small><strong>{meedAudit.awardedOrConstruction}</strong><em>{tr(lang,"筛查扩容包","Check expansion packages")}</em></p></div>
+      <div><span className="stat-icon cyan">↑</span><p><small>{tr(lang,"三国有效记录","Valid 3-country records")}</small><strong>{items.length.toLocaleString()}</strong><em>{tr(lang,"数据库记录","Database records")}</em></p></div>
+      <div><span className="stat-icon coral">◆</span><p><small>{tr(lang,"优先人工复核","Priority human review")}</small><strong>{priorityReviewCount.toLocaleString()}</strong><em>{tr(lang,"数据库统计","Database count")}</em></p></div>
+      <div><span className="stat-icon violet">◫</span><p><small>{tr(lang,"招标前窗口","Pre-award window")}</small><strong>{preAwardCount.toLocaleString()}</strong><em>{tr(lang,"按阶段字段统计","By recorded stage")}</em></p></div>
+      <div><span className="stat-icon green">⇄</span><p><small>{tr(lang,"授标 / 在建","Awarded / construction")}</small><strong>{awardedOrConstructionCount.toLocaleString()}</strong><em>{tr(lang,"按阶段字段统计","By recorded stage")}</em></p></div>
     </section>
 
     <div className="dashboard-grid">
@@ -419,7 +426,7 @@ function CommandView({ lang, items, openOpportunity, quickPush, openCountry }: {
         </button>)}
       </section>
       <section className="panel market-map">
-        <div className="panel-head"><div><span className="section-kicker">LEVANT OPPORTUNITY MAP</span><h2>{tr(lang,"区域机会分布","Regional distribution")}</h2></div><span className="sample-label">{tr(lang,"更新至 8月17日","Updated 17 Aug")}</span></div>
+        <div className="panel-head"><div><span className="section-kicker">LEVANT OPPORTUNITY MAP</span><h2>{tr(lang,"区域机会分布","Regional distribution")}</h2></div><span className="sample-label">{tr(lang,"按已入库记录统计","Based on persisted records")}</span></div>
         <div className="map-canvas">
           <div className="map-lines"></div>
           <button className="country-node iraq" onClick={()=>openCountry('伊拉克')}><i>{countryCounts.伊拉克}</i><span><strong>{localTerm(lang,'伊拉克')}</strong><small>{countryCounts.伊拉克} {tr(lang,"个经营机会","opportunities")}</small></span></button>
