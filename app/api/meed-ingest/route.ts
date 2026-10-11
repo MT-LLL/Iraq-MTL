@@ -147,6 +147,7 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
       score = excluded.score,
       confidence = excluded.confidence,
       project_value = excluded.project_value,
+      currency = excluded.currency,
       addressable_value = excluded.addressable_value,
       funding_status = excluded.funding_status,
       bid_deadline = excluded.bid_deadline,
@@ -231,7 +232,7 @@ export async function POST(request: Request) {
   const stats = payload.stats ?? {};
   const sourceCount = 1;
   const hasErrors = Array.isArray(payload.errors) && payload.errors.length > 0;
-  const status = payload.status === "failed" ? "failed" : payload.status === "partial" || hasErrors || records.length === 0 ? "partial" : "completed";
+  const status = payload.status === "failed" ? "failed" : payload.status === "partial" || hasErrors || records.length === 0 || readbackFailures.length > 0 ? "partial" : "completed";
   const finishedAt = Date.now();
   const nextRunAt = finishedAt + 7 * 86400000;
   const metadata = JSON.stringify({
