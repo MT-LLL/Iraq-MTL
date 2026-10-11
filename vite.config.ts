@@ -5,13 +5,12 @@ import { sites } from "./build/sites-vite-plugin";
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 
-// Keep the Vite plugin's local Worker entry settings here, but leave D1/R2
-// resource bindings to wrangler.toml. Defining DB again from hosting.json
-// creates a duplicate D1 binding in dist/server/wrangler.json and makes
-// `wrangler versions upload` fail with "DB assigned to multiple D1 Database bindings".
+// Keep the Vite plugin's local Worker entry settings here, but leave runtime
+// compatibility flags and D1/R2 resource bindings to wrangler.toml. Defining
+// these values in both places duplicates them in dist/server/wrangler.json and
+// causes Wrangler's version upload validation to fail.
 const localBindingConfig = {
   main: "./worker/index.ts",
-  compatibility_flags: ["nodejs_compat"],
 };
 
 export default defineConfig(async () => {
