@@ -378,6 +378,12 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
 
 function CommandView({ lang, items, openOpportunity, quickPush, openCountry }: { lang: Lang; items: Opportunity[]; openOpportunity: (item: Opportunity) => void; quickPush: (item: Opportunity) => void; openCountry: (country: Country) => void }) {
   const focus = items[0];
+  if (!focus) {
+    return <section className="panel dispatch-empty-state" role="status">
+      <h2>{tr(lang, "真实机会库暂无已入库记录", "No persisted opportunities yet")}</h2>
+      <p>{tr(lang, "为避免演示样例被误认为真实商机，经营总览和机会雷达现在只统计已保存到数据库的机会记录。请从“机会雷达”手工录入，或通过“数据与导入”导入经过核验的数据。", "To prevent demo samples from being mistaken for real deals, the command center and radar now use only opportunities persisted in the database. Add a record from Opportunity Radar or import verified data from Data & Imports.")}</p>
+    </section>;
+  }
   const countryCounts = { 伊拉克: items.filter(item=>item.country==='伊拉克').length, 约旦: items.filter(item=>item.country==='约旦').length, 黎巴嫩: items.filter(item=>item.country==='黎巴嫩').length };
   const maxCountryCount = Math.max(...Object.values(countryCounts),1);
   const sectorRows = [
@@ -1219,7 +1225,7 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
   const [archiveModalOpen, setArchiveModalOpen] = useState(false);
   const [archiveReason, setArchiveReason] = useState("");
   const [trackingSaving, setTrackingSaving] = useState(false);
-  const allOpportunities = useMemo(() => [...opportunities, ...manualOpportunities], [manualOpportunities]);
+  const allOpportunities = useMemo(() => manualOpportunities, [manualOpportunities]);
   const trackingById = useMemo(() => new Map(opportunityTrackingRows.map(row => [row.opportunityId, row])), [opportunityTrackingRows]);
   const activeOpportunities = useMemo(() => allOpportunities.filter(item => trackingById.get(item.id)?.status !== "archived"), [allOpportunities, trackingById]);
   const [lang, setLang] = useState<Lang>('zh');
@@ -1227,11 +1233,11 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
   const [selected, setSelected] = useState<Opportunity>(initialManualOpportunities[0] ?? opportunities[0]);
   const [detailOpen, setDetailOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
-  const [shareItems, setShareItems] = useState<Opportunity[]>([initialManualOpportunities[0] ?? opportunities[0]]);
+  const [shareItems, setShareItems] = useState<Opportunity[]>([]);
   const [exportOpen, setExportOpen] = useState(false);
-  const [exportItems, setExportItems] = useState<Opportunity[]>([...opportunities, ...initialManualOpportunities]);
+  const [exportItems, setExportItems] = useState<Opportunity[]>(initialManualOpportunities);
   const [dispatchOpen, setDispatchOpen] = useState(false);
-  const [dispatchItems, setDispatchItems] = useState<Opportunity[]>([initialManualOpportunities[0] ?? opportunities[0]]);
+  const [dispatchItems, setDispatchItems] = useState<Opportunity[]>([]);
   const [manualImportOpen, setManualImportOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [bulkIds, setBulkIds] = useState<Set<string>>(() => new Set());
@@ -1240,7 +1246,7 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
   const [priority, setPriority] = useState('全部优先级');
   const [industry, setIndustry] = useState('全部行业');
   const [toast, setToast] = useState('');
-  const [goldenIds, setGoldenIds] = useState(() => new Set([...opportunities, ...initialManualOpportunities].filter(o=>o.golden).map(o=>o.id)));
+  const [goldenIds, setGoldenIds] = useState(() => new Set(initialManualOpportunities.filter(o=>o.golden).map(o=>o.id)));
 
   useEffect(() => { document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en'; }, [lang]);
   useEffect(() => {
