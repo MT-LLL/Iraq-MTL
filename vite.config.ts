@@ -14,15 +14,10 @@ const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 const localBindingConfig = {
   main: "./worker/index.ts",
   compatibility_flags: ["nodejs_compat"],
-  d1_databases: d1
-    ? [
-        {
-          binding: d1,
-          database_name: "site-creator-d1",
-          database_id: SITE_CREATOR_PLACEHOLDER_DATABASE_ID,
-        },
-      ]
-    : [],
+  // The production D1 binding is defined in wrangler.toml. Do not add a
+  // second binding with the same name here: the Cloudflare Vite plugin merges
+  // this config with Wrangler's config when generating dist/server/wrangler.json.
+  d1_databases: [],
   r2_buckets: r2
     ? [
         {
