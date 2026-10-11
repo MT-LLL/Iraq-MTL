@@ -173,7 +173,7 @@ function toRecords(entries) {
     const sector = pick(entry, [/^sector$/]);
     const subSector = pick(entry, [/^subsector$/]);
     const stage = pick(entry, [/stage|statusprogress|status/]);
-    const value = pick(entry, [/netvalue|projectvalue|meedcontractvalue|contractvalue|value/]);
+    const value = pick(entry, [/^netvalue$/, /netvalue/, /projectvalue/, /meedcontractvalue/, /contractvalue/, /totalvalue/, /value/]);
     const updatedOn = parseDate(pick(entry, [/lastupdated|updatedon|updated/]));
     const awardDate = parseDate(pick(entry, [/maincontractaward|award/]));
     const completionDate = parseDate(pick(entry, [/maincontractcompletion|completion/]));
