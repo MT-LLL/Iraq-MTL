@@ -199,7 +199,7 @@ function toRecords(entries) {
     const updatedOn = parseDate(pick(entry, [/lastupdated|updatedon|updated/]));
     const awardDate = parseDate(pick(entry, [/maincontractaward|award/]));
     const completionDate = parseDate(pick(entry, [/maincontractcompletion|completion/]));
-    const meedId = pick(entry, [/^id$/, /projectid|meedid|recordid/]) || title.replace(/\\W+/g, "-").slice(0, 60);
+    const meedId = pick(entry, [/^id$/, /projectid|meedid|recordid/]) || title.replace(/\W+/g, "-").slice(0, 60);
     const oldProjectId = pick(entry, [/^oldprojectid$/]);
     const newProjectId = pick(entry, [/^newprojectid$/]);
     const ultimateProjectId = pick(entry, [/^ultimateprojectid$/]);
