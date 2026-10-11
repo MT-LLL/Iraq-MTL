@@ -2,6 +2,7 @@ import { env } from "cloudflare:workers";
 
 type MeedRecord = {
   meedId?: string;
+  parentMeedId?: string;
   title?: string;
   country?: string;
   city?: string;
@@ -110,6 +111,41 @@ function sourceRunId(payload: MeedIngestPayload) {
   return safeText(payload.runId, `MEED-GHA-${Date.now().toString(36).toUpperCase()}`).slice(0, 80);
 }
 
+function mergeParentChildRecords(records: MeedRecord[]) {
+  const byId = new Map<string, MeedRecord>();
+  for (const record of records) {
+    const id = safeText(record.meedId);
+    if (id) byId.set(id, record);
+  }
+  const childrenByParent = new Map<string, MeedRecord[]>();
+  for (const record of records) {
+    const parentId = safeText(record.parentMeedId);
+    if (!parentId || parentId === safeText(record.meedId) || !byId.has(parentId)) continue;
+    const children = childrenByParent.get(parentId) ?? [];
+    children.push(record);
+    childrenByParent.set(parentId, children);
+  }
+  const removedChildIds = new Set<string>();
+  const merged = new Map<string, MeedRecord>();
+  for (const record of records) {
+    const id = safeText(record.meedId);
+    if (!id || removedChildIds.has(id)) continue;
+    const children = childrenByParent.get(id);
+    if (!children?.length) {
+      merged.set(id, record);
+      continue;
+    }
+    // A parent amount is a roll-up total; sum children only if the parent amount is absent.
+    const parentValue = Number(record.valueUsdM);
+    const hasParentValue = record.valueUsdM !== null && record.valueUsdM !== undefined && Number.isFinite(parentValue) && parentValue > 0;
+    const childValues = children.map((child) => Number(child.valueUsdM)).filter((value) => Number.isFinite(value) && value >= 0);
+    const valueUsdM = hasParentValue ? parentValue : childValues.length ? childValues.reduce((sum, value) => sum + value, 0) : null;
+    merged.set(id, { ...record, valueUsdM });
+    for (const child of children) removedChildIds.add(safeText(child.meedId));
+  }
+  return [...merged.values()];
+}
+
 async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number) {
   const country = normalizeCountry(record.country);
   const meedId = safeText(record.meedId);
@@ -188,7 +224,12 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     updatedAt,
   ).run();
 
-  return { skipped: false, existing: Boolean(existing), changedFields, id, title, country: country.zh, industry, priority, score, projectValue };
+  const persisted = await db.prepare("SELECT id, title, project_value, currency FROM opportunities WHERE id = ?")
+    .bind(id)
+    .first<{ id: string; title: string; project_value: number | null; currency: string | null }>();
+  const amountMatches = (persisted?.project_value ?? null) === (projectValue ?? null);
+  const readbackVerified = Boolean(persisted && persisted.id === id && persisted.title === title && amountMatches && persisted.currency === "USD");
+  return { skipped: false, existing: Boolean(existing), changedFields, id, title, country: country.zh, industry, priority, score, projectValue, readbackVerified, readback: persisted ?? null };
 }
 
 export async function POST(request: Request) {
@@ -205,13 +246,16 @@ export async function POST(request: Request) {
 
   const now = Date.now();
   const runId = sourceRunId(payload);
-  const records = Array.isArray(payload.records) ? payload.records.slice(0, 250) : [];
+  const incomingRecords = Array.isArray(payload.records) ? payload.records.slice(0, 250) : [];
+  const records = mergeParentChildRecords(incomingRecords);
+  const mergedParentChildCount = incomingRecords.length - records.length;
   let inserted = 0;
   let updated = 0;
   let skipped = 0;
   const opportunityIds: string[] = [];
   const changedOpportunities: Array<{ id: string; title: string; changedFields: string[] }> = [];
   const newlyAdded: Array<{ id: string; title: string; country: string; industry: string; priority: string; score: number; projectValue: number | null }> = [];
+  const readbackFailures: Array<{ id: string; expectedProjectValue: number | null; persisted: unknown }> = [];
 
   for (const record of records) {
     const result = await upsertOpportunity(db, record, now);
@@ -227,6 +271,9 @@ export async function POST(request: Request) {
       newlyAdded.push({ id: result.id, title: result.title, country: result.country, industry: result.industry, priority: result.priority, score: result.score, projectValue: result.projectValue });
     }
     if ("id" in result && result.id) opportunityIds.push(result.id);
+    if ("readbackVerified" in result && !result.readbackVerified) {
+      readbackFailures.push({ id: result.id, expectedProjectValue: result.projectValue, persisted: result.readback });
+    }
   }
 
   const stats = payload.stats ?? {};
@@ -243,6 +290,10 @@ export async function POST(request: Request) {
     inserted,
     updated,
     skipped,
+    mergedParentChildCount,
+    readbackVerified: readbackFailures.length === 0,
+    readbackFailureCount: readbackFailures.length,
+    readbackFailures,
     opportunityIds,
     changedOpportunities,
     newlyAddedCount: inserted,
@@ -264,5 +315,5 @@ export async function POST(request: Request) {
     .bind(crypto.randomUUID(), "github-actions", "meed.github_actions_ingested", "source_scan_run", runId, metadata, finishedAt)
     .run();
 
-  return json({ ok: true, runId, inserted, updated, skipped, opportunityIds, status });
+  return json({ ok: readbackFailures.length === 0, runId, inserted, updated, skipped, mergedParentChildCount, readbackVerified: readbackFailures.length === 0, readbackFailureCount: readbackFailures.length, readbackFailures, opportunityIds, status }, readbackFailures.length === 0 ? 200 : 500);
 }
