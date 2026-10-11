@@ -118,15 +118,15 @@ function pick(entry, patterns) {
 
 function parseUsdM(value) {
   const raw = text(value);
-  if (!raw || /^(?:n\\/?a|none|null|-)$/i.test(raw)) return null;
-  const normalized = raw.replace(/[,$]/g, "").replace(/\\s+/g, " ").trim();
-  const number = Number(normalized.match(/-?\\d+(?:\\.\\d+)?/)?.[0] ?? NaN);
+  if (!raw || /^(?:n\/?a|none|null|-)$/i.test(raw)) return null;
+  const normalized = raw.replace(/[,$]/g, "").replace(/\s+/g, " ").trim();
+  const number = Number(normalized.match(/-?\d+(?:\.\d+)?/)?.[0] ?? NaN);
   if (!Number.isFinite(number)) return null;
   // D1 stores values in USD millions. Explicit suffixes are normalized to that unit.
   if (/(?:bn|b|billion)$/i.test(normalized)) return number * 1000;
-  if (/\\b(?:mn|m|million)\\b/i.test(normalized)) return number;
-  if (/\\b(?:tn|trillion)\\b/i.test(normalized)) return number * 1_000_000;
-  if (/\\b(?:thousand|k)\\b/i.test(normalized)) return number / 1000;
+  if (/\b(?:mn|m|million)\b/i.test(normalized)) return number;
+  if (/\b(?:tn|trillion)\b/i.test(normalized)) return number * 1_000_000;
+  if (/\b(?:thousand|k)\b/i.test(normalized)) return number / 1000;
   return number;
 }
 
