@@ -108,17 +108,25 @@ function objectRows(rows) {
 
 function pick(entry, patterns) {
   const keys = Object.keys(entry);
-  const found = keys.find((key) => patterns.some((pattern) => pattern.test(normalizeHeader(key))));
-  return found ? text(entry[found]) : "";
+  // Pattern order is intentional: prefer NetValue over ProjectValue/ContractValue.
+  for (const pattern of patterns) {
+    const found = keys.find((key) => pattern.test(normalizeHeader(key)));
+    if (found) return text(entry[found]);
+  }
+  return "";
 }
 
 function parseUsdM(value) {
   const raw = text(value);
-  if (!raw) return null;
-  const normalized = raw.replace(/,/g, "").replace(/\$/g, "");
-  const number = Number(normalized.match(/-?\d+(\.\d+)?/)?.[0] ?? NaN);
+  if (!raw || /^(?:n\/?a|none|null|-)$/i.test(raw)) return null;
+  const normalized = raw.replace(/[,$]/g, "").replace(/\s+/g, " ").trim();
+  const number = Number(normalized.match(/-?\d+(?:\.\d+)?/)?.[0] ?? NaN);
   if (!Number.isFinite(number)) return null;
-  if (/bn|billion|b$/i.test(normalized)) return number * 1000;
+  // D1 stores values in USD millions. Explicit suffixes are normalized to that unit.
+  if (/(?:bn|b|billion)$/i.test(normalized)) return number * 1000;
+  if (/\b(?:mn|m|million)\b/i.test(normalized)) return number;
+  if (/\b(?:tn|trillion)\b/i.test(normalized)) return number * 1_000_000;
+  if (/\b(?:thousand|k)\b/i.test(normalized)) return number / 1000;
   return number;
 }
 
@@ -157,6 +165,28 @@ function isPreAward(stage) {
 }
 
 function toRecords(entries) {
+  // MEED exports both Old ProjectId and New ProjectId. UltimateProjectId
+  // points to the root project's New ProjectId, so translate it back to the
+  // selected meedId before the ingest API performs parent/child roll-up.
+  const idByNewProjectId = new Map();
+  const idByOldProjectId = new Map();
+  const idByAnyProjectId = new Map();
+
+  for (const entry of entries) {
+    const meedId = pick(entry, [/^id$/, /projectid|meedid|recordid/]);
+    const oldProjectId = pick(entry, [/^oldprojectid$/]);
+    const newProjectId = pick(entry, [/^newprojectid$/]);
+    if (meedId) idByAnyProjectId.set(meedId, meedId);
+    if (oldProjectId && meedId) {
+      idByOldProjectId.set(oldProjectId, meedId);
+      idByAnyProjectId.set(oldProjectId, meedId);
+    }
+    if (newProjectId && meedId) {
+      idByNewProjectId.set(newProjectId, meedId);
+      idByAnyProjectId.set(newProjectId, meedId);
+    }
+  }
+
   return entries.map((entry) => {
     const title = pick(entry, [/^project$/, /^projectname$/, /^meedtitle$/, /projecttitle/]);
     const country = pick(entry, [/^country$/, /^meedcountry$/]);
@@ -165,13 +195,24 @@ function toRecords(entries) {
     const sector = pick(entry, [/^sector$/]);
     const subSector = pick(entry, [/^subsector$/]);
     const stage = pick(entry, [/stage|statusprogress|status/]);
-    const value = pick(entry, [/netvalue|projectvalue|meedcontractvalue|contractvalue|value/]);
+    const value = pick(entry, [/^netvalue$/, /netvalue/, /projectvalue/, /meedcontractvalue/, /contractvalue/, /totalvalue/, /value/]);
     const updatedOn = parseDate(pick(entry, [/lastupdated|updatedon|updated/]));
     const awardDate = parseDate(pick(entry, [/maincontractaward|award/]));
     const completionDate = parseDate(pick(entry, [/maincontractcompletion|completion/]));
     const meedId = pick(entry, [/^id$/, /projectid|meedid|recordid/]) || title.replace(/\W+/g, "-").slice(0, 60);
+    const oldProjectId = pick(entry, [/^oldprojectid$/]);
+    const newProjectId = pick(entry, [/^newprojectid$/]);
+    const ultimateProjectId = pick(entry, [/^ultimateprojectid$/]);
+    const explicitParentId = pick(entry, [/parentprojectid/, /parentmeedid/, /^parentid$/]);
+    const parentReference = explicitParentId || ultimateProjectId;
+    const isSelfReference = [meedId, oldProjectId, newProjectId].filter(Boolean).includes(parentReference);
+    const parentMeedId = !parentReference || isSelfReference
+      ? ""
+      : idByNewProjectId.get(parentReference) || idByOldProjectId.get(parentReference) || idByAnyProjectId.get(parentReference) || parentReference;
+
     return {
       meedId,
+      parentMeedId,
       title,
       country,
       city,

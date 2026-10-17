@@ -1,4 +1,4 @@
-name = "mssd-mtl"
+name = "iraq-mtl"
 main = "dist/server/index.js"
 compatibility_date = "2026-05-15"
 compatibility_flags = ["nodejs_compat"]
