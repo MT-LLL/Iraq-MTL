@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getDb } from "../db";
 import { auditLogs, leadDistributions, opportunities as storedOpportunities, opportunityTracking, pushJobs, savedViews, sourceScanRuns, users } from "../db/schema";
-import { industryDispatchDirectory, opportunities as catalogOpportunities, partnerDirectory, sourceConnectorConfig, sourceCoverage, type Country, type Opportunity, type Priority } from "./data";
+import { industryDispatchDirectory, partnerDirectory, sourceConnectorConfig, sourceCoverage, type Country, type Opportunity, type Priority } from "./data";
 import { getChatGPTUser } from "./chatgpt-auth";
 import { deliverNotification, NotificationError } from "./notifications";
 import { opportunityBrief } from "./localization";
@@ -282,9 +282,14 @@ export async function getCurrentAccountState() {
   return { authUser, profile: normalizedProfile, pending };
 }
 
+/**
+ * The operational opportunity pool must come only from persisted D1 records.
+ * Static catalog entries in app/data.ts are illustrative/demo content and must
+ * never be used for tracking, exports, dispatches, or outbound email.
+ */
 async function allAvailableOpportunities(db: ReturnType<typeof getDb>) {
-  const manualRows = await db.select().from(storedOpportunities);
-  return [...catalogOpportunities, ...manualRows.map(row => toClientOpportunity(row))];
+  const rows = await db.select().from(storedOpportunities);
+  return rows.map(row => toClientOpportunity(row));
 }
 
 function parseJson<T>(value: string | null | undefined, fallback: T): T {
@@ -495,12 +500,6 @@ export async function getManualOpportunities() {
   return rows.map(row => toClientOpportunity(row));
 }
 
-/**
- * Returns only D1 opportunities explicitly cleared for external partner sharing.
- * MEED imports default to reviewStatus="pending" and an internal-use license, so
- * they remain visible to Huawei users but are never exposed to partner browsers
- * until an authorized review changes both fields to an approved state.
- */
 export async function getPartnerShareableOpportunities(): Promise<Opportunity[]> {
   const { profile, db } = await currentIdentity();
   if (!profile || profile.status !== "approved" || profile.identityType !== "partner") return [];
