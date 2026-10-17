@@ -1,27 +1,16 @@
 import vinext from "vinext";
 import { defineConfig } from "vite";
-import hostingConfig from "./.openai/hosting.json";
 import { sites } from "./build/sites-vite-plugin";
-
-const { r2 } = hostingConfig;
 
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 
+// Keep the Vite plugin's local Worker entry settings here, but leave runtime
+// compatibility flags and D1/R2 resource bindings to wrangler.toml. Defining
+// these values in both places duplicates them in dist/server/wrangler.json and
+// causes Wrangler's version upload validation to fail.
 const localBindingConfig = {
   main: "./worker/index.ts",
-  // The production D1 binding is defined in wrangler.toml. Do not add a
-  // second binding with the same name here: the Cloudflare Vite plugin merges
-  // this config with Wrangler's config when generating dist/server/wrangler.json.
-  d1_databases: [],
-  r2_buckets: r2
-    ? [
-        {
-          binding: r2,
-          bucket_name: "site-creator-r2",
-        },
-      ]
-    : [],
 };
 
 export default defineConfig(async () => {
