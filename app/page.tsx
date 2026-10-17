@@ -1,9 +1,54 @@
 import { OpsConsole } from "./OpsConsole";
 import { AccountGate } from "./AccountGate";
+import { PartnerPortal, type PartnerOpportunityView } from "./PartnerPortal";
 import { getNotificationConfiguration } from "./notifications";
-import { getCurrentAccountState, getLatestOpportunityRefreshAt, getLeadDistributions, getManualOpportunities, getOpportunityTracking, getPushJobs, getSourceScanRuns } from "./actions";
+import { getCurrentAccountState, getLatestOpportunityRefreshAt, getLeadDistributions, getManualOpportunities, getOpportunityTracking, getPartnerShareableOpportunities, getPushJobs, getSourceScanRuns } from "./actions";
+import type { Opportunity } from "./data";
+import { localText, localTerm, opportunityBrief } from "./localization";
 
 export const dynamic = "force-dynamic";
+
+function partnerSafeOpportunities(catalog: Opportunity[]): PartnerOpportunityView[] {
+  // Stable ID de-duplication: dynamic D1 records override catalog entries if IDs ever overlap.
+  const unique = [...new Map(catalog.map(item => [item.id, item])).values()];
+  return unique.map(item => {
+    const zh = opportunityBrief(item, "zh");
+    const en = opportunityBrief(item, "en");
+    return {
+      id: item.id,
+      title: { zh: item.title, en: item.titleEn },
+      country: { zh: localTerm("zh", item.country), en: localTerm("en", item.country) },
+      city: { zh: localText("zh", item.city), en: localText("en", item.city) },
+      industry: { zh: localTerm("zh", item.industry), en: localTerm("en", item.industry) },
+      stage: { zh: localText("zh", item.stage), en: localText("en", item.stage) },
+      summary: {
+        zh: `${item.title}当前处于${localText("zh", item.stage)}阶段。伙伴可围绕公开项目范围、关键节点、采购入口、本地交付和华为方案方向开展前期协同。`,
+        en: `${item.titleEn} is currently at ${localText("en", item.stage)} stage. Partners can collaborate around public scope, milestones, procurement entry, local delivery and Huawei solution directions.`,
+      },
+      value: { zh: zh.value, en: en.value },
+      deadline: { zh: zh.deadline, en: en.deadline },
+      funding: { zh: zh.funding, en: en.funding },
+      source: { zh: zh.source, en: en.source },
+      updated: { zh: zh.updated, en: en.updated },
+      solutions: item.solutions.slice(0, 4).map((_, index) => ({
+        domain: { zh: zh.solutionItems[index]?.domain ?? "华为方案", en: en.solutionItems[index]?.domain ?? "Huawei solution" },
+        name: { zh: zh.solutionItems[index]?.name ?? "待匹配", en: en.solutionItems[index]?.name ?? "To be scoped" },
+        role: { zh: zh.solutionItems[index]?.role ?? "结合招标范围进一步澄清。", en: en.solutionItems[index]?.role ?? "Refine against the tender scope." },
+      })),
+      contact: {
+        status: { zh: zh.contactDetails.status, en: en.contactDetails.status },
+        name: { zh: zh.contactDetails.name, en: en.contactDetails.name },
+        role: { zh: zh.contactDetails.role, en: en.contactDetails.role },
+        company: { zh: zh.contactDetails.company, en: en.contactDetails.company },
+        email: { zh: zh.contactDetails.email, en: en.contactDetails.email },
+        phone: { zh: zh.contactDetails.phone, en: en.contactDetails.phone },
+        companyPhone: { zh: zh.contactDetails.companyPhone, en: en.contactDetails.companyPhone },
+        procurementEntry: en.contactDetails.procurementEntry,
+        source: { zh: zh.contactDetails.source, en: en.contactDetails.source },
+      },
+    };
+  });
+}
 
 export default async function Home() {
   const accountState = await getCurrentAccountState();
@@ -11,22 +56,16 @@ export default async function Home() {
     return <AccountGate authUser={accountState.authUser} profile={accountState.profile}/>;
   }
 
-  // Partner self-service access is paused. Do not expose the static demo catalog
-  // through a partner-facing page while the internal-only workflow is in effect.
+  const [latestOpportunityRefreshAt, opportunityTracking] = await Promise.all([getLatestOpportunityRefreshAt(), getOpportunityTracking()]);
+  const archivedIds = new Set(opportunityTracking.filter(row => row.status === "archived").map(row => row.opportunityId));
+
   if (accountState.profile.identityType === "partner") {
-    return <main style={{ padding: "32px", maxWidth: "760px", margin: "0 auto" }}>
-      <h1>伙伴登录暂未开放</h1>
-      <p>当前平台仅供授权的华为内部人员使用。机会点将由华为内部人员审核后，通过邮件发送给伙伴。</p>
-    </main>;
+    const partnerApprovedD1Opportunities = await getPartnerShareableOpportunities();
+    const partnerCatalog = partnerSafeOpportunities(partnerApprovedD1Opportunities)
+      .filter(item => !archivedIds.has(item.id));
+    return <PartnerPortal profile={accountState.profile} items={partnerCatalog} latestOpportunityRefreshAt={latestOpportunityRefreshAt}/>;
   }
 
-  const [latestOpportunityRefreshAt, opportunityTracking, manualOpportunities, leadDistributions, sourceScanRuns, pushJobs] = await Promise.all([
-    getLatestOpportunityRefreshAt(),
-    getOpportunityTracking(),
-    getManualOpportunities(),
-    getLeadDistributions(),
-    getSourceScanRuns(),
-    getPushJobs(),
-  ]);
+  const [manualOpportunities, leadDistributions, sourceScanRuns, pushJobs] = await Promise.all([getManualOpportunities(), getLeadDistributions(), getSourceScanRuns(), getPushJobs()]);
   return <OpsConsole authUser={accountState.authUser} initialProfile={accountState.profile} initialPending={accountState.pending} initialManualOpportunities={manualOpportunities} initialLeadDistributions={leadDistributions} initialSourceScanRuns={sourceScanRuns} initialPushJobs={pushJobs} initialOpportunityTracking={opportunityTracking} latestOpportunityRefreshAt={latestOpportunityRefreshAt} deliveryStatus={getNotificationConfiguration()}/>;
 }
