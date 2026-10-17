@@ -3,7 +3,7 @@ import { AccountGate } from "./AccountGate";
 import { PartnerPortal, type PartnerOpportunityView } from "./PartnerPortal";
 import { getNotificationConfiguration } from "./notifications";
 import { getCurrentAccountState, getLatestOpportunityRefreshAt, getLeadDistributions, getManualOpportunities, getOpportunityTracking, getPartnerShareableOpportunities, getPushJobs, getSourceScanRuns } from "./actions";
-import { opportunities, type Opportunity } from "./data";
+import type { Opportunity } from "./data";
 import { localText, localTerm, opportunityBrief } from "./localization";
 
 export const dynamic = "force-dynamic";
@@ -61,7 +61,7 @@ export default async function Home() {
 
   if (accountState.profile.identityType === "partner") {
     const partnerApprovedD1Opportunities = await getPartnerShareableOpportunities();
-    const partnerCatalog = partnerSafeOpportunities([...opportunities, ...partnerApprovedD1Opportunities])
+    const partnerCatalog = partnerSafeOpportunities(partnerApprovedD1Opportunities)
       .filter(item => !archivedIds.has(item.id));
     return <PartnerPortal profile={accountState.profile} items={partnerCatalog} latestOpportunityRefreshAt={latestOpportunityRefreshAt}/>;
   }
