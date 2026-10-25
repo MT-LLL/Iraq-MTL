@@ -199,6 +199,17 @@ function toRecords(entries) {
     const updatedOn = parseDate(pick(entry, [/lastupdated|updatedon|updated/]));
     const awardDate = parseDate(pick(entry, [/maincontractaward|award/]));
     const completionDate = parseDate(pick(entry, [/maincontractcompletion|completion/]));
+    // Preserve role/contact fields only when explicitly present in the MEED export.
+    const contactRole = pick(entry, [/^(projectrole|stakeholderrole|contactrole|role)$/]);
+    const contactCompany = pick(entry, [/^(ownercompany|companyname|stakeholdercompany|clientcompany|organization|organisation|company)$/]);
+    const contactName = pick(entry, [/^(contactname|personname|contactperson|fullname)$/]);
+    const contactTitle = pick(entry, [/^(contacttitle|jobtitle|contactposition|position)$/]);
+    const contactEmail = pick(entry, [/email/]);
+    const contactPhone = pick(entry, [/^(contactphone|contacttelephone|mobile|phone|telephone)$/]);
+    const companyPhone = pick(entry, [/^(companyphone|companytelephone|officephone)$/]);
+    const contacts = [contactRole, contactCompany, contactName, contactTitle, contactEmail, contactPhone, companyPhone].some(Boolean)
+      ? [{ role: contactRole, company: contactCompany, name: contactName, title: contactTitle, email: contactEmail, phone: contactPhone, companyPhone, source: "MEED Projects with Roles" }]
+      : [];
     const meedId = pick(entry, [/^id$/, /projectid|meedid|recordid/]) || title.replace(/\W+/g, "-").slice(0, 60);
     const oldProjectId = pick(entry, [/^oldprojectid$/]);
     const newProjectId = pick(entry, [/^newprojectid$/]);
@@ -224,6 +235,7 @@ function toRecords(entries) {
       updatedOn,
       awardDate,
       completionDate,
+      contacts,
       sourceUrl: projectSearchUrl,
     };
   }).filter((record) => record.title && isTargetCountry(record.country));
