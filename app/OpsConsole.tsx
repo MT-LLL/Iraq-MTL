@@ -338,7 +338,7 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
 
       {tab === "contacts" && <div className="tab-content contact-view">
         {item.contacts?.length ? <>
-          <div className="contact-note"><strong>{tr(lang,"MEED角色链 + 官方联系人","MEED role chain + official contacts")}</strong><span>{tr(lang,"优先展示 MEED 角色链，其次展示官方招投标/业主采购页面的机构级邮箱或电话；导入内部系统前仍建议人工核验。","MEED role-chain contacts are prioritized, followed by institution-level email or phone from official tender / owner procurement pages. Verify before internal import.")}</span></div>
+          <div className="contact-note"><strong>{tr(lang,"项目参与方","Project stakeholders")}</strong><span>{tr(lang,"优先展示 MEED 角色链，其次展示官方招投标/业主采购页面的机构级邮箱或电话；导入内部系统前仍建议人工核验。","MEED role-chain contacts are prioritized, followed by institution-level email or phone from official tender / owner procurement pages. Verify before internal import.")}</span></div>
           <div className="contact-list">{item.contacts.map((contact,index)=><article className="contact-card" key={`${contact.role}-${contact.company}-${index}`}>
             <div className="contact-card-top"><span className="contact-role">{contact.role || tr(lang,"角色待核实","Role TBC")}</span><span className="contact-source">{contact.source || tr(lang,"来源待核实","Source TBC")}</span></div>
             <div className="contact-field"><small>{tr(lang,"机构 / 公司","Organization / Company")}</small><strong>{contact.company || "—"}</strong></div>
