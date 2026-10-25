@@ -108,9 +108,19 @@ function objectRows(rows) {
 
 function pick(entry, patterns) {
   const keys = Object.keys(entry);
-  // Pattern order is intentional: prefer NetValue over ProjectValue/ContractValue.
   for (const pattern of patterns) {
     const found = keys.find((key) => pattern.test(normalizeHeader(key)));
+    if (found) return text(entry[found]);
+  }
+  return "";
+}
+
+// Unlike pick(), this skips blank matching columns. MEED exports can contain
+// NetValue columns that are empty for a row while other amount columns are populated.
+function pickNonEmpty(entry, patterns) {
+  const keys = Object.keys(entry);
+  for (const pattern of patterns) {
+    const found = keys.find((key) => pattern.test(normalizeHeader(key)) && text(entry[key]));
     if (found) return text(entry[found]);
   }
   return "";
@@ -195,7 +205,12 @@ function toRecords(entries) {
     const sector = pick(entry, [/^sector$/]);
     const subSector = pick(entry, [/^subsector$/]);
     const stage = pick(entry, [/stage|statusprogress|status/]);
-    const value = pick(entry, [/^netvalue$/, /netvalue/, /projectvalue/, /meedcontractvalue/, /contractvalue/, /totalvalue/, /value/]);
+    const netValueUsdM = parseUsdM(pickNonEmpty(entry, [/^netvalue$/]));
+    const projectValueUsdM = parseUsdM(pickNonEmpty(entry, [/^projectvalue$/]));
+    const contractValueUsdM = parseUsdM(pickNonEmpty(entry, [/^meedcontractvalue$/, /^contractvalue$/, /^totalvalue$/]));
+    // Opportunity amount is NetValue first, then ProjectValue. Contract value is
+    // kept separate and must never silently masquerade as NetValue.
+    const valueUsdM = netValueUsdM ?? projectValueUsdM;
     const updatedOn = parseDate(pick(entry, [/lastupdated|updatedon|updated/]));
     const awardDate = parseDate(pick(entry, [/maincontractaward|award/]));
     const completionDate = parseDate(pick(entry, [/maincontractcompletion|completion/]));
@@ -231,7 +246,11 @@ function toRecords(entries) {
       sector,
       subSector,
       stage,
-      valueUsdM: parseUsdM(value),
+      valueUsdM,
+      netValueUsdM,
+      projectValueUsdM,
+      contractValueUsdM,
+      amountSource: netValueUsdM !== null ? "NetValue" : projectValueUsdM !== null ? "ProjectValue" : "unavailable",
       updatedOn,
       awardDate,
       completionDate,
@@ -261,7 +280,15 @@ function statsFrom(records, promoted) {
     preAward: records.filter((record) => isPreAward(record.stage)).length,
     recent30Days: records.filter((record) => Date.parse(record.updatedOn || "1970-01-01") >= recentCutoff).length,
     promotedCount: promoted.length,
-    totalNetValueUsdM: Math.round(records.reduce((sum, record) => sum + Number(record.valueUsdM || 0), 0)),
+    totalNetValueUsdM: Math.round(records.reduce((sum, record) => sum + Number(record.netValueUsdM || 0), 0)),
+    totalProjectValueUsdM: Math.round(records.reduce((sum, record) => sum + Number(record.projectValueUsdM || 0), 0)),
+    totalContractValueUsdM: Math.round(records.reduce((sum, record) => sum + Number(record.contractValueUsdM || 0), 0)),
+    amountCoverage: {
+      netValue: records.filter((record) => record.netValueUsdM !== null).length,
+      projectValue: records.filter((record) => record.projectValueUsdM !== null).length,
+      contractValue: records.filter((record) => record.contractValueUsdM !== null).length,
+      unavailable: records.filter((record) => record.valueUsdM === null).length,
+    },
   };
 }
 
