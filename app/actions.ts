@@ -489,7 +489,7 @@ export async function autoArchiveExpiredOpportunities() {
     const existing = trackingById.get(item.id);
     if (existing?.status === "archived") continue;
     const reason = `系统自动归档：关键节点截止日期 ${match} 已过期（检查日期：${today}）。如确认项目仍有效，请恢复跟踪并核实最新节点。`;
-    const values = { opportunityId: item.id, status: "archived", reason, updatedBy: "system:auto-expired-milestone", updatedAt: now };
+    const values = { opportunityId: item.id, status: "archived" as const, reason, updatedBy: "system:auto-expired-milestone", updatedAt: now };
     if (existing) await db.update(opportunityTracking).set(values).where(eq(opportunityTracking.opportunityId, item.id));
     else await db.insert(opportunityTracking).values(values);
     await db.insert(auditLogs).values({ id: crypto.randomUUID(), actorId: profile.id, action: "opportunity.tracking.auto_archived_expired_milestone", entityType: "opportunity", entityId: item.id, metadata: JSON.stringify({ title: item.title, deadline: match, reason, previousStatus: existing?.status ?? "tracked" }), createdAt: now });
