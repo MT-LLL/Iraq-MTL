@@ -693,7 +693,6 @@ export async function recordPush(input: {
   const partners = input.audience === "partner"
     ? partnerDirectory.filter(partner => requestedPartnerIds.has(partner.id)).map(partner => ({ id: partner.id, name: partner.name, manager: partner.manager, managerEmail: partner.managerEmail }))
     : [];
-  if (input.audience === "partner" && partners.length === 0) throw new Error("PARTNER_REQUIRED");
   const recipient = input.recipient.trim();
   if (!recipient) throw new Error("RECIPIENT_REQUIRED");
   const catalog = await allAvailableOpportunities(db);
