@@ -4,8 +4,9 @@ import { env } from "cloudflare:workers";
 import { eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getDb } from "../db";
-import { auditLogs, leadDistributions, opportunities as storedOpportunities, opportunityTracking, pushJobs, savedViews, sourceScanRuns, users } from "../db/schema";
-import { industryDispatchDirectory, partnerDirectory, sourceConnectorConfig, sourceCoverage, type Country, type Opportunity, type Priority } from "./data";
+import { auditLogs, leadDistributions, opportunities as storedOpportunities, opportunityContacts, opportunityTracking, pushJobs, savedViews, sourceScanRuns, users } from "../db/schema";
+import { industryDispatchDirectory, partnerDirectory, sourceConnectorConfig, sourceCoverage, type Country, type Opportunity, type OpportunityContact, type Priority } from "./data";
+import { meedContactDirectory } from "./meed-contacts";
 import { getChatGPTUser } from "./chatgpt-auth";
 import { deliverNotification, NotificationError } from "./notifications";
 import { opportunityBrief } from "./localization";
@@ -287,9 +288,71 @@ export async function getCurrentAccountState() {
  * Static catalog entries in app/data.ts are illustrative/demo content and must
  * never be used for tracking, exports, dispatches, or outbound email.
  */
+function stableContactId(opportunityId: string, contact: OpportunityContact) {
+  const raw = [opportunityId, contact.role, contact.company, contact.name, contact.title, contact.source].join("|");
+  let hash = 2166136261;
+  for (let index = 0; index < raw.length; index++) {
+    hash ^= raw.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `oc-${(hash >>> 0).toString(16).padStart(8, "0")}`;
+}
+
+function toClientContact(row: typeof opportunityContacts.$inferSelect): OpportunityContact {
+  return {
+    role: row.role,
+    company: row.company,
+    name: row.name || undefined,
+    title: row.title || undefined,
+    email: row.email || undefined,
+    phone: row.phone || undefined,
+    companyPhone: row.companyPhone || undefined,
+    source: row.source,
+  };
+}
+
 async function allAvailableOpportunities(db: ReturnType<typeof getDb>) {
   const rows = await db.select().from(storedOpportunities);
-  return rows.map(row => toClientOpportunity(row));
+  if (!rows.length) return [];
+  const availableIds = new Set(rows.map(row => row.id));
+
+  // Seed the existing curated MEED role directory into D1 once, so the contacts
+  // survive deployments and are available to every persisted-opportunity view.
+  for (const [opportunityId, contacts] of Object.entries(meedContactDirectory) as Array<[string, readonly OpportunityContact[]]>) {
+    if (!availableIds.has(opportunityId)) continue;
+    for (const contact of contacts) {
+      const id = stableContactId(opportunityId, contact);
+      const existing = await db.select({ id: opportunityContacts.id }).from(opportunityContacts).where(eq(opportunityContacts.id, id)).limit(1);
+      if (existing.length) continue;
+      await db.insert(opportunityContacts).values({
+        id,
+        opportunityId,
+        role: contact.role || "",
+        company: contact.company || "",
+        name: contact.name || "",
+        title: contact.title || "",
+        email: contact.email || "",
+        phone: contact.phone || "",
+        companyPhone: contact.companyPhone || "",
+        source: contact.source || "Curated contact directory",
+        updatedAt: new Date(),
+      });
+    }
+  }
+
+  const contactRows = await db.select().from(opportunityContacts);
+  const contactsByOpportunity = new Map<string, OpportunityContact[]>();
+  for (const row of contactRows) {
+    if (!availableIds.has(row.opportunityId)) continue;
+    const list = contactsByOpportunity.get(row.opportunityId) ?? [];
+    list.push(toClientContact(row));
+    contactsByOpportunity.set(row.opportunityId, list);
+  }
+  return rows.map(row => {
+    const item = toClientOpportunity(row);
+    const contacts = contactsByOpportunity.get(row.id);
+    return contacts?.length ? { ...item, contacts } : item;
+  });
 }
 
 function parseJson<T>(value: string | null | undefined, fallback: T): T {
@@ -522,8 +585,7 @@ export async function setOpportunityTracking(input: { opportunityIds: string[]; 
 export async function getManualOpportunities() {
   const { profile, db } = await currentIdentity();
   if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) return [];
-  const rows = await db.select().from(storedOpportunities);
-  return rows.map(row => toClientOpportunity(row));
+  return allAvailableOpportunities(db);
 }
 
 export async function getPartnerShareableOpportunities(): Promise<Opportunity[]> {
@@ -531,12 +593,13 @@ export async function getPartnerShareableOpportunities(): Promise<Opportunity[]>
   if (!profile || profile.status !== "approved" || profile.identityType !== "partner") return [];
 
   const rows = await db.select().from(storedOpportunities);
-  return rows
-    .filter(row =>
-      row.reviewStatus === "verified" &&
-      (row.sourceLicense === "partner-approved" || row.sourceLicense === "public")
-    )
-    .map(row => toClientOpportunity(row, "Partner-safe feed"));
+  const allowedIds = new Set(rows.filter(row =>
+    row.reviewStatus === "verified" &&
+    (row.sourceLicense === "partner-approved" || row.sourceLicense === "public")
+  ).map(row => row.id));
+  return (await allAvailableOpportunities(db))
+    .filter(item => allowedIds.has(item.id))
+    .map(item => ({ ...item, owner: "Partner-safe feed" }));
 }
 
 export async function createManualOpportunity(input: ManualOpportunityInput) {
