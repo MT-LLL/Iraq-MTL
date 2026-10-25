@@ -281,7 +281,7 @@ function mergeContactExport(records, entries) {
   let matchedRows = 0;
   let contactRows = 0;
   for (const entry of entries) {
-    const ids = [pick(entry, [/^newprojectid$/, /^oldprojectid$/, /projectid|meedid|recordid|projectnumber/])].filter(Boolean);
+    const ids = Object.entries(entry).filter(([key, value]) => /projectid|meedid|recordid|projectnumber/i.test(normalizeHeader(key)) && text(value)).map(([, value]) => text(value));
     const name = pick(entry, [/^(contactname|personname|contactperson|fullname)$/]);
     const title = pick(entry, [/^contactjobtitle$/, /^contacttitle$/, /^jobtitle$/, /^contactposition$/, /^position$/]);
     const phone = pick(entry, [/^contactphone$/, /^contacttelephone$/, /^contactmobile$/, /^mobile$/, /^phone$/, /^telephone$/]);
