@@ -253,7 +253,7 @@ async function buildKimiEnhancements(opportunities: Opportunity[], audience: Aud
   if (audience !== "partner" || !config.MOONSHOT_API_KEY) return new Map();
   const safeItems = safeAiOpportunityPayload(opportunities, lang);
   if (!safeItems.length) return new Map();
-  const baseUrl = (config.MOONSHOT_API_BASE_URL || "https://api.moonshot.cn/v1").replace(/\\/$/, "");
+  const baseUrl = (config.MOONSHOT_API_BASE_URL || "https://api.moonshot.cn/v1").replace(/\/$/, "");
   try {
     const response = await fetch(`${baseUrl}/chat/completions`, {
       method: "POST",
@@ -262,7 +262,7 @@ async function buildKimiEnhancements(opportunities: Opportunity[], audience: Aud
         model: config.MOONSHOT_MODEL || "kimi-k2.6",
         messages: [
           { role: "system", content: aiSystemPrompt(lang) },
-          { role: "user", content: `${aiCopyInstruction(lang)}\\n\\n${JSON.stringify({ opportunities: safeItems })}` }
+          { role: "user", content: `${aiCopyInstruction(lang)}\n\n${JSON.stringify({ opportunities: safeItems })}` }
         ],
         temperature: 0.4,
         max_tokens: 1800,
@@ -343,6 +343,10 @@ async function buildDeepSeekEnhancements(opportunities: Opportunity[], audience:
 async function buildAiEnhancements(opportunities: Opportunity[], audience: Audience, lang: Lang): Promise<Map<string, AiEnhancement>> {
   const config = runtimeEnv();
   if (audience !== "partner") return new Map();
+  if (config.MOONSHOT_API_KEY) {
+    const kimiEnhancements = await buildKimiEnhancements(opportunities, audience, lang);
+    if (kimiEnhancements.size) return kimiEnhancements;
+  }
   if (config.ZHIPU_API_KEY) {
     const zhipuEnhancements = await buildZhipuEnhancements(opportunities, audience, lang);
     if (zhipuEnhancements.size) return zhipuEnhancements;
