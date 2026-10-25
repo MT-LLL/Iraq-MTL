@@ -315,7 +315,6 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
           {item.summary && !/^(?:GitHub Actions从MEED自动采集|MEED自动采集|手工录入机会，等待补充)/i.test(item.summary.trim())
             ? <p>{exportText(lang,item.summary)}</p>
             : <p className="background-missing">{tr(lang,"当前记录尚未包含可核验的项目背景介绍。请在下一次采集时读取信源原文，或由管理员补充；不以项目名称推测项目内容。","This record does not yet contain a verifiable project description. Fetch the source text on the next ingestion run or have an administrator add it; do not infer project details from the title.")}</p>}
-          {item.evidence?.length ? <div className="project-background-evidence">{item.evidence.slice(0,3).map((entry,index)=><p key={index}><span>{String(index+1).padStart(2,"0")}</span>{exportText(lang,entry)}</p>)}</div> : null}
         </section>
         <div className="metric-grid">
           <div><small>{tr(lang,"项目总额","Project value")}</small><strong>{exportText(lang,item.value)}</strong></div>
