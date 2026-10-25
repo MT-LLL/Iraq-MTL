@@ -39,6 +39,7 @@ jobs:
           MEED_USERNAME: ${{ secrets.MEED_USERNAME }}
           MEED_PASSWORD: ${{ secrets.MEED_PASSWORD }}
           MEED_PROJECT_SEARCH_URL: ${{ secrets.MEED_PROJECT_SEARCH_URL }}
+          MEED_CONTACT_SEARCH_URL: ${{ secrets.MEED_CONTACT_SEARCH_URL }}
           MEED_INGEST_ENDPOINT: ${{ secrets.MEED_INGEST_ENDPOINT }}
           MEED_INGEST_TOKEN: ${{ secrets.MEED_INGEST_TOKEN }}
           MSSD_SITE_URL: ${{ vars.MSSD_SITE_URL }}
