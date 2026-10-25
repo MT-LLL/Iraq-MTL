@@ -48,10 +48,10 @@ function parseSharedStrings(xml) {
   return shared;
 }
 
-function firstWorksheet(zip) {
-  const path = Object.keys(zip).find((key) => /^xl\/worksheets\/sheet\d+\.xml$/.test(key));
-  if (!path) throw new Error("No worksheet found in the downloaded workbook");
-  return strFromU8(zip[path]);
+function worksheetPaths(zip) {
+  return Object.keys(zip)
+    .filter((key) => /^xl\/worksheets\/sheet\d+\.xml$/.test(key))
+    .sort((a, b) => Number(a.match(/sheet(\d+)\.xml$/)?.[1] || 0) - Number(b.match(/sheet(\d+)\.xml$/)?.[1] || 0));
 }
 
 function parseCellValue(cellXml, sharedStrings) {
@@ -66,38 +66,51 @@ function parseCellValue(cellXml, sharedStrings) {
   return decodeXml(cellXml.match(/<v>([\s\S]*?)<\/v>/)?.[1] ?? "");
 }
 
-function parseWorkbook(buffer) {
+function parseWorkbook(buffer, { contactsOnly = false } = {}) {
   const zip = unzipSync(new Uint8Array(buffer));
   const sharedXml = zip["xl/sharedStrings.xml"] ? strFromU8(zip["xl/sharedStrings.xml"]) : "";
   const sharedStrings = parseSharedStrings(sharedXml);
-  const sheetXml = firstWorksheet(zip);
-  const rows = [];
-  const rowMatches = sheetXml.match(/<row[\s\S]*?<\/row>/g) || [];
-  for (const rowXml of rowMatches) {
-    const cells = [];
-    for (const match of rowXml.matchAll(/<c([^>]*)>([\s\S]*?)<\/c>/g)) {
-      const attrs = match[1];
-      const body = match[2];
-      const ref = attrs.match(/\sr="([^"]+)"/)?.[1] || "";
-      cells[colIndex(ref)] = parseCellValue(`<c${attrs}>${body}</c>`, sharedStrings);
+  const paths = worksheetPaths(zip);
+  if (!paths.length) throw new Error("No worksheet found in the downloaded workbook");
+
+  const parsedSheets = paths.map((path) => {
+    const sheetXml = strFromU8(zip[path]);
+    const rows = [];
+    const rowMatches = sheetXml.match(/<row[\\s\\S]*?<\\/row>/g) || [];
+    for (const rowXml of rowMatches) {
+      const cells = [];
+      for (const match of rowXml.matchAll(/<c([^>]*)>([\\s\\S]*?)<\\/c>/g)) {
+        const attrs = match[1];
+        const body = match[2];
+        const ref = attrs.match(/\\sr="([^"]+)"/)?.[1] || "";
+        cells[colIndex(ref)] = parseCellValue(`<c${attrs}>${body}</c>`, sharedStrings);
+      }
+      if (cells.some(Boolean)) rows.push(cells.map((cell) => text(cell)));
     }
-    if (cells.some(Boolean)) rows.push(cells.map((cell) => text(cell)));
-  }
-  return rows;
+    return rows;
+  });
+
+  // MEED stores contact rows on a separate worksheet ("Projects with Roles").
+  // Select the worksheet by its header instead of always parsing sheet1.xml.
+  return parsedSheets.find((rows) => rows.some((row) => matchesHeaderRow(row, contactsOnly))) || parsedSheets[0];
 }
 
 function normalizeHeader(header) {
   return text(header).toLowerCase().replace(/[^a-z0-9]+/g, "");
 }
 
+function matchesHeaderRow(row, contactsOnly = false) {
+  const normalized = row.map(normalizeHeader);
+  const hasProject = normalized.some((cell) => /^project$|projectname|meedtitle|projecttitle/.test(cell));
+  const hasCountry = normalized.some((cell) => /country|meedcountry/.test(cell));
+  const hasContactFields = normalized.some((cell) => /contactname|contactjobtitle|contactphone|companyphonenumber|companyname/.test(cell));
+  return contactsOnly
+    ? (hasProject || normalized.some((cell) => /projectid|meedid|recordid/.test(cell))) && hasContactFields
+    : hasProject && hasCountry;
+}
+
 function objectRows(rows, { contactsOnly = false } = {}) {
-  const headerIndex = rows.findIndex((row) => {
-    const normalized = row.map(normalizeHeader);
-    const hasProject = normalized.some((cell) => /^project$|projectname|meedtitle|projecttitle/.test(cell));
-    const hasCountry = normalized.some((cell) => /country|meedcountry/.test(cell));
-    const hasContactFields = normalized.some((cell) => /contactname|contactjobtitle|contactphone|companyphonenumber|companyname/.test(cell));
-    return contactsOnly ? (hasProject || normalized.some((cell) => /projectid|meedid|recordid/.test(cell))) && hasContactFields : hasProject && hasCountry;
-  });
+  const headerIndex = rows.findIndex((row) => matchesHeaderRow(row, contactsOnly));
   if (headerIndex < 0) throw new Error("Could not detect the MEED header row");
   const headers = rows[headerIndex];
   return rows.slice(headerIndex + 1).map((row) => {
@@ -534,7 +547,7 @@ async function main() {
         const contactExport = await loginAndDownload(contactSearchUrl, "meed-projects-with-roles");
         contactBrowser = contactExport.browser;
         const contactBuffer = await (await import("node:fs/promises")).readFile(contactExport.filePath);
-        const contactEntries = objectRows(parseWorkbook(contactBuffer), { contactsOnly: true });
+        const contactEntries = objectRows(parseWorkbook(contactBuffer, { contactsOnly: true }), { contactsOnly: true });
         const merged = mergeContactExport(records, contactEntries);
         contactStats = { enabled: true, sourceRows: contactEntries.length, matchedRows: merged.matchedRows, contactRowsAdded: merged.contactRows };
       } catch (error) {
