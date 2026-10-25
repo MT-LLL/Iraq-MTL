@@ -339,15 +339,15 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
       {tab === "contacts" && <div className="tab-content contact-view">
         {item.contacts?.length ? <>
           <div className="contact-note"><strong>{tr(lang,"MEED角色链 + 官方联系人","MEED role chain + official contacts")}</strong><span>{tr(lang,"优先展示 MEED 角色链，其次展示官方招投标/业主采购页面的机构级邮箱或电话；导入内部系统前仍建议人工核验。","MEED role-chain contacts are prioritized, followed by institution-level email or phone from official tender / owner procurement pages. Verify before internal import.")}</span></div>
-          <div className="contact-list">{item.contacts.map((contact,index)=><div className="contact-card" key={`${contact.role}-${contact.company}-${index}`}>
-            <span className="contact-role">{contact.role || tr(lang,"角色待核实","Role TBC")}</span>
-            <div><small>{tr(lang,"CompanyName","Company Name")}</small><strong>{contact.company || "—"}</strong><small>{contact.source}</small></div>
-            <div><small>{tr(lang,"Contact Name","Contact Name")}</small><strong>{contact.name || "—"}</strong></div>
-            <div><small>{tr(lang,"Contact_Job Title","Contact_Job Title")}</small><strong>{contact.title || "—"}</strong></div>
-            <div><small>{tr(lang,"Contact_Phone","Contact_Phone")}</small><strong>{contact.phone || "—"}</strong></div>
-            <div><small>{tr(lang,"Company Phone Number","Company Phone Number")}</small><strong>{contact.companyPhone || "—"}</strong></div>
-            <div><small>{tr(lang,"邮箱","Email")}</small><strong>{contact.email || "—"}</strong></div>
-          </div>)}</div>
+          <div className="contact-list">{item.contacts.map((contact,index)=><article className="contact-card" key={`${contact.role}-${contact.company}-${index}`}>
+            <div className="contact-card-top"><span className="contact-role">{contact.role || tr(lang,"角色待核实","Role TBC")}</span><span className="contact-source">{contact.source || tr(lang,"来源待核实","Source TBC")}</span></div>
+            <div className="contact-field"><small>{tr(lang,"机构 / 公司","Organization / Company")}</small><strong>{contact.company || "—"}</strong></div>
+            <div className="contact-field"><small>{tr(lang,"联系人姓名","Contact name")}</small><strong>{contact.name || "—"}</strong></div>
+            <div className="contact-field"><small>{tr(lang,"职位 / 角色","Job title")}</small><strong>{contact.title || "—"}</strong></div>
+            <div className="contact-field"><small>{tr(lang,"个人电话","Direct phone")}</small><strong>{contact.phone || "—"}</strong></div>
+            <div className="contact-field"><small>{tr(lang,"机构电话","Company phone")}</small><strong>{contact.companyPhone || "—"}</strong></div>
+            <div className="contact-field contact-email"><small>{tr(lang,"电子邮箱","Email address")}</small><strong>{contact.email || "—"}</strong></div>
+          </article>)}</div>
         </> : <div className="empty-contact"><strong>{tr(lang,"暂无已匹配联系人","No matched contacts yet")}</strong><span>{tr(lang,"可通过MEED角色表、官方招标公告、业主采购页或手工维护补齐。","Complete this through MEED roles, official tender notices, owner procurement pages or manual maintenance.")}</span></div>}
       </div>}
 
