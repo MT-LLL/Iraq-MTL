@@ -315,7 +315,7 @@ async function allAvailableOpportunities(db: ReturnType<typeof getDb>) {
   const rows = await db.select().from(storedOpportunities);
   if (!rows.length) return [];
   const availableIds = new Set(rows.map(row => row.id));
-
+  try {
   // Seed the existing curated MEED role directory into D1 once, so the contacts
   // survive deployments and are available to every persisted-opportunity view.
   for (const [opportunityId, contacts] of Object.entries(meedContactDirectory) as Array<[string, readonly OpportunityContact[]]>) {
@@ -353,6 +353,12 @@ async function allAvailableOpportunities(db: ReturnType<typeof getDb>) {
     const contacts = contactsByOpportunity.get(row.id);
     return contacts?.length ? { ...item, contacts } : item;
   });
+  } catch (error) {
+    // Keep the opportunity dashboard available during the short interval before
+    // the new D1 migration has been applied; contacts hydrate after migration.
+    console.warn("Opportunity contacts could not be loaded from D1 yet.", error);
+    return rows.map(row => toClientOpportunity(row));
+  }
 }
 
 function parseJson<T>(value: string | null | undefined, fallback: T): T {
