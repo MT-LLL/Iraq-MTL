@@ -57,8 +57,8 @@ async function post(payload){const base=process.env.MSSD_SITE_URL?.trim().replac
  const res=await fetch(endpoint,{method:"POST",headers,body:JSON.stringify(payload),signal:AbortSignal.timeout(30000)}),body=await res.text();if(!res.ok)throw Error(`Ingest API returned HTTP ${res.status}: ${body.slice(0,500)}`);return JSON.parse(body);}
 function parsePublishedAmount(raw) {
  const text=String(raw||"");
- const currency=/IQD|IQ\\s*D|Iraqi Dinars?|دينار(?: عراقي)?|د\\.ع/i.test(text)?"IQD":/USD|US\\s*\\$|دولار(?: أمريكي)?|\\$/.test(text)?"USD":null;
- const match=text.replace(/,/g,"").match(/[0-9]+(?:\\.[0-9]+)?/);
+ const currency=/IQD|IQ\s*D|Iraqi Dinars?|دينار(?: عراقي)?|د\.ع/i.test(text)?"IQD":/USD|US\s*\$|دولار(?: أمريكي)?|\$/.test(text)?"USD":null;
+ const match=text.replace(/,/g,"").match(/[0-9]+(?:\.[0-9]+)?/);
  if(!currency||!match)return {sourceCurrency:currency,sourceAmount:null,unit:null,usdEquivalentM:null};
  const n=Number(match[0]);
  const unit=/billion|مليار/i.test(text)?1e9:/million|مليون/i.test(text)?1e6:1;
