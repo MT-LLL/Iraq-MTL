@@ -305,3 +305,131 @@ body { font-size: 15px; line-height: 1.55; }
   .main-area .field-hint { font-size: 12px; }
   .topbar { padding-inline: 16px; }
 }
+
+/* Opportunity detail usability: keep the full detail panel scrollable and contacts readable. */
+.detail-panel {
+  position: sticky;
+  top: 82px;
+  align-self: start;
+  max-height: calc(100vh - 98px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.detail-panel .detail-head,
+.detail-panel .detail-footer {
+  flex-shrink: 0;
+}
+.detail-panel .tab-content {
+  min-width: 0;
+}
+.contact-list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  border: 0;
+  overflow: visible;
+}
+.contact-card {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 12px;
+  align-items: start;
+  padding: 14px;
+  border: 1px solid #dfe9e5;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fff 0%, #fbfdfc 100%);
+}
+.contact-card-top {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  padding-bottom: 9px;
+  border-bottom: 1px solid #e8efec;
+}
+.contact-role {
+  width: auto;
+  max-width: 65%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: 11px;
+  line-height: 1.4;
+  padding: 5px 8px;
+}
+.contact-source {
+  min-width: 0;
+  color: #829196;
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+.contact-field {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.contact-field small {
+  color: #7c8d91;
+  font-size: 11px;
+  line-height: 1.35;
+}
+.contact-field strong {
+  min-width: 0;
+  color: #24464f;
+  font-size: 13px;
+  font-weight: 650;
+  line-height: 1.45;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.contact-email {
+  grid-column: 1 / -1;
+  padding-top: 8px;
+  border-top: 1px dashed #e1eae6;
+}
+.contact-email strong {
+  color: #117b74;
+}
+@media (max-width: 1180px) {
+  .detail-panel {
+    position: relative;
+    top: auto;
+    max-height: min(78vh, 900px);
+  }
+}
+@media (max-width: 540px) {
+  .detail-panel {
+    max-height: 78vh;
+  }
+  .contact-card {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px;
+  }
+  .contact-card-top,
+  .contact-email {
+    grid-column: 1;
+  }
+  .contact-card-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .contact-role {
+    max-width: 100%;
+    width: fit-content;
+  }
+  .contact-source {
+    text-align: left;
+  }
+}
+
