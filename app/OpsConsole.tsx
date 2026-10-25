@@ -310,6 +310,13 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
           <div className="ai-mark">AI</div>
           <div><div className="section-label">{canInternal ? tr(lang,"机会判断","Opportunity assessment") : tr(lang,"公开线索摘要","Public lead summary")} {canInternal ? <span>{tr(lang,"置信度","Confidence")} {Math.round(item.confidence * 100)}%</span> : <span>{tr(lang,"伙伴安全版","Partner-safe")}</span>}</div><p>{canInternal ? opportunityInsight(item, lang) : partnerSafeOpportunityInsight(item, lang)}</p></div>
         </div>
+        <section className="project-background">
+          <div className="section-label">{tr(lang,"项目背景与介绍","Project background & overview")} <span>{tr(lang,"来源记录","Source record")}</span></div>
+          {item.summary && !/^(?:GitHub Actions从MEED自动采集|MEED自动采集|手工录入机会，等待补充)/i.test(item.summary.trim())
+            ? <p>{exportText(lang,item.summary)}</p>
+            : <p className="background-missing">{tr(lang,"当前记录尚未包含可核验的项目背景介绍。请在下一次采集时读取信源原文，或由管理员补充；不以项目名称推测项目内容。","This record does not yet contain a verifiable project description. Fetch the source text on the next ingestion run or have an administrator add it; do not infer project details from the title.")}</p>}
+          {item.evidence?.length ? <div className="project-background-evidence">{item.evidence.slice(0,3).map((entry,index)=><p key={index}><span>{String(index+1).padStart(2,"0")}</span>{exportText(lang,entry)}</p>)}</div> : null}
+        </section>
         <div className="metric-grid">
           <div><small>{tr(lang,"项目总额","Project value")}</small><strong>{exportText(lang,item.value)}</strong></div>
           {canInternal ? <div><small>{tr(lang,"华为可服务空间","Huawei addressable")}</small><strong>{exportText(lang,item.addressable)}</strong></div> : null}
