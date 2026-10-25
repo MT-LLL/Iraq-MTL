@@ -205,9 +205,9 @@ function toRecords(entries) {
     const sector = pick(entry, [/^sector$/]);
     const subSector = pick(entry, [/^subsector$/]);
     const stage = pick(entry, [/stage|statusprogress|status/]);
-    const netValueUsdM = parseUsdM(pickNonEmpty(entry, [/^netvalue$/]));
-    const projectValueUsdM = parseUsdM(pickNonEmpty(entry, [/^projectvalue$/]));
-    const contractValueUsdM = parseUsdM(pickNonEmpty(entry, [/^meedcontractvalue$/, /^contractvalue$/, /^totalvalue$/]));
+    const netValueUsdM = parseUsdM(pickNonEmpty(entry, [/netvalue/]));
+    const projectValueUsdM = parseUsdM(pickNonEmpty(entry, [/projectvalue/]));
+    const contractValueUsdM = parseUsdM(pickNonEmpty(entry, [/meedcontractvalue/, /contractvalue/, /totalvalue/]));
     // Opportunity amount is NetValue first, then ProjectValue. Contract value is
     // kept separate and must never silently masquerade as NetValue.
     const valueUsdM = netValueUsdM ?? projectValueUsdM;
