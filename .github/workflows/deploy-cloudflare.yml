@@ -70,5 +70,17 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
+      - name: Restore Resend sender address
+        shell: bash
+        env:
+          RESEND_FROM_EMAIL: ${{ secrets.RESEND_FROM_EMAIL }}
+        run: |
+          if [ -n "$RESEND_FROM_EMAIL" ]; then
+            printf '%s' "$RESEND_FROM_EMAIL" | npx wrangler secret put RESEND_FROM_EMAIL --config wrangler.toml
+            echo "Resend sender address restored to the Worker."
+          else
+            echo "::warning::GitHub Actions secret RESEND_FROM_EMAIL is not configured. Add it in repository Actions secrets to restore the sender address after deployment."
+          fi
+
       - name: Deployment verification marker
         run: echo "Cloudflare Worker deployment completed."
