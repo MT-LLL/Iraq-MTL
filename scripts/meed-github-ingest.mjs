@@ -6,6 +6,7 @@ import { strFromU8, unzipSync } from "fflate";
 const rootDir = dirname(dirname(fileURLToPath(import.meta.url)));
 const artifactDir = process.env.MEED_ARTIFACT_DIR || join(rootDir, "artifacts", "meed");
 const projectSearchUrl = process.env.MEED_PROJECT_SEARCH_URL || "https://premium.meedprojects.com/Projects?recordType=Projects&Location=4000013-4000014-4000016&ProjectFields=MEEDTitle-ProfileType-MEEDCountry,MEEDCountryRegion,mEEDCityTown-Industry,Sector,SubSector-MeedContractValue,ProjectValue,NetValue,CashSpent-MEEDStage-LastUpdatedOnString-MainContractAward-MainContractCompletion";
+const defaultContactSearchUrl = "https://premium.meedprojects.com/Projects?recordType=Projects&Location=4000042-4000043-4000045&ProjectStage=77003&ProjectFields=MEEDTitle-ProfileType-MEEDCountry,MEEDCountryRegion,mEEDCityTown-Industry,Sector,SubSector-MeedContractValue,ProjectValue,NetValue,CashSpent-MEEDStage-LastUpdatedOnString-MainContractAward-MainContractCompletion-OldProjectId,NewProjectId,UltimateProjectId-ContactName,Contact_Job%20Title,Contact_Phone,CompanyName,Company%20Phone%20Number&companyrole=76501-76535-76505-76510-76521-76551&pageNumber=1&pageSize=100";
 const ingestEndpoint = process.env.MEED_INGEST_ENDPOINT || `${String(process.env.MSSD_SITE_URL || "").replace(/\/$/, "")}/api/meed-ingest`;
 const ingestToken = process.env.MEED_INGEST_TOKEN || "";
 
@@ -526,7 +527,7 @@ async function main() {
     const entries = objectRows(parseWorkbook(buffer));
     const records = toRecords(entries);
     let contactStats = { enabled: false, sourceRows: 0, matchedRows: 0, contactRowsAdded: 0, warning: "" };
-    const contactSearchUrl = text(process.env.MEED_CONTACT_SEARCH_URL);
+    const contactSearchUrl = text(process.env.MEED_CONTACT_SEARCH_URL, defaultContactSearchUrl);
     if (contactSearchUrl) {
       try {
         const contactExport = await loginAndDownload(contactSearchUrl, "meed-projects-with-roles");
