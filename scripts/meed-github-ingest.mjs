@@ -89,10 +89,13 @@ function normalizeHeader(header) {
   return text(header).toLowerCase().replace(/[^a-z0-9]+/g, "");
 }
 
-function objectRows(rows) {
+function objectRows(rows, { contactsOnly = false } = {}) {
   const headerIndex = rows.findIndex((row) => {
     const normalized = row.map(normalizeHeader);
-    return normalized.some((cell) => /^project$|projectname|meedtitle|projecttitle/.test(cell)) && normalized.some((cell) => /country|meedcountry/.test(cell));
+    const hasProject = normalized.some((cell) => /^project$|projectname|meedtitle|projecttitle/.test(cell));
+    const hasCountry = normalized.some((cell) => /country|meedcountry/.test(cell));
+    const hasContactFields = normalized.some((cell) => /contactname|contactjobtitle|contactphone|companyphonenumber|companyname/.test(cell));
+    return contactsOnly ? (hasProject || normalized.some((cell) => /projectid|meedid|recordid/.test(cell))) && hasContactFields : hasProject && hasCountry;
   });
   if (headerIndex < 0) throw new Error("Could not detect the MEED header row");
   const headers = rows[headerIndex];
@@ -266,6 +269,50 @@ function toRecords(entries) {
   }).filter((record) => record.title && isTargetCountry(record.country));
 }
 
+function mergeContactExport(records, entries) {
+  const byId = new Map();
+  for (const record of records) {
+    for (const id of [record.meedId, record.parentMeedId].filter(Boolean)) {
+      const key = String(id).trim().toLowerCase();
+      if (!byId.has(key)) byId.set(key, []);
+      byId.get(key).push(record);
+    }
+  }
+  let matchedRows = 0;
+  let contactRows = 0;
+  for (const entry of entries) {
+    const ids = [pick(entry, [/^newprojectid$/, /^oldprojectid$/, /projectid|meedid|recordid|projectnumber/])].filter(Boolean);
+    const name = pick(entry, [/^(contactname|personname|contactperson|fullname)$/]);
+    const title = pick(entry, [/^contactjobtitle$/, /^contacttitle$/, /^jobtitle$/, /^contactposition$/, /^position$/]);
+    const phone = pick(entry, [/^contactphone$/, /^contacttelephone$/, /^contactmobile$/, /^mobile$/, /^phone$/, /^telephone$/]);
+    const company = pick(entry, [/^(ownercompany|companyname|stakeholdercompany|clientcompany|organization|organisation|company)$/]);
+    const companyPhone = pick(entry, [/^companyphonenumber$/, /^companyphone$/, /^companytelephone$/, /^officephone$/, /^organizationphonenumber$/, /^organisationphonenumber$/]);
+    const role = pick(entry, [/^(projectrole|stakeholderrole|contactrole|role)$/]);
+    const email = pick(entry, [/contactemail/, /^email$/, /emailaddress/]);
+    if (![name, title, phone, company, companyPhone, role, email].some(Boolean)) continue;
+    const contact = { role, company, name, title, phone, companyPhone, email, source: "MEED Projects with Roles" };
+    let matched = [];
+    for (const id of ids) matched = matched.concat(byId.get(id.trim().toLowerCase()) || []);
+    if (!matched.length) {
+      for (const [key, value] of Object.entries(entry)) {
+        if (/projectid|meedid|recordid|projectnumber/i.test(normalizeHeader(key)) && text(value)) matched = matched.concat(byId.get(text(value).toLowerCase()) || []);
+      }
+    }
+    const unique = [...new Set(matched)];
+    if (!unique.length) continue;
+    matchedRows++;
+    for (const record of unique) {
+      const contacts = record.contacts || (record.contacts = []);
+      const keyOf = (item) => [item.role, item.company, item.name, item.title, item.email, item.phone, item.companyPhone].map((value) => text(value).toLowerCase()).join("|");
+      if (!contacts.some((item) => keyOf(item) === keyOf(contact))) {
+        contacts.push(contact);
+        contactRows++;
+      }
+    }
+  }
+  return { matchedRows, contactRows };
+}
+
 function selectPromoted(records) {
   return [...records]
     .filter((record) => isActiveStage(record.stage))
@@ -374,13 +421,13 @@ async function visibleText(page, patterns) {
   return "";
 }
 
-async function loginAndDownload() {
+async function loginAndDownload(targetUrl = projectSearchUrl, artifactPrefix = "meed-projects") {
   const { chromium } = await import("playwright");
   await mkdir(artifactDir, { recursive: true });
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage({ acceptDownloads: true });
   try {
-    await page.goto(projectSearchUrl, { waitUntil: "domcontentloaded", timeout: 90000 });
+    await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 90000 });
 
     if (await isMeedLoginVisible(page)) {
       const usernameSelector = process.env.MEED_USERNAME_SELECTOR || "";
@@ -439,7 +486,7 @@ async function loginAndDownload() {
       await page.waitForLoadState("domcontentloaded", { timeout: 60000 }).catch(() => undefined);
       await page.waitForLoadState("networkidle", { timeout: 20000 }).catch(() => undefined);
       await page.goto(projectSearchUrl, { waitUntil: "networkidle", timeout: 90000 }).catch(async () => {
-        await page.goto(projectSearchUrl, { waitUntil: "domcontentloaded", timeout: 90000 });
+        await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 90000 });
       });
     } else {
       throw new Error("MEED login form was not detected; set MEED_USERNAME_SELECTOR / MEED_PASSWORD_SELECTOR / MEED_LOGIN_BUTTON_SELECTOR if the page changed.");
@@ -459,7 +506,7 @@ async function loginAndDownload() {
       page.waitForEvent("download", { timeout: 90000 }),
       downloadLocator.click(),
     ]);
-    const suggested = download.suggestedFilename() || `meed-projects-${new Date().toISOString().slice(0, 10)}.xlsx`;
+    const suggested = download.suggestedFilename() || `${artifactPrefix}-${new Date().toISOString().slice(0, 10)}.xlsx`;
     const filePath = join(artifactDir, suggested);
     await download.saveAs(filePath);
     return { filePath, browser };
@@ -473,18 +520,37 @@ async function loginAndDownload() {
 async function main() {
   const runId = `MEED-GHA-${Date.now().toString(36).toUpperCase()}`;
   try {
-    const { filePath, browser } = await loginAndDownload();
+    const { filePath, browser } = await loginAndDownload(projectSearchUrl, "meed-projects");
     const buffer = await (await import("node:fs/promises")).readFile(filePath);
     const entries = objectRows(parseWorkbook(buffer));
     const records = toRecords(entries);
+    let contactStats = { enabled: false, sourceRows: 0, matchedRows: 0, contactRowsAdded: 0, warning: "" };
+    const contactSearchUrl = text(process.env.MEED_CONTACT_SEARCH_URL);
+    if (contactSearchUrl) {
+      try {
+        const contactExport = await loginAndDownload(contactSearchUrl, "meed-projects-with-roles");
+        const contactBuffer = await (await import("node:fs/promises")).readFile(contactExport.filePath);
+        const contactEntries = objectRows(parseWorkbook(contactBuffer), { contactsOnly: true });
+        const merged = mergeContactExport(records, contactEntries);
+        contactStats = { enabled: true, sourceRows: contactEntries.length, matchedRows: merged.matchedRows, contactRowsAdded: merged.contactRows };
+        await contactExport.browser.close();
+      } catch (error) {
+        contactStats = { enabled: true, sourceRows: 0, matchedRows: 0, contactRowsAdded: 0, warning: error instanceof Error ? error.message : String(error) };
+        console.error(`MEED contact export failed; project ingest will continue without new contact data: ${contactStats.warning}`);
+      }
+    } else {
+      contactStats.warning = "MEED_CONTACT_SEARCH_URL is not configured; project-list export does not contain contact columns.";
+      console.warn(contactStats.warning);
+    }
     const promoted = selectPromoted(records);
     const payload = {
       runId,
       generatedAt: new Date().toISOString(),
       source: "MEED Projects GitHub Actions",
       searchUrl: projectSearchUrl,
+      contactSearchUrl: contactSearchUrl || null,
       status: "completed",
-      stats: statsFrom(records, promoted),
+      stats: { ...statsFrom(records, promoted), contacts: contactStats },
       records: promoted,
     };
     await writeFile(join(artifactDir, "meed-ingest-payload.json"), JSON.stringify(payload, null, 2));
