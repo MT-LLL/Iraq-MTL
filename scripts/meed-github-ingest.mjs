@@ -485,7 +485,7 @@ async function loginAndDownload(targetUrl = projectSearchUrl, artifactPrefix = "
       if (!clickedLogin) throw new Error("MEED login button was not found.");
       await page.waitForLoadState("domcontentloaded", { timeout: 60000 }).catch(() => undefined);
       await page.waitForLoadState("networkidle", { timeout: 20000 }).catch(() => undefined);
-      await page.goto(projectSearchUrl, { waitUntil: "networkidle", timeout: 90000 }).catch(async () => {
+      await page.goto(targetUrl, { waitUntil: "networkidle", timeout: 90000 }).catch(async () => {
         await page.goto(targetUrl, { waitUntil: "domcontentloaded", timeout: 90000 });
       });
     } else {
