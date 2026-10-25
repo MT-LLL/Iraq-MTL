@@ -55,10 +55,37 @@ function stripForDetail(s="") {
 async function post(payload){const base=process.env.MSSD_SITE_URL?.trim().replace(/\/$/,""),endpoint=process.env.GOVERNMENT_INGEST_ENDPOINT?.trim()||(base?`${base}/api/government-ingest`:""),token=process.env.SOURCE_INGEST_TOKEN?.trim()||process.env.NEWS_INGEST_TOKEN?.trim()||process.env.MEED_INGEST_TOKEN?.trim();if(!endpoint)throw Error("Missing GOVERNMENT_INGEST_ENDPOINT or MSSD_SITE_URL");if(!token)throw Error("Missing SOURCE_INGEST_TOKEN, NEWS_INGEST_TOKEN or MEED_INGEST_TOKEN");
  const headers={"content-type":"application/json",authorization:`Bearer ${token}`};if(process.env.CF_ACCESS_CLIENT_ID&&process.env.CF_ACCESS_CLIENT_SECRET){headers["CF-Access-Client-Id"]=process.env.CF_ACCESS_CLIENT_ID;headers["CF-Access-Client-Secret"]=process.env.CF_ACCESS_CLIENT_SECRET;}
  const res=await fetch(endpoint,{method:"POST",headers,body:JSON.stringify(payload),signal:AbortSignal.timeout(30000)}),body=await res.text();if(!res.ok)throw Error(`Ingest API returned HTTP ${res.status}: ${body.slice(0,500)}`);return JSON.parse(body);}
+function parsePublishedAmount(raw) {
+ const text=String(raw||"");
+ const currency=/IQD|IQ\\s*D|Iraqi Dinars?|دينار(?: عراقي)?|د\\.ع/i.test(text)?"IQD":/USD|US\\s*\\$|دولار(?: أمريكي)?|\\$/.test(text)?"USD":null;
+ const match=text.replace(/,/g,"").match(/[0-9]+(?:\\.[0-9]+)?/);
+ if(!currency||!match)return {sourceCurrency:currency,sourceAmount:null,unit:null,usdEquivalentM:null};
+ const n=Number(match[0]);
+ const unit=/billion|مليار/i.test(text)?1e9:/million|مليون/i.test(text)?1e6:1;
+ return {sourceCurrency:currency,sourceAmount:n*unit,unit:unit===1e9?"billion":unit===1e6?"million":"unit",usdEquivalentM:null};
+}
+async function fetchIqdRate() {
+ try {
+  const res=await fetch("https://open.er-api.com/v6/latest/USD",{headers:{"accept":"application/json"},signal:AbortSignal.timeout(10000)});
+  if(!res.ok)throw Error("FX HTTP "+res.status);
+  const data=await res.json(), rate=Number(data?.rates?.IQD);
+  if(data?.result!=="success"||!Number.isFinite(rate)||rate<=0)throw Error("FX response missing USD/IQD rate");
+  return {iqdPerUsd:rate,date:String(data.time_last_update_utc||new Date().toISOString()),source:"open.er-api.com"};
+ } catch(e) { console.warn("[WARN] Latest IQD/USD rate unavailable; IQD amounts will be preserved without USD conversion:",e.message); return null; }
+}
+function attachAmountConversions(records, fx) {
+ return records.map(record=>({...record,amounts:(record.amounts||[]).map(a=>{
+  const parsed=parsePublishedAmount(a.value), rate=parsed.sourceCurrency==="IQD"?fx?.iqdPerUsd:null;
+  const usdEquivalentM=parsed.sourceCurrency==="USD"&&parsed.sourceAmount!==null?parsed.sourceAmount/1e6:
+   parsed.sourceCurrency==="IQD"&&parsed.sourceAmount!==null&&rate?parsed.sourceAmount/rate/1e6:null;
+  return {...a,...parsed,usdEquivalentM:usdEquivalentM===null?null:Math.round(usdEquivalentM*1e6)/1e6,
+   fxRate:rate||null,fxRateDate:rate?fx.date:null,fxRateSource:rate?fx.source:null};
+ })}));
+}
 async function main(){const dir=path.join(process.cwd(),"artifacts","iraq-government");await mkdir(dir,{recursive:true});const list=sources(),errors=[],records=[];
  for(const s of list){try{const found=await fetchSource(s);records.push(...found);console.log(`[OK] ${s.name}: ${found.length} candidates`);}catch(e){errors.push(`${s.name}: ${e.message}`);console.error(`[WARN] ${s.name}: ${e.message}`);}}
  const unique=new Map();for(const r of records)unique.set(r.url.toLowerCase(),r);const candidates=[...unique.values()].slice(0,Math.min(100,Number(process.env.GOVERNMENT_DETAIL_PAGE_LIMIT||100))), enriched=[]; for(let i=0;i<candidates.length;i+=5){ enriched.push(...await Promise.all(candidates.slice(i,i+5).map(enrichRecord))); console.log(`[DETAIL] ${Math.min(i+5,candidates.length)}/${candidates.length}`); }
- const payload={runId:"IQ-GOV-"+new Date().toISOString().replace(/[-:T.Z]/g,"").slice(0,12),generatedAt:new Date().toISOString(),source:"Iraq Government Official Websites",status:errors.length&&candidates.length?"partial":errors.length?"failed":"completed",stats:{sourceCount:list.length,fetchedCandidates:enriched.length,detailPagesFetched:enriched.filter(x=>x.detailFetched).length,withAmount:enriched.filter(x=>x.amounts?.length).length,withDeadline:enriched.filter(x=>x.deadline).length,withEmail:enriched.filter(x=>x.contacts?.emails?.length).length,withPhone:enriched.filter(x=>x.contacts?.phones?.length).length,withScope:enriched.filter(x=>x.scope?.length).length,ictRelevant:enriched.filter(x=>x.isIctRelevant).length},records:enriched,errors};
+ const fx=await fetchIqdRate(); const normalized=attachAmountConversions(enriched,fx); const payload={runId:"IQ-GOV-"+new Date().toISOString().replace(/[-:T.Z]/g,"").slice(0,12),generatedAt:new Date().toISOString(),source:"Iraq Government Official Websites",fxRate:fx, status:errors.length&&candidates.length?"partial":errors.length?"failed":"completed",stats:{sourceCount:list.length,fetchedCandidates:normalized.length,detailPagesFetched:normalized.filter(x=>x.detailFetched).length,withAmount:normalized.filter(x=>x.amounts?.length).length,withConvertedAmount:normalized.filter(x=>x.amounts?.some(a=>a.usdEquivalentM!==null)).length,withDeadline:normalized.filter(x=>x.deadline).length,withEmail:normalized.filter(x=>x.contacts?.emails?.length).length,withPhone:normalized.filter(x=>x.contacts?.phones?.length).length,withScope:normalized.filter(x=>x.scope?.length).length,ictRelevant:normalized.filter(x=>x.isIctRelevant).length},records:normalized,errors};
  await writeFile(path.join(dir,"government-tender-payload.json"),JSON.stringify(payload,null,2));
  if(process.env.GOVERNMENT_INGEST_DRY_RUN==="1"){console.log(JSON.stringify({ok:true,dryRun:true,sourceCount:list.length,candidates:candidates.length,errors},null,2));return;}
  const result=await post(payload);await writeFile(path.join(dir,"government-tender-result.json"),JSON.stringify(result,null,2));console.log(JSON.stringify({ok:true,sourceCount:list.length,candidates:candidates.length,errors,result},null,2));if(!candidates.length||errors.length===list.length)process.exitCode=1;
