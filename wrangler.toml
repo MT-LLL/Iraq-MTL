@@ -16,7 +16,9 @@ crons = ["0 4 * * 1"]
 [vars]
 MSSD_SITE_URL = "https://iraq-mtl.lihui9329.workers.dev/"
 MSSD_ADMIN_EMAILS = "lihui302@huawei.com"
-MOONSHOT_MODEL = "kimi-k2.6"\nMOONSHOT_API_BASE_URL = "https://api.moonshot.cn/v1"\nZHIPU_MODEL = "glm-5.3"
+MOONSHOT_MODEL = "kimi-k2.6"
+MOONSHOT_API_BASE_URL = "https://api.moonshot.cn/v1"
+ZHIPU_MODEL = "glm-5.3"
 ZHIPU_API_BASE_URL = "https://open.bigmodel.cn/api/paas/v4"
 CF_ACCESS_TEAM_DOMAIN = "mssd-mtl.cloudflareaccess.com"
 CF_ACCESS_AUD = "f3144e4eade7b67fdbdec54246840de39c04bad74c593da34f7553e5e245e0da"
