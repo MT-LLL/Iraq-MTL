@@ -176,11 +176,11 @@ export const huaweiOfficialSolutionCatalog: HuaweiOfficialSolutionCatalogItem[] 
 ];
 
 export const partnerDirectory: PartnerDirectoryEntry[] = [
-  { id: "PT-IQ-001", name: "Mesopotamia Digital Systems", country: "伊拉克", email: "opportunities@mds.example", phone: "+964 770 000 4101", tier: "核心", manager: "赵文君", managerInitials: "ZW", managerEmail: "zhaowenjun@huawei.com" },
-  { id: "PT-IQ-002", name: "Baghdad Technology Systems", country: "伊拉克", email: "bid@bts.example", phone: "+964 780 000 2732", tier: "优选", manager: "赵文君", managerInitials: "ZW", managerEmail: "zhaowenjun@huawei.com" },
-  { id: "PT-IQ-003", name: "Tigris Smart Infrastructure", country: "伊拉克", email: "sales@tigris-si.example", phone: "+964 750 000 6854", tier: "认证", manager: "赵文君", managerInitials: "ZW", managerEmail: "zhaowenjun@huawei.com" },
-  { id: "PT-LB-001", name: "Levant Smart Systems", country: "黎巴嫩", email: "opportunity@levant-smart.example", phone: "+961 70 000 392", tier: "优选", manager: "赵文君", managerInitials: "ZW", managerEmail: "zhaowenjun@huawei.com" },
-  { id: "PT-JO-001", name: "Jordan Digital Alliance", country: "约旦", email: "partner@jda.example", phone: "+962 79 000 8421", tier: "认证", manager: "赵文君", managerInitials: "ZW", managerEmail: "zhaowenjun@huawei.com" },
+  { id: "PT-IQ-001", name: "Mesopotamia Digital Systems", country: "伊拉克", email: "opportunities@mds.example", phone: "+964 770 000 4101", tier: "核心", manager: "李辉", managerInitials: "LH", managerEmail: "lihui302@huawei.com" },
+  { id: "PT-IQ-002", name: "Baghdad Technology Systems", country: "伊拉克", email: "bid@bts.example", phone: "+964 780 000 2732", tier: "优选", manager: "李辉", managerInitials: "LH", managerEmail: "lihui302@huawei.com" },
+  { id: "PT-IQ-003", name: "Tigris Smart Infrastructure", country: "伊拉克", email: "sales@tigris-si.example", phone: "+964 750 000 6854", tier: "认证", manager: "李辉", managerInitials: "LH", managerEmail: "lihui302@huawei.com" },
+  { id: "PT-LB-001", name: "Levant Smart Systems", country: "黎巴嫩", email: "opportunity@levant-smart.example", phone: "+961 70 000 392", tier: "优选", manager: "李辉", managerInitials: "LH", managerEmail: "lihui302@huawei.com" },
+  { id: "PT-JO-001", name: "Jordan Digital Alliance", country: "约旦", email: "partner@jda.example", phone: "+962 79 000 8421", tier: "认证", manager: "李辉", managerInitials: "LH", managerEmail: "lihui302@huawei.com" },
 ];
 
 export const marketingContentLibrary: MarketingContent[] = [
