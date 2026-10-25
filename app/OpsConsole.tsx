@@ -694,8 +694,8 @@ function EmailPushView({ lang, items, canInternal, deliveryStatus, pushJobs, onC
   const priorityItems = rankedItems.filter(item => item.priority === "P0" || item.priority === "P1");
   const [audience, setAudience] = useState<"partner" | "internal">("partner");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set(items.map(item => item.id)));
-  const [selectedPartnerIds, setSelectedPartnerIds] = useState<Set<string>>(() => new Set([partnerDirectory[0].id]));
-  const [partnerRecipient, setPartnerRecipient] = useState(partnerDirectory[0].email);
+  const [selectedPartnerIds, setSelectedPartnerIds] = useState<Set<string>>(() => new Set());
+  const [partnerRecipient, setPartnerRecipient] = useState("");
   const [internalRecipient, setInternalRecipient] = useState("");
   const [sending, setSending] = useState(false);
   const selectedPartners = partnerDirectory.filter(partner => selectedPartnerIds.has(partner.id));
@@ -743,11 +743,11 @@ function EmailPushView({ lang, items, canInternal, deliveryStatus, pushJobs, onC
           ? tr(lang, "请输入接收人邮箱。", "Enter recipient email address.")
           : hasDemoRecipient
             ? tr(lang, "请把演示伙伴邮箱替换为真实邮箱。", "Replace demo partner email addresses with real recipients.")
-            : audience === "partner" && !selectedPartners.length
-              ? tr(lang, "请至少选择 1 家伙伴。", "Select at least one partner.")
-              : audience === "internal" && recipient.split(/[,;\n]+/).map(item => item.trim()).filter(Boolean).some(item => !item.toLowerCase().endsWith("@huawei.com"))
-                ? tr(lang, "内部邮件只能发送给 @huawei.com 邮箱；如需发 Gmail，请切换为伙伴邮件。", "Internal email can only be sent to @huawei.com. Switch to partner email for Gmail testing.")
-                : "";
+            : !recipient.split(/[,;\n]+/).map(item => item.trim()).filter(Boolean).every(item => /^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(item))
+      ? tr(lang, "请检查邮箱格式；多个邮箱请用逗号、分号或换行分隔。", "Check email format; separate multiple recipients with commas, semicolons or new lines.")
+      : audience === "internal" && recipient.split(/[,;\n]+/).map(item => item.trim()).filter(Boolean).some(item => !item.toLowerCase().endsWith("@huawei.com"))
+        ? tr(lang, "内部邮件只能发送给 @huawei.com 邮箱；如需发外部邮箱，请切换为伙伴邮件。", "Internal email can only be sent to @huawei.com. Switch to partner email for external recipients.")
+        : "";
   const sendDisabled = Boolean(sendBlockReason);
   const submit = async () => {
     if (sendBlockReason) return;
@@ -763,8 +763,8 @@ function EmailPushView({ lang, items, canInternal, deliveryStatus, pushJobs, onC
     {sendBlockReason ? <div className="send-blocker">! {sendBlockReason}</div> : null}
     <div className="email-push-grid">
       <section className="panel email-target-panel"><div className="panel-head"><div><span className="section-kicker">RECIPIENTS</span><h2>{tr(lang,"接收对象","Recipients")}</h2><span>{tr(lang,"伙伴安全版会移除内部评分、竞争策略和其他伙伴信息。","Partner-safe emails remove internal scores, competitive strategy and other partner details.")}</span></div></div>
-        <div className="audience-switch embedded"><button className={audience==='partner'?'active':''} onClick={()=>setAudience('partner')}><strong>{tr(lang,"伙伴邮件","Partner email")}</strong><small>{tr(lang,"可多选伙伴并自动带出伙伴经理","Multi-partner with manager matching")}</small></button>{canInternal&&<button className={audience==='internal'?'active internal':''} onClick={()=>setAudience('internal')}><strong>{tr(lang,"内部邮件","Internal email")}</strong><small>{tr(lang,"仅限授权华为邮箱","Authorized Huawei emails only")}</small></button>}</div>
-        {audience === "partner" ? <><div className="partner-picker compact">{partnerDirectory.map(partner=><label className={selectedPartnerIds.has(partner.id)?'selected':''} key={partner.id}><input type="checkbox" checked={selectedPartnerIds.has(partner.id)} onChange={()=>togglePartner(partner.id)}/><span className="partner-check">✓</span><span><strong>{partner.name}</strong><small>{partner.manager} · {partner.managerEmail}</small></span></label>)}</div><label>{tr(lang,"伙伴收件人","Partner recipients")}<textarea value={partnerRecipient} onChange={event=>setPartnerRecipient(event.target.value)} placeholder="partner@example.com"/><small>{tr(lang,"演示伙伴邮箱必须替换为真实邮箱后才能发送。","Demo partner emails must be replaced before sending.")}</small></label>{hasDemoRecipient&&<div className="recipient-warning">! {tr(lang,"请替换演示邮箱地址","Replace demo email addresses")}</div>}</> : <label>{tr(lang,"内部收件人","Internal recipients")}<textarea value={internalRecipient} onChange={event=>setInternalRecipient(event.target.value)} placeholder="name@huawei.com, team@huawei.com"/><small>{tr(lang,"内部经营版只能发送给 @huawei.com 授权邮箱。","Internal sales view can only be sent to authorized @huawei.com emails.")}</small></label>}
+        <div className="audience-switch embedded"><button className={audience==='partner'?'active':''} onClick={()=>setAudience('partner')}><strong>{tr(lang,"伙伴邮件","Partner email")}</strong><small>{tr(lang,"可选伙伴快捷带出邮箱，也可直接填写任意伙伴邮箱","Optional partner shortcuts or any manually entered partner email")}</small></button>{canInternal&&<button className={audience==='internal'?'active internal':''} onClick={()=>setAudience('internal')}><strong>{tr(lang,"内部邮件","Internal email")}</strong><small>{tr(lang,"仅限授权华为邮箱","Authorized Huawei emails only")}</small></button>}</div>
+        {audience === "partner" ? <><div className="partner-picker compact">{partnerDirectory.map(partner=><label className={selectedPartnerIds.has(partner.id)?'selected':''} key={partner.id}><input type="checkbox" checked={selectedPartnerIds.has(partner.id)} onChange={()=>togglePartner(partner.id)}/><span className="partner-check">✓</span><span><strong>{partner.name}</strong><small>{partner.manager} · {partner.managerEmail}</small></span></label>)}</div><label>{tr(lang,"伙伴收件人","Partner recipients")}<textarea value={partnerRecipient} onChange={event=>setPartnerRecipient(event.target.value)} placeholder="partner@example.com"/><small>{tr(lang,"多个邮箱用逗号、分号或换行分隔；示意邮箱需替换为真实地址。","Separate multiple recipients with commas, semicolons or new lines; replace demo addresses with real ones.")}</small></label>{hasDemoRecipient&&<div className="recipient-warning">! {tr(lang,"请替换演示邮箱地址","Replace demo email addresses")}</div>}</> : <label>{tr(lang,"内部收件人","Internal recipients")}<textarea value={internalRecipient} onChange={event=>setInternalRecipient(event.target.value)} placeholder="name@huawei.com, team@huawei.com"/><small>{tr(lang,"内部经营版只能发送给 @huawei.com 授权邮箱。","Internal sales view can only be sent to authorized @huawei.com emails.")}</small></label>}
       </section>
       <section className="panel email-package-panel"><div className="panel-head"><div><span className="section-kicker">OPPORTUNITY PACKAGE</span><h2>{tr(lang,"选择机会包","Select opportunity pack")}</h2><span>{tr(lang,"默认选中全量机会点，也可一键切换为P0/P1重点机会。","All opportunities are selected by default; you can switch to P0/P1 priority opportunities in one click.")}</span></div><em className="status active">{selectedItems.length}/{items.length} {tr(lang,"已选","selected")}</em></div>
         <div className="package-actions"><button onClick={selectAllOpportunities}>✓ {tr(lang,"选择全量机会点","Select all opportunities")}</button><button onClick={selectPriorityOpportunities}>☆ {tr(lang,"仅选P0/P1","P0/P1 only")}</button><button onClick={clearOpportunities}>× {tr(lang,"清空","Clear")}</button></div>
