@@ -8,7 +8,7 @@ type Lang = "zh" | "en";
 type RuntimeEnv = Record<string, string | undefined>;
 type PushDeliveryContext = { pushId?: string; ackToken?: string; slaDueAt?: string };
 type AiEnhancement = { insight?: string; play?: string; actions?: string[] };
-type AiProvider = "zhipu" | "deepseek";
+type AiProvider = "kimi" | "zhipu" | "deepseek";
 
 export type NotificationConfiguration = { email: boolean; sms: boolean; ai: boolean; emailMissing: string[]; smsMissing: string[]; aiMissing: string[]; emailProvider?: "resend" | "gmail"; aiProvider?: AiProvider; aiModel?: string };
 export type DeliveryResult = { provider: "resend" | "gmail" | "twilio"; messageIds: string[]; recipientCount: number };
@@ -52,8 +52,8 @@ export function getNotificationConfiguration(): NotificationConfiguration {
     ["TWILIO_AUTH_TOKEN", config.TWILIO_AUTH_TOKEN],
     ["TWILIO_FROM_NUMBER 或 TWILIO_MESSAGING_SERVICE_SID", config.TWILIO_FROM_NUMBER || config.TWILIO_MESSAGING_SERVICE_SID],
   ].filter(([, value]) => !value).map(([key]) => key!);
-  const aiProvider: AiProvider | undefined = config.ZHIPU_API_KEY ? "zhipu" : config.DEEPSEEK_API_KEY ? "deepseek" : undefined;
-  const aiMissing = aiProvider ? [] : ["ZHIPU_API_KEY", "DEEPSEEK_API_KEY"];
+  const aiProvider: AiProvider | undefined = config.MOONSHOT_API_KEY ? "kimi" : config.ZHIPU_API_KEY ? "zhipu" : config.DEEPSEEK_API_KEY ? "deepseek" : undefined;
+  const aiMissing = aiProvider ? [] : ["MOONSHOT_API_KEY", "ZHIPU_API_KEY", "DEEPSEEK_API_KEY"];
   return {
     email: Boolean(emailProvider),
     sms: smsMissing.length === 0,
@@ -63,7 +63,7 @@ export function getNotificationConfiguration(): NotificationConfiguration {
     aiMissing,
     emailProvider,
     aiProvider,
-    aiModel: aiProvider === "zhipu" ? config.ZHIPU_MODEL || "glm-5.3" : config.DEEPSEEK_MODEL || "deepseek-v4-flash",
+    aiModel: aiProvider === "kimi" ? config.MOONSHOT_MODEL || "kimi-k2.6" : aiProvider === "zhipu" ? config.ZHIPU_MODEL || "glm-5.3" : config.DEEPSEEK_MODEL || "deepseek-v4-flash",
   };
 }
 
@@ -248,6 +248,37 @@ function parseAiEnhancements(content: string, lang: Lang): Map<string, AiEnhance
   return output;
 }
 
+async function buildKimiEnhancements(opportunities: Opportunity[], audience: Audience, lang: Lang): Promise<Map<string, AiEnhancement>> {
+  const config = runtimeEnv();
+  if (audience !== "partner" || !config.MOONSHOT_API_KEY) return new Map();
+  const safeItems = safeAiOpportunityPayload(opportunities, lang);
+  if (!safeItems.length) return new Map();
+  const baseUrl = (config.MOONSHOT_API_BASE_URL || "https://api.moonshot.cn/v1").replace(/\/$/, "");
+  try {
+    const response = await fetch(`${baseUrl}/chat/completions`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${config.MOONSHOT_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: config.MOONSHOT_MODEL || "kimi-k2.6",
+        messages: [
+          { role: "system", content: aiSystemPrompt(lang) },
+          { role: "user", content: `${aiCopyInstruction(lang)}\n\n${JSON.stringify({ opportunities: safeItems })}` }
+        ],
+        temperature: 0.4,
+        max_tokens: 1800,
+        stream: false
+      })
+    });
+    if (!response.ok) return new Map();
+    const result = await response.json().catch(() => ({})) as { choices?: Array<{ message?: { content?: string } }> };
+    const content = result.choices?.[0]?.message?.content;
+    if (!content) return new Map();
+    return parseAiEnhancements(content, lang);
+  } catch {
+    return new Map();
+  }
+}
+
 async function buildZhipuEnhancements(opportunities: Opportunity[], audience: Audience, lang: Lang): Promise<Map<string, AiEnhancement>> {
   const config = runtimeEnv();
   if (audience !== "partner" || !config.ZHIPU_API_KEY) return new Map();
@@ -312,6 +343,10 @@ async function buildDeepSeekEnhancements(opportunities: Opportunity[], audience:
 async function buildAiEnhancements(opportunities: Opportunity[], audience: Audience, lang: Lang): Promise<Map<string, AiEnhancement>> {
   const config = runtimeEnv();
   if (audience !== "partner") return new Map();
+  if (config.MOONSHOT_API_KEY) {
+    const kimiEnhancements = await buildKimiEnhancements(opportunities, audience, lang);
+    if (kimiEnhancements.size) return kimiEnhancements;
+  }
   if (config.ZHIPU_API_KEY) {
     const zhipuEnhancements = await buildZhipuEnhancements(opportunities, audience, lang);
     if (zhipuEnhancements.size) return zhipuEnhancements;

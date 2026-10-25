@@ -10,7 +10,7 @@ import { localText, opportunityBrief as pushOpportunityBrief } from "./localizat
 
 type View = "command" | "radar" | "updates" | "mtl" | "dispatch" | "partners" | "email" | "approvals" | "imports";
 type Lang = "zh" | "en";
-type DeliveryStatus = { email: boolean; sms: boolean; ai?: boolean; emailMissing?: string[]; smsMissing?: string[]; aiMissing?: string[]; emailProvider?: "resend" | "gmail"; aiProvider?: "zhipu" | "deepseek"; aiModel?: string };
+type DeliveryStatus = { email: boolean; sms: boolean; ai?: boolean; emailMissing?: string[]; smsMissing?: string[]; aiMissing?: string[]; emailProvider?: "resend" | "gmail"; aiProvider?: "kimi" | "zhipu" | "deepseek"; aiModel?: string };
 const PLATFORM_ZH = "伊拉克代表处面向伙伴MTL营销作战平台";
 const PLATFORM_EN = "Iraq Partner MTL Marketing War-room";
 
@@ -1195,12 +1195,15 @@ function DeliverySettingsModal({ lang, deliveryStatus, close, onTestPush }: { la
     { key: "TWILIO_AUTH_TOKEN", required: true, secret: true, ok: !smsMissing.includes("TWILIO_AUTH_TOKEN"), note: tr(lang,"Twilio Auth Token，生产环境按Secret保存","Twilio auth token, stored as a production secret") },
     { key: "TWILIO_FROM_NUMBER / TWILIO_MESSAGING_SERVICE_SID", required: true, secret: false, ok: !smsMissing.includes("TWILIO_FROM_NUMBER 或 TWILIO_MESSAGING_SERVICE_SID"), note: tr(lang,"二选一：短信发送号码或Messaging Service SID","Either a sender number or Messaging Service SID") },
   ];
-  const aiProviderLabel = deliveryStatus.aiProvider === "zhipu" ? "Zhipu GLM" : deliveryStatus.aiProvider === "deepseek" ? "DeepSeek" : "Zhipu GLM / DeepSeek";
+  const aiProviderLabel = deliveryStatus.aiProvider === "kimi" ? "Kimi K2.6" : deliveryStatus.aiProvider === "zhipu" ? "Zhipu GLM" : deliveryStatus.aiProvider === "deepseek" ? "DeepSeek" : "Kimi / Zhipu GLM / DeepSeek";
   const aiRows = [
-    { key: "ZHIPU_API_KEY", required: !deliveryStatus.ai, secret: true, ok: deliveryStatus.aiProvider === "zhipu" || Boolean(deliveryStatus.ai), note: tr(lang,"智谱BigModel API Key，优先通道，生产环境按Secret保存","Zhipu BigModel API key, preferred channel, stored as a production secret") },
-    { key: "ZHIPU_MODEL", required: false, secret: false, ok: true, note: deliveryStatus.aiProvider === "zhipu" ? deliveryStatus.aiModel || "glm-5.3" : "glm-5.3" },
+    { key: "MOONSHOT_API_KEY", required: !deliveryStatus.ai, secret: true, ok: deliveryStatus.aiProvider === "kimi" || Boolean(deliveryStatus.ai), note: tr(lang,"Moonshot 中国版 API Key，Kimi优先通道，生产环境按Secret保存","Moonshot China API key, preferred Kimi channel, stored as a production secret") },
+    { key: "MOONSHOT_MODEL", required: false, secret: false, ok: true, note: deliveryStatus.aiProvider === "kimi" ? deliveryStatus.aiModel || "kimi-k2.6" : "kimi-k2.6" },
+    { key: "MOONSHOT_API_BASE_URL", required: false, secret: false, ok: true, note: "https://api.moonshot.cn/v1" },
+    { key: "ZHIPU_API_KEY", required: false, secret: true, ok: deliveryStatus.aiProvider === "zhipu" || Boolean(deliveryStatus.ai), note: tr(lang,"智谱BigModel API Key，备用通道，生产环境按Secret保存","Zhipu BigModel API key, fallback channel, stored as a production secret") },
+    { key: "ZHIPU_MODEL", required: false, secret: false, ok: true, note: deliveryStatus.aiProvider === "zhipu" ? deliveryStatus.aiModel || "kimi-k2.6" : "glm-5.3" },
     { key: "ZHIPU_API_BASE_URL", required: false, secret: false, ok: true, note: "https://open.bigmodel.cn/api/paas/v4" },
-    { key: "DEEPSEEK_API_KEY", required: false, secret: true, ok: deliveryStatus.aiProvider === "deepseek" || !aiMissing.includes("DEEPSEEK_API_KEY"), note: tr(lang,"备用AI通道，生产环境按Secret保存","Backup AI channel, stored as a production secret") },
+    { key: "DEEPSEEK_API_KEY", required: false, secret: true, ok: deliveryStatus.aiProvider === "deepseek" || Boolean(deliveryStatus.ai), note: tr(lang,"DeepSeek备用AI通道，生产环境按Secret保存","DeepSeek fallback AI channel, stored as a production secret") },
     { key: "DEEPSEEK_MODEL", required: false, secret: false, ok: true, note: deliveryStatus.aiProvider === "deepseek" ? deliveryStatus.aiModel || "deepseek-v4-flash" : "deepseek-v4-flash" },
   ];
   const renderRows = (rows: typeof emailRows) => rows.map(row => <div className="config-row" key={row.key}><span className={row.ok ? "ok" : "missing"}>{row.ok ? "✓" : "!"}</span><strong>{row.key}</strong><small>{row.required ? tr(lang,"必填","Required") : tr(lang,"选填","Optional")}{row.secret ? ` · ${tr(lang,"密钥","Secret")}` : ""}</small><em>{row.note}</em></div>);
@@ -1209,11 +1212,11 @@ function DeliverySettingsModal({ lang, deliveryStatus, close, onTestPush }: { la
     <div className="settings-status-grid">
       <div className={deliveryStatus.email ? "ready" : "pending"}><span>{deliveryStatus.email ? "✓" : "!"}</span><strong>{tr(lang,"邮件 Resend / Gmail API","Email · Resend / Gmail API")}</strong><small>{deliveryStatus.email ? tr(lang,`已启用${emailProvider==="gmail"?"Gmail API":"Resend"}，可真实发送`,`Enabled via ${emailProvider==="gmail"?"Gmail API":"Resend"} for live delivery`) : tr(lang,`缺少：${emailMissing.join("、") || "待核验"}`,`Missing: ${emailMissing.join(", ") || "verification pending"}`)}</small></div>
       <div className={deliveryStatus.sms ? "ready" : "pending"}><span>{deliveryStatus.sms ? "✓" : "!"}</span><strong>SMS · Twilio</strong><small>{deliveryStatus.sms ? tr(lang,"已启用，可真实发送","Enabled for live delivery") : tr(lang,`缺少：${smsMissing.join("、") || "待核验"}`,`Missing: ${smsMissing.join(", ") || "verification pending"}`)}</small></div>
-      <div className={deliveryStatus.ai ? "ready" : "pending"}><span>{deliveryStatus.ai ? "✓" : "!"}</span><strong>{tr(lang,"AI文案增强 · GLM优先","AI copy enrichment · GLM first")}</strong><small>{deliveryStatus.ai ? tr(lang,`已启用${aiProviderLabel}，模型：${deliveryStatus.aiModel || "glm-5.3"}`,`Enabled via ${aiProviderLabel}, model: ${deliveryStatus.aiModel || "glm-5.3"}`) : tr(lang,`缺少：${aiMissing.join("、") || "ZHIPU_API_KEY"}`,`Missing: ${aiMissing.join(", ") || "ZHIPU_API_KEY"}`)}</small></div>
+      <div className={deliveryStatus.ai ? "ready" : "pending"}><span>{deliveryStatus.ai ? "✓" : "!"}</span><strong>{tr(lang,"AI文案增强 · Kimi优先","AI copy enrichment · Kimi first")}</strong><small>{deliveryStatus.ai ? tr(lang,`已启用${aiProviderLabel}，模型：${deliveryStatus.aiModel || "kimi-k2.6"}`,`Enabled via ${aiProviderLabel}, model: ${deliveryStatus.aiModel || "kimi-k2.6"}`) : tr(lang,`缺少：${aiMissing.join("、") || "MOONSHOT_API_KEY"}`,`Missing: ${aiMissing.join(", ") || "MOONSHOT_API_KEY"}`)}</small></div>
     </div>
     <div className="config-section"><h3>{tr(lang,"邮件配置项：Resend 或 Gmail API 二选一","Email configuration: choose Resend or Gmail API")}</h3>{renderRows(emailRows)}</div>
     <div className="config-section"><h3>{tr(lang,"短信配置项","SMS configuration")}</h3>{renderRows(smsRows)}</div>
-    <div className="config-section"><h3>{tr(lang,"AI增强配置项：智谱GLM优先 / DeepSeek备用","AI enrichment configuration: Zhipu GLM first / DeepSeek backup")}</h3>{renderRows(aiRows)}</div>
+    <div className="config-section"><h3>{tr(lang,"AI增强配置项：Kimi优先 / 智谱GLM与DeepSeek备用","AI enrichment configuration: Kimi first / Zhipu GLM and DeepSeek fallback")}</h3>{renderRows(aiRows)}</div>
     <div className="config-help"><strong>{tr(lang,"配置方式","How to enable")}</strong><p>{tr(lang,"把以上字段发给管理员或Codex，由管理员写入站点生产环境变量；密钥只保存为Secret，不在页面展示。配置完成并重新发布后，推送弹窗的发送按钮会自动打开。","Send the fields above to an administrator or Codex. They must be saved as production environment variables; secrets are stored as secrets and never shown in the page. After configuration and redeployment, the push modal will automatically enable sending.")}</p></div>
     <div className="modal-actions"><button onClick={close}>{tr(lang,"关闭","Close")}</button><button className="primary" onClick={onTestPush}>{tr(lang,"去测试推送","Go test push")} →</button></div>
   </div></div>;
