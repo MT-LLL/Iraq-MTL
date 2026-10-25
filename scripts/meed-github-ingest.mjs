@@ -76,13 +76,13 @@ function parseWorkbook(buffer, { contactsOnly = false } = {}) {
   const parsedSheets = paths.map((path) => {
     const sheetXml = strFromU8(zip[path]);
     const rows = [];
-    const rowMatches = sheetXml.match(/<row[\\s\\S]*?<\\/row>/g) || [];
+    const rowMatches = sheetXml.match(/<row[\s\S]*?<\/row>/g) || [];
     for (const rowXml of rowMatches) {
       const cells = [];
-      for (const match of rowXml.matchAll(/<c([^>]*)>([\\s\\S]*?)<\\/c>/g)) {
+      for (const match of rowXml.matchAll(/<c([^>]*)>([\s\S]*?)<\/c>/g)) {
         const attrs = match[1];
         const body = match[2];
-        const ref = attrs.match(/\\sr="([^"]+)"/)?.[1] || "";
+        const ref = attrs.match(/\sr="([^"]+)"/)?.[1] || "";
         cells[colIndex(ref)] = parseCellValue(`<c${attrs}>${body}</c>`, sharedStrings);
       }
       if (cells.some(Boolean)) rows.push(cells.map((cell) => text(cell)));
