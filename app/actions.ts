@@ -484,7 +484,7 @@ export async function autoArchiveExpiredOpportunities() {
   let archived = 0;
   for (const item of all) {
     // Only act on explicit, machine-readable YYYY-MM-DD milestone dates; do not guess from free text.
-    const match = /^\\d{4}-\\d{2}-\\d{2}$/.test(item.deadline) ? item.deadline : "";
+    const match = /^\d{4}-\d{2}-\d{2}$/.test(item.deadline) ? item.deadline : "";
     if (!match || match >= today) continue;
     const existing = trackingById.get(item.id);
     if (existing?.status === "archived") continue;
