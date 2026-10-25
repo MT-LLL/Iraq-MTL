@@ -1197,10 +1197,13 @@ function DeliverySettingsModal({ lang, deliveryStatus, close, onTestPush }: { la
   ];
   const aiProviderLabel = deliveryStatus.aiProvider === "kimi" ? "Kimi K2.6" : deliveryStatus.aiProvider === "zhipu" ? "Zhipu GLM" : deliveryStatus.aiProvider === "deepseek" ? "DeepSeek" : "Kimi / Zhipu GLM / DeepSeek";
   const aiRows = [
-    { key: "ZHIPU_API_KEY", required: !deliveryStatus.ai, secret: true, ok: deliveryStatus.aiProvider === "zhipu" || Boolean(deliveryStatus.ai), note: tr(lang,"智谱BigModel API Key，优先通道，生产环境按Secret保存","Zhipu BigModel API key, preferred channel, stored as a production secret") },
+    { key: "MOONSHOT_API_KEY", required: !deliveryStatus.ai, secret: true, ok: deliveryStatus.aiProvider === "kimi" || Boolean(deliveryStatus.ai), note: tr(lang,"Moonshot 中国版 API Key，Kimi优先通道，生产环境按Secret保存","Moonshot China API key, preferred Kimi channel, stored as a production secret") },
+    { key: "MOONSHOT_MODEL", required: false, secret: false, ok: true, note: deliveryStatus.aiProvider === "kimi" ? deliveryStatus.aiModel || "kimi-k2.6" : "kimi-k2.6" },
+    { key: "MOONSHOT_API_BASE_URL", required: false, secret: false, ok: true, note: "https://api.moonshot.cn/v1" },
+    { key: "ZHIPU_API_KEY", required: false, secret: true, ok: deliveryStatus.aiProvider === "zhipu" || Boolean(deliveryStatus.ai), note: tr(lang,"智谱BigModel API Key，备用通道，生产环境按Secret保存","Zhipu BigModel API key, fallback channel, stored as a production secret") },
     { key: "ZHIPU_MODEL", required: false, secret: false, ok: true, note: deliveryStatus.aiProvider === "zhipu" ? deliveryStatus.aiModel || "glm-5.3" : "glm-5.3" },
     { key: "ZHIPU_API_BASE_URL", required: false, secret: false, ok: true, note: "https://open.bigmodel.cn/api/paas/v4" },
-    { key: "DEEPSEEK_API_KEY", required: false, secret: true, ok: deliveryStatus.aiProvider === "deepseek" || !aiMissing.includes("DEEPSEEK_API_KEY"), note: tr(lang,"备用AI通道，生产环境按Secret保存","Backup AI channel, stored as a production secret") },
+    { key: "DEEPSEEK_API_KEY", required: false, secret: true, ok: deliveryStatus.aiProvider === "deepseek" || Boolean(deliveryStatus.ai), note: tr(lang,"DeepSeek备用AI通道，生产环境按Secret保存","DeepSeek fallback AI channel, stored as a production secret") },
     { key: "DEEPSEEK_MODEL", required: false, secret: false, ok: true, note: deliveryStatus.aiProvider === "deepseek" ? deliveryStatus.aiModel || "deepseek-v4-flash" : "deepseek-v4-flash" },
   ];
   const renderRows = (rows: typeof emailRows) => rows.map(row => <div className="config-row" key={row.key}><span className={row.ok ? "ok" : "missing"}>{row.ok ? "✓" : "!"}</span><strong>{row.key}</strong><small>{row.required ? tr(lang,"必填","Required") : tr(lang,"选填","Optional")}{row.secret ? ` · ${tr(lang,"密钥","Secret")}` : ""}</small><em>{row.note}</em></div>);
