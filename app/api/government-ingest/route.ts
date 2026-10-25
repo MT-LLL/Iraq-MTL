@@ -36,11 +36,11 @@ export async function POST(request: Request) {
     const id=`IQGOV-${hash(url.replace(/\/$/,"").toLowerCase())}`;
     const old=await db.prepare("SELECT id FROM opportunities WHERE id = ?").bind(id).first<{id:string}>();
     const combined=`${title} ${excerpt}`, sc=score(combined), sourceName=clean(r.sourceName,"Iraq Government Official Website");
-    const convertibleAmount = (r.amounts || []).find(a => Number.isFinite(Number(a.usdEquivalentM)) && Number(a.usdEquivalentM) >= 0 && a.sourceCurrency);
+    const convertibleAmount = (r.amounts || []).find(a => a.usdEquivalentM !== null && a.usdEquivalentM !== undefined && Number.isFinite(Number(a.usdEquivalentM)) && Number(a.usdEquivalentM) >= 0 && a.sourceCurrency);
     const projectValueUsdM = convertibleAmount ? Number(convertibleAmount.usdEquivalentM) : null;
     const amountDetails = (r.amounts || []).map(a => {
       const currency = a.sourceCurrency || a.currency || "currency unverified";
-      const converted = Number.isFinite(Number(a.usdEquivalentM)) ? `; USD equivalent ${Number(a.usdEquivalentM).toLocaleString("en-US")} million` : "; USD conversion unavailable";
+      const converted = a.usdEquivalentM !== null && a.usdEquivalentM !== undefined && Number.isFinite(Number(a.usdEquivalentM)) ? `; USD equivalent ${Number(a.usdEquivalentM).toLocaleString("en-US")} million` : "; USD conversion unavailable";
       const rate = a.fxRate ? `; FX rate ${a.fxRate} IQD/USD (${a.fxRateDate || "date unavailable"}, ${a.fxRateSource || "source unavailable"})` : "";
       return `${a.value} [original currency: ${currency}${a.unit ? `; unit: ${a.unit}` : ""}]${currency === "IQD" ? converted + rate : currency === "USD" ? converted : ""}`;
     }).join("; ");
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
     const summary=`Iraq government notice lead: ${excerpt.slice(0,650)}${excerpt.length>650?"…":""} | ${details} | Main project_value is stored in USD millions only when the source currency and conversion are identifiable; original published amount is retained in evidence.`;
     await db.prepare(`INSERT INTO opportunities (id,external_id,title,title_en,country,city,industry,stage,priority,score,confidence,project_value,addressable_value,currency,funding_status,bid_deadline,participation_space,win_band,summary,source_name,source_url,source_license,review_status,is_golden_seed,created_at,updated_at)
       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-      ON CONFLICT(id) DO UPDATE SET title=excluded.title,title_en=excluded.title_en,industry=excluded.industry,stage=excluded.stage,priority=excluded.priority,score=excluded.score,confidence=excluded.confidence,summary=excluded.summary,source_name=excluded.source_name,source_url=excluded.source_url,source_license=excluded.source_license,updated_at=excluded.updated_at`)
+      ON CONFLICT(id) DO UPDATE SET title=excluded.title,title_en=excluded.title_en,industry=excluded.industry,stage=excluded.stage,priority=excluded.priority,score=excluded.score,confidence=excluded.confidence,project_value=excluded.project_value,currency=excluded.currency,summary=excluded.summary,source_name=excluded.source_name,source_url=excluded.source_url,source_license=excluded.source_license,updated_at=excluded.updated_at`)
       .bind(id,clean(r.id,url),title,title,"伊拉克","Baghdad",industry(combined),"政府公告待核实",sc.priority,sc.score,r.isIctRelevant?0.62:0.48,projectValueUsdM,null,"USD","官方公告待核实",null,r.isIctRelevant?"中":"低","中",summary,sourceName,url,"Official Iraqi government website; public notice link","pending",0,now,now).run();
     await db.prepare("INSERT INTO evidence (id,opportunity_id,kind,excerpt,source_url,collected_at) VALUES (?,?,?,?,?,?)")
       .bind(crypto.randomUUID(),id,"iraq_government_notice",JSON.stringify({excerpt:(excerpt||title).slice(0,900),projectNumber:r.projectNumber||[],amounts:r.amounts||[],normalizedProjectValueUsdM:projectValueUsdM,fxRate:p.fxRate||null,deadline:r.deadline||"",contacts:r.contacts||{},scope:r.scope||[],description:r.description||[],detailFetched:!!r.detailFetched,detailError:r.detailError||""}).slice(0,4000),url,now).run();
