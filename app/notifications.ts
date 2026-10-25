@@ -644,7 +644,7 @@ async function sendResendEmail(config: RuntimeEnv, recipients: string[], content
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { Authorization: `Bearer ${config.RESEND_API_KEY}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: config.RESEND_FROM_EMAIL, to: recipients, reply_to: config.RESEND_REPLY_TO || "zhaowenjun@huawei.com", subject: content.subject, html: content.html, text: content.text }),
+    body: JSON.stringify({ from: config.RESEND_FROM_EMAIL, to: recipients, reply_to: config.RESEND_REPLY_TO || "lihui302@huawei.com", subject: content.subject, html: content.html, text: content.text }),
   });
   const result = await response.json().catch(() => ({})) as { id?: string; message?: string };
   if (!response.ok || !result.id) throw new NotificationError("EMAIL_PROVIDER_ERROR", providerErrorMessage("Resend", response.status, result));
