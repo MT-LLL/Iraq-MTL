@@ -47,6 +47,20 @@ export const opportunities = sqliteTable("opportunities", {
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
 });
 
+export const opportunityContacts = sqliteTable("opportunity_contacts", {
+  id: text("id").primaryKey(),
+  opportunityId: text("opportunity_id").notNull().references(() => opportunities.id),
+  role: text("role").notNull().default(""),
+  company: text("company").notNull().default(""),
+  name: text("name").notNull().default(""),
+  title: text("title").notNull().default(""),
+  email: text("email").notNull().default(""),
+  phone: text("phone").notNull().default(""),
+  companyPhone: text("company_phone").notNull().default(""),
+  source: text("source").notNull().default(""),
+  updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
+});
+
 export const evidence = sqliteTable("evidence", {
   id: text("id").primaryKey(),
   opportunityId: text("opportunity_id").notNull().references(() => opportunities.id),
