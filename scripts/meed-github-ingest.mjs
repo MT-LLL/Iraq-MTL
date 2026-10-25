@@ -529,16 +529,24 @@ async function main() {
     let contactStats = { enabled: false, sourceRows: 0, matchedRows: 0, contactRowsAdded: 0, warning: "" };
     const contactSearchUrl = text(process.env.MEED_CONTACT_SEARCH_URL, defaultContactSearchUrl);
     if (contactSearchUrl) {
+      let contactBrowser;
       try {
         const contactExport = await loginAndDownload(contactSearchUrl, "meed-projects-with-roles");
+        contactBrowser = contactExport.browser;
         const contactBuffer = await (await import("node:fs/promises")).readFile(contactExport.filePath);
         const contactEntries = objectRows(parseWorkbook(contactBuffer), { contactsOnly: true });
         const merged = mergeContactExport(records, contactEntries);
         contactStats = { enabled: true, sourceRows: contactEntries.length, matchedRows: merged.matchedRows, contactRowsAdded: merged.contactRows };
-        await contactExport.browser.close();
       } catch (error) {
         contactStats = { enabled: true, sourceRows: 0, matchedRows: 0, contactRowsAdded: 0, warning: error instanceof Error ? error.message : String(error) };
         console.error(`MEED contact export failed; project ingest will continue without new contact data: ${contactStats.warning}`);
+      } finally {
+        // Always close the second Chromium instance, including when workbook
+        // parsing or contact matching throws. Otherwise its child processes can
+        // keep Node alive until the GitHub Actions job times out.
+        await contactBrowser?.close().catch((error) => {
+          console.warn(`Could not close MEED contact browser cleanly: ${error instanceof Error ? error.message : String(error)}`);
+        });
       }
     } else {
       contactStats.warning = "MEED_CONTACT_SEARCH_URL is not configured; project-list export does not contain contact columns.";
