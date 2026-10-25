@@ -4,6 +4,9 @@ type MeedRecord = {
   meedId?: string;
   parentMeedId?: string;
   title?: string;
+  projectDescription?: string;
+  projectObjectives?: string;
+  projectScope?: string;
   country?: string;
   city?: string;
   industry?: string;
