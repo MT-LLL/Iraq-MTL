@@ -1,0 +1,45 @@
+name: Iraq Government Official Sites Ingest
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Daily at 04:50 UTC / 07:50 Baghdad.
+    - cron: "50 4 * * *"
+
+concurrency:
+  group: iraq-government-official-ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    name: Scan Iraqi government tender websites and sync opportunities
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install app dependencies
+        run: npm ci
+      - name: Collect official government notices and sync to D1
+        env:
+          IRAQ_GOV_SOURCES: ${{ secrets.IRAQ_GOV_SOURCES }}
+          GOVERNMENT_INGEST_ENDPOINT: ${{ secrets.GOVERNMENT_INGEST_ENDPOINT }}
+          SOURCE_INGEST_TOKEN: ${{ secrets.SOURCE_INGEST_TOKEN }}
+          NEWS_INGEST_TOKEN: ${{ secrets.NEWS_INGEST_TOKEN }}
+          MEED_INGEST_TOKEN: ${{ secrets.MEED_INGEST_TOKEN }}
+          MSSD_SITE_URL: ${{ vars.MSSD_SITE_URL }}
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: node scripts/iraq-government-ingest.mjs
+      - name: Upload government ingest artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: iraq-government-ingest-artifacts
+          path: artifacts/iraq-government
+          if-no-files-found: ignore
