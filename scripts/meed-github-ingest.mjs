@@ -205,8 +205,11 @@ function toRecords(entries) {
     const sector = pick(entry, [/^sector$/]);
     const subSector = pick(entry, [/^subsector$/]);
     const stage = pick(entry, [/stage|statusprogress|status/]);
-    const netValueUsdM = parseUsdM(pickNonEmpty(entry, [/netvalue/]));
-    const projectValueUsdM = parseUsdM(pickNonEmpty(entry, [/projectvalue/]));
+    const netValueUsdM = parseUsdM(pickNonEmpty(entry, [/netprojectvalue/, /netvalue/]));
+    // MEED's current export labels the budget as "Estimated Budget ($m)"
+    // and the net project amount as "Net Project Value ($m)". Keep these
+    // distinct: a broad /projectvalue/ match would misclassify net value as budget.
+    const projectValueUsdM = parseUsdM(pickNonEmpty(entry, [/estimatedbudget/, /^projectvalue$/]));
     const contractValueUsdM = parseUsdM(pickNonEmpty(entry, [/meedcontractvalue/, /contractvalue/, /totalvalue/]));
     // Opportunity amount is NetValue first, then ProjectValue. Contract value is
     // kept separate and must never silently masquerade as NetValue.
