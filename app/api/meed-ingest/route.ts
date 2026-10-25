@@ -12,6 +12,10 @@ type MeedRecord = {
   stage?: string;
   status?: string;
   valueUsdM?: number | null;
+  netValueUsdM?: number | null;
+  projectValueUsdM?: number | null;
+  contractValueUsdM?: number | null;
+  amountSource?: string;
   updatedOn?: string;
   awardDate?: string;
   completionDate?: string;
@@ -42,6 +46,14 @@ type MeedIngestPayload = {
     recent30Days?: number;
     promotedCount?: number;
     totalNetValueUsdM?: number;
+    totalProjectValueUsdM?: number;
+    totalContractValueUsdM?: number;
+    amountCoverage?: {
+      netValue?: number;
+      projectValue?: number;
+      contractValue?: number;
+      unavailable?: number;
+    };
   };
   records?: MeedRecord[];
   errors?: string[];
@@ -189,8 +201,12 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
   const stage = safeText(record.stage || record.status, "待核实");
   const city = safeText(record.city, country.fallbackCity);
   const { score, priority } = scoreRecord(record);
-  const hasProjectValue = record.valueUsdM !== null && record.valueUsdM !== undefined && String(record.valueUsdM).trim() !== "";
-  const projectValue = hasProjectValue && Number.isFinite(Number(record.valueUsdM)) ? Number(record.valueUsdM) : null;
+  // The persisted opportunity amount is NetValue, falling back to ProjectValue.
+  // ContractValue is intentionally kept as separate source metadata and is never
+  // substituted for either field. valueUsdM remains for older payload compatibility.
+  const selectedAmount = record.netValueUsdM ?? record.projectValueUsdM ?? record.valueUsdM;
+  const hasProjectValue = selectedAmount !== null && selectedAmount !== undefined && String(selectedAmount).trim() !== "";
+  const projectValue = hasProjectValue && Number.isFinite(Number(selectedAmount)) ? Number(selectedAmount) : null;
   const sourceUrl = safeText(record.sourceUrl || "");
   const summary = `GitHub Actions从MEED自动采集：${title}，当前阶段${stage}，行业${industry}。需人工复核资金路径、ICT工作包、联系人和截标日期后进入正式经营。`;
   const updatedAt = dateToMs(record.updatedOn) ?? now;
