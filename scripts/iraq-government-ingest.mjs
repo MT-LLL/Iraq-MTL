@@ -24,13 +24,41 @@ function extract(html,source){const links=[...html.matchAll(/<a\b([^>]*?)href\s*
  const unique=new Map();for(const r of out){const k=r.url.toLowerCase();if(!unique.has(k)||unique.get(k).text.length<r.text.length)unique.set(k,r);}return[...unique.values()];
 }
 async function fetchSource(s){const res=await fetch(s.url,{headers:{"user-agent":"Iraq-MTL-Government-Opportunity-Collector/1.0","accept-language":"en,ar;q=0.9"},signal:AbortSignal.timeout(25000)});if(!res.ok)throw Error(`${s.url} returned HTTP ${res.status}`);const html=await res.text();if(!/<html|<body|<a\b/i.test(html))throw Error("Response did not look like HTML");return extract(html,s);}
+function extractDetailFields(text, html) {
+ const lines=text.split(/[\\n|]/).map(s=>s.trim()).filter(s=>s.length>18&&s.length<700);
+ const amounts=[...text.matchAll(/(?:IQD|IQ\\s*D|Iraqi Dinars?|دينار(?: عراقي)?|د\\.ع|USD|US\\s*\\$|\\$|دولار(?: أمريكي)?)\\s*[:：-]?\\s*[\\d,]+(?:\\.\\d+)?(?:\\s*(?:million|billion|مليون|مليار))?|[\\d,]+(?:\\.\\d+)?(?:\\s*(?:million|billion|مليون|مليار))?\\s*(?:IQD|IQ\\s*D|Iraqi Dinars?|دينار(?: عراقي)?|د\\.ع|USD|US\\s*\\$|دولار(?: أمريكي)?)/ig)].slice(0,8).map(m=>({value:m[0],context:text.slice(Math.max(0,m.index-80),Math.min(text.length,m.index+m[0].length+80)).replace(/\\s+/g," ")}));
+ const emails=[...new Set([...(text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}/gi)||[]),...[...html.matchAll(/href\\s*=\\s*["']mailto:([^"'?]+)[^"']*["']/gi)].map(m=>m[1])])].slice(0,10);
+ const phones=[...new Set((text.match(/(?:\\+?\\d[\\d ()\\-./]{7,}\\d)/g)||[]).filter(x=>x.replace(/\\D/g,"").length>=8).map(x=>x.trim()))].slice(0,10);
+ const deadline=(text.match(/(?:deadline|closing date|submission deadline|last date|due date|آخر موعد|تاريخ الغلق|غلق المناقصة|موعد التسليم)\\s*[:：-]?\\s*([^\\n|;]{3,70})/i)||[])[1]?.trim()||"";
+ const projectNumber=[...new Set((text.match(/MOC-T-\\d{4}-\\d+|\\d{2,4}\\/20\\d{2}|L\\.\\d{3,}\\.\\d{2}\\.\\d{2,}|(?:tender|contract|bid|reference|رقم المناقصة|مناقصة رقم|رقم الإعلان|no\\.?|number)\\s*(?:#|:|：|-)\\s*[A-Z0-9][A-Z0-9./_-]{2,35}/ig)||[]))].slice(0,8);
+ const scope=lines.filter(s=>/scope|supply|installation|maintenance|construction|implementation|equipment|system|works|services|تجهيز|نصب|صيانة|إنشاء|تأهيل|توريد|خدمات|منظومة|نظام|مشروع/i.test(s)).slice(0,12);
+ const description=lines.filter(s=>s.length>35).slice(0,14);
+ const contactLines=lines.filter(s=>/contact|email|e-mail|phone|telephone|fax|address|procurement|tender department|اتصال|هاتف|بريد إلكتروني|العنوان/i.test(s)).slice(0,10);
+ return {amounts,deadline,projectNumber,scope,description,contacts:{emails,phones,contactLines}};
+}
+async function enrichRecord(record) {
+ try {
+  const u=new URL(record.url); if(!/^https?:$/.test(u.protocol)) return {...record,detailFetched:false,detailError:"Unsupported URL"};
+  const response=await fetch(u,{headers:{"user-agent":"Iraq-MTL-Government-Opportunity-Collector/1.1","accept-language":"en,ar;q=0.9"},signal:AbortSignal.timeout(18000)});
+  if(!response.ok) throw Error("HTTP "+response.status);
+  const html=await response.text(), text=stripForDetail(html), f=extractDetailFields(text,html);
+  return {...record,detailFetched:true,detailText:text.slice(0,8000),
+   projectNumber:f.projectNumber.length?f.projectNumber:(record.projectNumber||[]),
+   amounts:f.amounts.length?f.amounts:(record.amounts||[]),deadline:f.deadline||record.deadline||"",
+   scope:f.scope.length?f.scope:(record.scope||[]),description:f.description.length?f.description:(record.description||[]),
+   contacts:{emails:[...new Set([...(record.contacts?.emails||[]),...f.contacts.emails])].slice(0,10),phones:[...new Set([...(record.contacts?.phones||[]),...f.contacts.phones])].slice(0,10),contactLines:[...new Set([...(record.contacts?.contactLines||[]),...f.contacts.contactLines])].slice(0,10)}};
+ } catch(e) { return {...record,detailFetched:false,detailError:e.message}; }
+}
+function stripForDetail(s="") {
+ return s.replace(/<!--[\\s\\S]*?-->/g," ").replace(/<script\\b[\\s\\S]*?<\\/script>/gi," ").replace(/<style\\b[\\s\\S]*?<\\/style>/gi," ").replace(/<br\\s*\\/?>/gi,"\\n").replace(/<\\/\\s*(p|div|tr|li|td|th|h[1-6]|section|article)\\s*>/gi,"\\n").replace(/<[^>]+>/g," ").replace(/&nbsp;/gi," ").replace(/&amp;/gi,"&").replace(/&quot;/gi,'"').replace(/&#39;|&apos;/gi,"'").replace(/&lt;/gi,"<").replace(/&gt;/gi,">").replace(/[ \\t]+/g," ").replace(/\\n\\s*\\n+/g,"\\n").trim();
+}
 async function post(payload){const base=process.env.MSSD_SITE_URL?.trim().replace(/\/$/,""),endpoint=process.env.GOVERNMENT_INGEST_ENDPOINT?.trim()||(base?`${base}/api/government-ingest`:""),token=process.env.SOURCE_INGEST_TOKEN?.trim()||process.env.NEWS_INGEST_TOKEN?.trim()||process.env.MEED_INGEST_TOKEN?.trim();if(!endpoint)throw Error("Missing GOVERNMENT_INGEST_ENDPOINT or MSSD_SITE_URL");if(!token)throw Error("Missing SOURCE_INGEST_TOKEN, NEWS_INGEST_TOKEN or MEED_INGEST_TOKEN");
  const headers={"content-type":"application/json",authorization:`Bearer ${token}`};if(process.env.CF_ACCESS_CLIENT_ID&&process.env.CF_ACCESS_CLIENT_SECRET){headers["CF-Access-Client-Id"]=process.env.CF_ACCESS_CLIENT_ID;headers["CF-Access-Client-Secret"]=process.env.CF_ACCESS_CLIENT_SECRET;}
  const res=await fetch(endpoint,{method:"POST",headers,body:JSON.stringify(payload),signal:AbortSignal.timeout(30000)}),body=await res.text();if(!res.ok)throw Error(`Ingest API returned HTTP ${res.status}: ${body.slice(0,500)}`);return JSON.parse(body);}
 async function main(){const dir=path.join(process.cwd(),"artifacts","iraq-government");await mkdir(dir,{recursive:true});const list=sources(),errors=[],records=[];
  for(const s of list){try{const found=await fetchSource(s);records.push(...found);console.log(`[OK] ${s.name}: ${found.length} candidates`);}catch(e){errors.push(`${s.name}: ${e.message}`);console.error(`[WARN] ${s.name}: ${e.message}`);}}
- const unique=new Map();for(const r of records)unique.set(r.url.toLowerCase(),r);const candidates=[...unique.values()].slice(0,400);
- const payload={runId:"IQ-GOV-"+new Date().toISOString().replace(/[-:T.Z]/g,"").slice(0,12),generatedAt:new Date().toISOString(),source:"Iraq Government Official Websites",status:errors.length&&candidates.length?"partial":errors.length?"failed":"completed",stats:{sourceCount:list.length,fetchedCandidates:candidates.length,ictRelevant:candidates.filter(x=>x.isIctRelevant).length},records:candidates,errors};
+ const unique=new Map();for(const r of records)unique.set(r.url.toLowerCase(),r);const candidates=[...unique.values()].slice(0,Math.min(100,Number(process.env.GOVERNMENT_DETAIL_PAGE_LIMIT||100))), enriched=[]; for(let i=0;i<candidates.length;i+=5){ enriched.push(...await Promise.all(candidates.slice(i,i+5).map(enrichRecord))); console.log(`[DETAIL] ${Math.min(i+5,candidates.length)}/${candidates.length}`); }
+ const payload={runId:"IQ-GOV-"+new Date().toISOString().replace(/[-:T.Z]/g,"").slice(0,12),generatedAt:new Date().toISOString(),source:"Iraq Government Official Websites",status:errors.length&&candidates.length?"partial":errors.length?"failed":"completed",stats:{sourceCount:list.length,fetchedCandidates:enriched.length,detailPagesFetched:enriched.filter(x=>x.detailFetched).length,withAmount:enriched.filter(x=>x.amounts?.length).length,withDeadline:enriched.filter(x=>x.deadline).length,withEmail:enriched.filter(x=>x.contacts?.emails?.length).length,withPhone:enriched.filter(x=>x.contacts?.phones?.length).length,withScope:enriched.filter(x=>x.scope?.length).length,ictRelevant:enriched.filter(x=>x.isIctRelevant).length},records:enriched,errors};
  await writeFile(path.join(dir,"government-tender-payload.json"),JSON.stringify(payload,null,2));
  if(process.env.GOVERNMENT_INGEST_DRY_RUN==="1"){console.log(JSON.stringify({ok:true,dryRun:true,sourceCount:list.length,candidates:candidates.length,errors},null,2));return;}
  const result=await post(payload);await writeFile(path.join(dir,"government-tender-result.json"),JSON.stringify(result,null,2));console.log(JSON.stringify({ok:true,sourceCount:list.length,candidates:candidates.length,errors,result},null,2));if(!candidates.length||errors.length===list.length)process.exitCode=1;
