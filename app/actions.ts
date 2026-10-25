@@ -472,6 +472,32 @@ export async function getOpportunityTracking(): Promise<OpportunityTrackingView[
   return rows.map(row => ({ opportunityId: row.opportunityId, status: row.status === "archived" ? "archived" : "tracked", reason: row.reason, updatedBy: row.updatedBy, updatedAt: row.updatedAt.toISOString() }));
 }
 
+/** Automatically archive opportunities whose explicit key milestone date has passed. */
+export async function autoArchiveExpiredOpportunities() {
+  const { profile, db } = await currentIdentity();
+  if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) return { archived: 0 };
+  const all = await allAvailableOpportunities(db);
+  const trackingRows = await db.select().from(opportunityTracking);
+  const trackingById = new Map(trackingRows.map(row => [row.opportunityId, row]));
+  const today = new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  let archived = 0;
+  for (const item of all) {
+    // Only act on explicit, machine-readable YYYY-MM-DD milestone dates; do not guess from free text.
+    const match = /^\\d{4}-\\d{2}-\\d{2}$/.test(item.deadline) ? item.deadline : "";
+    if (!match || match >= today) continue;
+    const existing = trackingById.get(item.id);
+    if (existing?.status === "archived") continue;
+    const reason = `系统自动归档：关键节点截止日期 ${match} 已过期（检查日期：${today}）。如确认项目仍有效，请恢复跟踪并核实最新节点。`;
+    const values = { opportunityId: item.id, status: "archived", reason, updatedBy: "system:auto-expired-milestone", updatedAt: now };
+    if (existing) await db.update(opportunityTracking).set(values).where(eq(opportunityTracking.opportunityId, item.id));
+    else await db.insert(opportunityTracking).values(values);
+    await db.insert(auditLogs).values({ id: crypto.randomUUID(), actorId: profile.id, action: "opportunity.tracking.auto_archived_expired_milestone", entityType: "opportunity", entityId: item.id, metadata: JSON.stringify({ title: item.title, deadline: match, reason, previousStatus: existing?.status ?? "tracked" }), createdAt: now });
+    archived++;
+  }
+  return { archived };
+}
+
 export async function setOpportunityTracking(input: { opportunityIds: string[]; status: "tracked" | "archived"; reason?: string }) {
   const { profile, db } = await currentIdentity();
   if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) throw new Error("FORBIDDEN");
