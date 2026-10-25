@@ -199,7 +199,7 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
   if (!country || !meedId || !title) return { skipped: true, existing: false };
 
   const id = `MEED-${country.code}-${meedId}`;
-  const existing = await db.prepare("SELECT id, title, country, industry, stage, priority, score, project_value, bid_deadline FROM opportunities WHERE id = ?").bind(id).first<{ id: string; title: string; country: string; industry: string; stage: string; priority: string; score: number; project_value: number | null; bid_deadline: number | null }>();
+  const existing = await db.prepare("SELECT id, title, country, industry, stage, priority, score, project_value, bid_deadline, summary FROM opportunities WHERE id = ?").bind(id).first<{ id: string; title: string; country: string; industry: string; stage: string; priority: string; score: number; project_value: number | null; bid_deadline: number | null; summary: string | null }>();
   const industry = normalizeIndustry(record);
   const stage = safeText(record.stage || record.status, "待核实");
   const city = safeText(record.city, country.fallbackCity);
@@ -219,7 +219,7 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     ? sourceDescription.slice(0, 6000)
     : `MEED原始导出暂未提供可用的项目背景/介绍字段。当前已核实的结构化信息：项目“${title}”，国家${country.zh}，行业${industry}，阶段${stage}。请打开原始MEED记录核验项目范围、建设目标和采购包；不得仅根据标题推测项目内容。`;
   const updatedAt = dateToMs(record.updatedOn) ?? now;
-  const changedFields = existing ? ([["title", existing.title, title], ["country", existing.country, country.zh], ["industry", existing.industry, industry], ["stage", existing.stage, stage], ["priority", existing.priority, priority], ["score", existing.score, score], ["projectValue", existing.project_value, projectValue], ["bidDeadline", existing.bid_deadline, dateToMs(record.awardDate)]] as const).filter(([, before, after]) => (before ?? null) !== (after ?? null)).map(([field]) => field) : [];
+  const changedFields = existing ? ([["title", existing.title, title], ["country", existing.country, country.zh], ["industry", existing.industry, industry], ["stage", existing.stage, stage], ["priority", existing.priority, priority], ["score", existing.score, score], ["projectValue", existing.project_value, projectValue], ["bidDeadline", existing.bid_deadline, dateToMs(record.awardDate)], ["summary", existing.summary, summary]] as const).filter(([, before, after]) => (before ?? null) !== (after ?? null)).map(([field]) => field) : [];
 
   await db.prepare(`
     INSERT INTO opportunities (
@@ -306,11 +306,12 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     `).bind(contactId, id, normalized.role, normalized.company, normalized.name, normalized.title, normalized.email, normalized.phone, normalized.companyPhone, normalized.source, now).run();
   }
 
-  const persisted = await db.prepare("SELECT id, title, project_value, currency FROM opportunities WHERE id = ?")
+  const persisted = await db.prepare("SELECT id, title, project_value, currency, summary FROM opportunities WHERE id = ?")
     .bind(id)
-    .first<{ id: string; title: string; project_value: number | null; currency: string | null }>();
+    .first<{ id: string; title: string; project_value: number | null; currency: string | null; summary: string | null }>();
   const amountMatches = (persisted?.project_value ?? null) === (projectValue ?? null);
-  const readbackVerified = Boolean(persisted && persisted.id === id && persisted.title === title && amountMatches && persisted.currency === "USD");
+  const summaryMatches = persisted?.summary === summary;
+  const readbackVerified = Boolean(persisted && persisted.id === id && persisted.title === title && amountMatches && persisted.currency === "USD" && summaryMatches);
   return { skipped: false, existing: Boolean(existing), changedFields, id, title, country: country.zh, industry, priority, score, projectValue, readbackVerified, readback: persisted ?? null };
 }
 
