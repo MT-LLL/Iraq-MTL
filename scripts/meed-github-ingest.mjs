@@ -281,6 +281,9 @@ function toRecords(entries) {
       updatedOn,
       awardDate,
       completionDate,
+      projectDescription,
+      projectObjectives,
+      projectScope,
       contacts,
       sourceUrl: projectSearchUrl,
     };
