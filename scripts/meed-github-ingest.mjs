@@ -248,6 +248,7 @@ function toRecords(entries) {
     return {
       meedId,
       parentMeedId,
+      sourceProjectIds: [...new Set([meedId, oldProjectId, newProjectId].filter(Boolean))],
       title,
       country,
       city,
@@ -272,7 +273,7 @@ function toRecords(entries) {
 function mergeContactExport(records, entries) {
   const byId = new Map();
   for (const record of records) {
-    for (const id of [record.meedId, record.parentMeedId].filter(Boolean)) {
+    for (const id of [...(record.sourceProjectIds || []), record.meedId, record.parentMeedId].filter(Boolean)) {
       const key = String(id).trim().toLowerCase();
       if (!byId.has(key)) byId.set(key, []);
       byId.get(key).push(record);
