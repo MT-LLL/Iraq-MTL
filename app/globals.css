@@ -554,3 +554,35 @@ body { font-size: 15px; line-height: 1.55; }
   }
 }
 
+
+
+/* Opportunity background content: visible in every record's overview, not hidden behind the source link. */
+.project-background {
+  margin: 14px 0;
+  padding: 16px 18px;
+  border: 1px solid var(--line, #dfe5e8);
+  border-radius: 12px;
+  background: var(--paper, #fff);
+}
+.project-background > .section-label { margin-bottom: 10px; }
+.project-background > p {
+  margin: 0;
+  color: var(--ink, #172b35);
+  font-size: 13px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.project-background > p.background-missing { color: var(--muted, #71818a); }
+.project-background-evidence { display: grid; gap: 7px; margin-top: 12px; }
+.project-background-evidence p {
+  display: flex;
+  gap: 9px;
+  margin: 0;
+  color: var(--muted, #52636d);
+  font-size: 11px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.project-background-evidence p span { flex: 0 0 auto; font-variant-numeric: tabular-nums; opacity: .7; }
+
