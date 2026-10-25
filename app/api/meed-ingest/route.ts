@@ -208,7 +208,13 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
   const hasProjectValue = selectedAmount !== null && selectedAmount !== undefined && String(selectedAmount).trim() !== "";
   const projectValue = hasProjectValue && Number.isFinite(Number(selectedAmount)) ? Number(selectedAmount) : null;
   const sourceUrl = safeText(record.sourceUrl || "");
-  const summary = `GitHub Actions从MEED自动采集：${title}，当前阶段${stage}，行业${industry}。需人工复核资金路径、ICT工作包、联系人和截标日期后进入正式经营。`;
+  const sourceDescription = [record.projectDescription, record.projectScope, record.projectObjectives]
+    .map((value) => safeText(value))
+    .filter((value, index, values) => value && values.indexOf(value) === index)
+    .join("\\n\\n");
+  const summary = sourceDescription
+    ? sourceDescription.slice(0, 6000)
+    : `MEED原始导出暂未提供可用的项目背景/介绍字段。当前已核实的结构化信息：项目“${title}”，国家${country.zh}，行业${industry}，阶段${stage}。请打开原始MEED记录核验项目范围、建设目标和采购包；不得仅根据标题推测项目内容。`;
   const updatedAt = dateToMs(record.updatedOn) ?? now;
   const changedFields = existing ? ([["title", existing.title, title], ["country", existing.country, country.zh], ["industry", existing.industry, industry], ["stage", existing.stage, stage], ["priority", existing.priority, priority], ["score", existing.score, score], ["projectValue", existing.project_value, projectValue], ["bidDeadline", existing.bid_deadline, dateToMs(record.awardDate)]] as const).filter(([, before, after]) => (before ?? null) !== (after ?? null)).map(([field]) => field) : [];
 
