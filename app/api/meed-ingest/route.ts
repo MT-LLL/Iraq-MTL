@@ -16,6 +16,16 @@ type MeedRecord = {
   awardDate?: string;
   completionDate?: string;
   sourceUrl?: string;
+  contacts?: Array<{
+    role?: string;
+    company?: string;
+    name?: string;
+    title?: string;
+    email?: string;
+    phone?: string;
+    companyPhone?: string;
+    source?: string;
+  }>;
 };
 
 type MeedIngestPayload = {
@@ -105,6 +115,16 @@ function dateToMs(value: string | undefined) {
   if (!value) return null;
   const date = new Date(value);
   return Number.isFinite(date.getTime()) ? date.getTime() : null;
+}
+
+function stableContactId(opportunityId: string, contact: NonNullable<MeedRecord["contacts"]>[number]) {
+  const raw = [opportunityId, safeText(contact.role), safeText(contact.company), safeText(contact.name), safeText(contact.title), safeText(contact.source)].join("|");
+  let hash = 2166136261;
+  for (let index = 0; index < raw.length; index++) {
+    hash ^= raw.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `oc-${(hash >>> 0).toString(16).padStart(8, "0")}`;
 }
 
 function sourceRunId(payload: MeedIngestPayload) {
@@ -223,6 +243,32 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     now,
     updatedAt,
   ).run();
+
+  // Persist contact/role-chain records separately from the project row. Existing
+  // contacts are upserted by a stable ID, so weekly imports do not create duplicates.
+  for (const contact of (record.contacts ?? []).slice(0, 50)) {
+    const normalized = {
+      role: safeText(contact.role),
+      company: safeText(contact.company),
+      name: safeText(contact.name),
+      title: safeText(contact.title),
+      email: safeText(contact.email),
+      phone: safeText(contact.phone),
+      companyPhone: safeText(contact.companyPhone),
+      source: safeText(contact.source, "MEED Projects with Roles"),
+    };
+    if (!normalized.role && !normalized.company && !normalized.name && !normalized.email && !normalized.phone && !normalized.companyPhone) continue;
+    const contactId = stableContactId(id, normalized);
+    await db.prepare(`
+      INSERT INTO opportunity_contacts
+        (id, opportunity_id, role, company, name, title, email, phone, company_phone, source, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        role = excluded.role, company = excluded.company, name = excluded.name,
+        title = excluded.title, email = excluded.email, phone = excluded.phone,
+        company_phone = excluded.company_phone, source = excluded.source, updated_at = excluded.updated_at
+    `).bind(contactId, id, normalized.role, normalized.company, normalized.name, normalized.title, normalized.email, normalized.phone, normalized.companyPhone, normalized.source, now).run();
+  }
 
   const persisted = await db.prepare("SELECT id, title, project_value, currency FROM opportunities WHERE id = ?")
     .bind(id)
