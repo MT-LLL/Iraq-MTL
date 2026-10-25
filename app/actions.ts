@@ -315,47 +315,50 @@ async function allAvailableOpportunities(db: ReturnType<typeof getDb>) {
   const rows = await db.select().from(storedOpportunities);
   if (!rows.length) return [];
   const availableIds = new Set(rows.map(row => row.id));
+
+  // Seed curated MEED role-chain records idempotently. A failed seed must never
+  // prevent already-persisted contacts from being read and shown.
   try {
-  // Seed the existing curated MEED role directory into D1 once, so the contacts
-  // survive deployments and are available to every persisted-opportunity view.
-  for (const [opportunityId, contacts] of Object.entries(meedContactDirectory) as Array<[string, readonly OpportunityContact[]]>) {
-    if (!availableIds.has(opportunityId)) continue;
-    for (const contact of contacts) {
-      const id = stableContactId(opportunityId, contact);
-      const existing = await db.select({ id: opportunityContacts.id }).from(opportunityContacts).where(eq(opportunityContacts.id, id)).limit(1);
-      if (existing.length) continue;
-      await db.insert(opportunityContacts).values({
-        id,
-        opportunityId,
-        role: contact.role || "",
-        company: contact.company || "",
-        name: contact.name || "",
-        title: contact.title || "",
-        email: contact.email || "",
-        phone: contact.phone || "",
-        companyPhone: contact.companyPhone || "",
-        source: contact.source || "Curated contact directory",
-        updatedAt: new Date(),
-      });
+    for (const [opportunityId, contacts] of Object.entries(meedContactDirectory) as Array<[string, readonly OpportunityContact[]]>) {
+      if (!availableIds.has(opportunityId)) continue;
+      for (const contact of contacts) {
+        const id = stableContactId(opportunityId, contact);
+        await db.insert(opportunityContacts).values({
+          id,
+          opportunityId,
+          role: contact.role || "",
+          company: contact.company || "",
+          name: contact.name || "",
+          title: contact.title || "",
+          email: contact.email || "",
+          phone: contact.phone || "",
+          companyPhone: contact.companyPhone || "",
+          source: contact.source || "Curated contact directory",
+          updatedAt: new Date(),
+        }).onConflictDoNothing();
+      }
     }
+  } catch (error) {
+    console.warn("Curated opportunity contact seeding failed; continuing with persisted contacts.", error);
   }
 
-  const contactRows = await db.select().from(opportunityContacts);
-  const contactsByOpportunity = new Map<string, OpportunityContact[]>();
-  for (const row of contactRows) {
-    if (!availableIds.has(row.opportunityId)) continue;
-    const list = contactsByOpportunity.get(row.opportunityId) ?? [];
-    list.push(toClientContact(row));
-    contactsByOpportunity.set(row.opportunityId, list);
-  }
-  return rows.map(row => {
-    const item = toClientOpportunity(row);
-    const contacts = contactsByOpportunity.get(row.id);
-    return contacts?.length ? { ...item, contacts } : item;
-  });
+  try {
+    const contactRows = await db.select().from(opportunityContacts);
+    const contactsByOpportunity = new Map<string, OpportunityContact[]>();
+    for (const row of contactRows) {
+      if (!availableIds.has(row.opportunityId)) continue;
+      const list = contactsByOpportunity.get(row.opportunityId) ?? [];
+      list.push(toClientContact(row));
+      contactsByOpportunity.set(row.opportunityId, list);
+    }
+    return rows.map(row => {
+      const item = toClientOpportunity(row);
+      const contacts = contactsByOpportunity.get(row.id);
+      return contacts?.length ? { ...item, contacts } : item;
+    });
   } catch (error) {
-    // Keep the opportunity dashboard available during the short interval before
-    // the new D1 migration has been applied; contacts hydrate after migration.
+    // Keep the opportunity dashboard available if the contact migration has not
+    // been applied yet. Once the migration is available, persisted contacts hydrate.
     console.warn("Opportunity contacts could not be loaded from D1 yet.", error);
     return rows.map(row => toClientOpportunity(row));
   }
