@@ -433,3 +433,124 @@ body { font-size: 15px; line-height: 1.55; }
   }
 }
 
+/* Follow-up detail panel refinement: compact labels, wrap long values, and scroll only the active tab body. */
+.detail-panel {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 98px);
+  max-height: calc(100vh - 98px);
+  min-height: 420px;
+  overflow: hidden;
+}
+.detail-panel > .detail-head,
+.detail-panel > .hard-gates,
+.detail-panel > .partner-access-notice,
+.detail-panel > .detail-tabs,
+.detail-panel > .detail-footer {
+  flex: 0 0 auto;
+}
+.detail-panel > .detail-tabs {
+  position: relative;
+  z-index: 1;
+  background: var(--paper);
+}
+.detail-panel > .tab-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+.contact-note {
+  padding: 9px 11px;
+  gap: 5px;
+}
+.contact-note strong {
+  font-size: 8px;
+  line-height: 1.35;
+}
+.contact-note span {
+  font-size: 7px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.contact-card {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.contact-card-top {
+  grid-column: 1 / -1;
+}
+.contact-role,
+.contact-source {
+  font-size: 10px;
+  line-height: 1.4;
+}
+.contact-field {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.contact-field small {
+  font-size: 10px;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.contact-field strong {
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.tag-row span {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.4;
+}
+.metric-grid small,
+.metric-grid em {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.4;
+}
+.metric-grid strong {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.4;
+}
+@media (max-width: 1180px) {
+  .detail-panel {
+    height: min(78vh, 900px);
+    max-height: 78vh;
+    min-height: 360px;
+  }
+}
+@media (max-width: 540px) {
+  .detail-panel {
+    height: 78vh;
+    max-height: 78vh;
+    min-height: 320px;
+  }
+  .detail-panel > .detail-head {
+    padding: 14px;
+  }
+  .detail-panel > .hard-gates,
+  .detail-panel > .partner-access-notice {
+    margin-left: 14px;
+    margin-right: 14px;
+  }
+  .contact-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .contact-card-top {
+    grid-column: 1;
+  }
+}
+
