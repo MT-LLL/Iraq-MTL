@@ -160,7 +160,18 @@ function mergeParentChildRecords(records: MeedRecord[]) {
     const hasParentValue = record.valueUsdM !== null && record.valueUsdM !== undefined && Number.isFinite(parentValue) && parentValue > 0;
     const childValues = children.map((child) => Number(child.valueUsdM)).filter((value) => Number.isFinite(value) && value >= 0);
     const valueUsdM = hasParentValue ? parentValue : childValues.length ? childValues.reduce((sum, value) => sum + value, 0) : null;
-    merged.set(id, { ...record, valueUsdM });
+    // Child projects can carry the only available role/contact chain. Preserve
+    // those records when consolidating child rows under the parent opportunity.
+    const contactKey = (contact: NonNullable<MeedRecord["contacts"]>[number]) => [
+      contact.role, contact.company, contact.name, contact.title,
+      contact.email, contact.phone, contact.companyPhone,
+    ].map((value) => safeText(value).toLowerCase()).join("|");
+    const contactsByKey = new Map<string, NonNullable<MeedRecord["contacts"]>[number]>();
+    for (const contact of [...(record.contacts ?? []), ...children.flatMap((child) => child.contacts ?? [])]) {
+      const key = contactKey(contact);
+      if (key.replace(/\|/g, "")) contactsByKey.set(key, contact);
+    }
+    merged.set(id, { ...record, valueUsdM, contacts: [...contactsByKey.values()] });
     for (const child of children) removedChildIds.add(safeText(child.meedId));
   }
   return [...merged.values()];
