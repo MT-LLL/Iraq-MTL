@@ -221,10 +221,13 @@ function toRecords(entries) {
     const contactRole = pick(entry, [/^(projectrole|stakeholderrole|contactrole|role)$/]);
     const contactCompany = pick(entry, [/^(ownercompany|companyname|stakeholdercompany|clientcompany|organization|organisation|company)$/]);
     const contactName = pick(entry, [/^(contactname|personname|contactperson|fullname)$/]);
-    const contactTitle = pick(entry, [/^(contacttitle|jobtitle|contactposition|position)$/]);
-    const contactEmail = pick(entry, [/email/]);
-    const contactPhone = pick(entry, [/^(contactphone|contacttelephone|mobile|phone|telephone)$/]);
-    const companyPhone = pick(entry, [/^(companyphone|companytelephone|officephone)$/]);
+    // The MEED export uses "Contact_Job Title" as well as variants such as
+    // "Contact Job Title", "Contact Title", and "Job Title".
+    const contactTitle = pick(entry, [/^contactjobtitle$/, /^contacttitle$/, /^jobtitle$/, /^contactposition$/, /^position$/]);
+    const contactEmail = pick(entry, [/contactemail/, /^email$/, /emailaddress/]);
+    const contactPhone = pick(entry, [/^contactphone$/, /^contacttelephone$/, /^contactmobile$/, /^mobile$/, /^phone$/, /^telephone$/]);
+    // Keep the organisation's phone separate from the named contact's phone.
+    const companyPhone = pick(entry, [/^companyphonenumber$/, /^companyphone$/, /^companytelephone$/, /^officephone$/, /^organizationphonenumber$/, /^organisationphonenumber$/]);
     const contacts = [contactRole, contactCompany, contactName, contactTitle, contactEmail, contactPhone, companyPhone].some(Boolean)
       ? [{ role: contactRole, company: contactCompany, name: contactName, title: contactTitle, email: contactEmail, phone: contactPhone, companyPhone, source: "MEED Projects with Roles" }]
       : [];
