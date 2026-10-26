@@ -413,6 +413,9 @@ function outlookOpportunityCard(item: Opportunity, audience: Audience, lang: Lan
   const analysisText = audience === "partner" ? partnerInsight : brief.insight;
   const evidenceRows = outlookBulletRows(item.evidence.map(evidence => cleanLocalizedText(lang, evidence, "Evidence to be verified")));
   const actionRows = outlookBulletRows(actions);
+  const partnerProjectContext = audience === "partner"
+    ? `${outlookSectionTitle(tr(lang, "项目背景", "Project background"))}${outlookTextBlock(cleanLocalizedText(lang, item.summary, lang === "zh" ? "项目背景待核实。" : "Project background to be verified."))}${outlookSectionTitle(tr(lang, "项目范围 / Scope（公开信息）", "Project scope (public information)"))}${outlookTextBlock(item.evidence.length ? item.evidence.map(entry => cleanLocalizedText(lang, entry, lang === "zh" ? "范围线索待核实" : "Scope clue to be verified")).join(lang === "zh" ? "；" : "; ") : tr(lang, "当前记录未包含可核验的Scope描述，请以业主公告或招标文件补齐。", "No verifiable scope description is recorded; confirm it from the owner's announcement or tender documents."))}`
+    : "";
   const metrics = outlookMetricTable([
     [tr(lang, "项目金额", "Project value"), brief.value],
     [tr(lang, "关键节点", "Key milestone"), brief.deadline],
@@ -456,6 +459,7 @@ function outlookOpportunityCard(item: Opportunity, audience: Audience, lang: Lan
       </td>
     </tr>
     ${metrics}
+    ${partnerProjectContext}
     ${outlookSectionTitle(tr(lang, "线索与机会点分析", "Lead and opportunity analysis"))}
     ${outlookTextBlock(analysisText)}
     ${outlookSectionTitle(tr(lang, "公开证据与判断依据", "Public evidence and rationale"))}
