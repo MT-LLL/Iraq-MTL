@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { activity, countrySourceStrategies, enrichmentFieldMatrix, enrichmentSourcePlaybook, huaweiOfficialSolutionCatalog, industryDispatchDirectory, marketingContentLibrary, meedAudit, meedLatestIngestion, meedLiveVerification, opportunities, opportunityRadarLayers, partnerDirectory, releaseUpdateLog, sourceConnectorConfig, sourceCoverage, sourceKeywordLibrary, sourceScanCadencePlan, type Country, type MarketingContent, type MarketingContentType, type Opportunity, type PartnerDirectoryEntry, type Priority } from "./data";
-import { createLeadDistribution, createManualOpportunity, decideRegistration, getPendingRegistrations, recordPush, respondLeadDistribution, runWeeklySourceScan, saveOpportunityView, setOpportunityTracking, type LeadDistributionView, type OpportunityTrackingView, type PendingRegistrationView, type PushJobView, type SourceScanRunView } from "./actions";
+import { countrySourceStrategies, enrichmentFieldMatrix, enrichmentSourcePlaybook, huaweiOfficialSolutionCatalog, industryDispatchDirectory, marketingContentLibrary, meedAudit, meedLatestIngestion, meedLiveVerification, opportunities, opportunityRadarLayers, partnerDirectory, releaseUpdateLog, sourceConnectorConfig, sourceCoverage, sourceKeywordLibrary, sourceScanCadencePlan, type Country, type MarketingContent, type MarketingContentType, type Opportunity, type PartnerDirectoryEntry, type Priority } from "./data";
+import { createLeadDistribution, createManualOpportunity, decideRegistration, getCollaborationActivity, getPendingRegistrations, recordPush, respondLeadDistribution, runWeeklySourceScan, saveOpportunityView, setOpportunityTracking, type CollaborationActivityView, type LeadDistributionView, type OpportunityTrackingView, type PendingRegistrationView, type PushJobView, type SourceScanRunView } from "./actions";
 import type { AppProfile } from "./AccountGate";
 import { LogoutButton } from "./LogoutButton";
 import { FIXED_RESPONSE_TACTIC_CODE, MAX_RESPONSE_TEMPLATE_ROWS, createResponseTemplateXlsx, defaultResponseTemplateContext, inferPreferredProducts, inferTemplateIndustry, responseTemplateColumns, responseTemplateDropdowns, validateResponseTemplateRows, type ResponseTemplateContext } from "./response-import-template";
@@ -462,7 +462,7 @@ function CommandView({ lang, items, openOpportunity, quickPush, openCountry }: {
       <section className="panel sector-panel"><div className="panel-head"><div><span className="section-kicker">SOLUTION FIT</span><h2>{tr(lang,"行业机会分布","Opportunity distribution by sector")}</h2></div></div><div className="sector-list">
         {sectorRows.map(row => <div key={row.zh}><span><strong>{lang === "zh" ? row.zh : row.en}</strong><small>{lang === "zh" ? row.zhSolutions : row.enSolutions}</small></span><i><b style={{width:`${row.heat}%`}}></b></i><em>{row.count} {tr(lang,"项","items")}</em></div>)}
       </div></section>
-      <section className="panel activity-panel"><div className="panel-head"><div><span className="section-kicker">LIVE FEED</span><h2>{tr(lang,"协同动态","Collaboration feed")}</h2></div><button>{tr(lang,"全部记录","All records")} →</button></div><div className="activity-list">{activity.map(item => <div key={item.action}><i className={item.tone}></i><p><strong>{item.actor}</strong><span>{localText(lang, item.action, "Activity update")}</span><small>{localText(lang, item.time, "just now")}</small></p></div>)}</div></section>
+      <section className="panel activity-panel"><div className="panel-head"><div><span className="section-kicker">LIVE FEED</span><h2>{tr(lang,"协同动态","Collaboration feed")}</h2></div><button>{tr(lang,"全部记录","All records")} →</button></div><div className="activity-list">{collaborationActivity.length ? collaborationActivity.map(item => <div key={item.id}><i className={item.tone}></i><p><strong>{item.actor}</strong><span>{lang === "zh" ? item.action : item.action.replace("新增了机会记录","created an opportunity").replace("将机会移入暂不跟踪","archived an opportunity").replace("恢复机会跟踪","restored opportunity tracking").replace("发起机会协同分发","started opportunity collaboration").replace("完成伙伴推送","sent partner push").replace("伙伴推送失败，需检查","partner push failed").replace("完成一次数据源扫描","completed a source scan")}</span><small>{new Date(item.time).toLocaleString(lang === "zh" ? "zh-CN" : "en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</small></p></div>) : <p className="activity-empty">{tr(lang,"暂无真实协同事件；发生机会新增、归档、分发或推送后将自动显示。","No collaboration events yet. New opportunities, archiving, distributions and pushes will appear here automatically.")}</p>}</div></section>
     </div>
   </>;
 }
@@ -1242,9 +1242,10 @@ function DeliverySettingsModal({ lang, deliveryStatus, close, onTestPush }: { la
   </div></div>;
 }
 
-export function OpsConsole({ authUser, initialProfile, initialPending, initialManualOpportunities, initialLeadDistributions, initialSourceScanRuns, initialSourceScanRunCount, initialPushJobs, initialOpportunityTracking, latestOpportunityRefreshAt, deliveryStatus }: { authUser: { name: string; email: string }; initialProfile: AppProfile | null; initialPending: PendingRegistrationView[]; initialManualOpportunities: Opportunity[]; initialLeadDistributions: LeadDistributionView[]; initialSourceScanRuns: SourceScanRunView[]; initialSourceScanRunCount: number; initialPushJobs: PushJobView[]; initialOpportunityTracking: OpportunityTrackingView[]; latestOpportunityRefreshAt: string | null; deliveryStatus: DeliveryStatus }) {
+export function OpsConsole({ authUser, initialProfile, initialPending, initialManualOpportunities, initialLeadDistributions, initialSourceScanRuns, initialSourceScanRunCount, initialPushJobs, initialCollaborationActivity, initialOpportunityTracking, latestOpportunityRefreshAt, deliveryStatus }: { authUser: { name: string; email: string }; initialProfile: AppProfile | null; initialPending: PendingRegistrationView[]; initialManualOpportunities: Opportunity[]; initialLeadDistributions: LeadDistributionView[]; initialSourceScanRuns: SourceScanRunView[]; initialSourceScanRunCount: number; initialPushJobs: PushJobView[]; initialCollaborationActivity: CollaborationActivityView[]; initialOpportunityTracking: OpportunityTrackingView[]; latestOpportunityRefreshAt: string | null; deliveryStatus: DeliveryStatus }) {
   const profile = initialProfile;
   const [pendingAccounts, setPendingAccounts] = useState<PendingRegistrationView[]>(initialPending);
+  const [collaborationActivity, setCollaborationActivity] = useState<CollaborationActivityView[]>(initialCollaborationActivity);
   const [refreshingApprovals, setRefreshingApprovals] = useState(false);
   const [manualOpportunities, setManualOpportunities] = useState<Opportunity[]>(initialManualOpportunities);
   const [mtlAssets, setMtlAssets] = useState<MarketingContent[]>(marketingContentLibrary);
@@ -1282,6 +1283,16 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
   const [goldenIds, setGoldenIds] = useState(() => new Set(initialManualOpportunities.filter(o=>o.golden).map(o=>o.id)));
 
   useEffect(() => { document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en'; }, [lang]);
+  useEffect(() => {
+    if (profile?.status !== "approved" || !profile.identityType.startsWith("huawei_")) return;
+    let active = true;
+    const refresh = () => {
+      void getCollaborationActivity().then(rows => { if (active) setCollaborationActivity(rows); }).catch(() => undefined);
+    };
+    refresh();
+    const timer = window.setInterval(refresh, 30000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [profile?.identityType, profile?.status]);
   useEffect(() => {
     if (profile?.identityType !== "huawei_admin" || profile.status !== "approved") return;
     let active = true;
