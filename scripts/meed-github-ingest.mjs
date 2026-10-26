@@ -66,7 +66,7 @@ function parseCellValue(cellXml, sharedStrings) {
   return decodeXml(cellXml.match(/<v>([\s\S]*?)<\/v>/)?.[1] ?? "");
 }
 
-function parseWorkbook(buffer, { contactsOnly = false } = {}) {
+function parseWorkbook(buffer, { contactsOnly = false, eventsOnly = false } = {}) {
   const zip = unzipSync(new Uint8Array(buffer));
   const sharedXml = zip["xl/sharedStrings.xml"] ? strFromU8(zip["xl/sharedStrings.xml"]) : "";
   const sharedStrings = parseSharedStrings(sharedXml);
@@ -92,25 +92,27 @@ function parseWorkbook(buffer, { contactsOnly = false } = {}) {
 
   // MEED stores contact rows on a separate worksheet ("Projects with Roles").
   // Select the worksheet by its header instead of always parsing sheet1.xml.
-  return parsedSheets.find((rows) => rows.some((row) => matchesHeaderRow(row, contactsOnly))) || parsedSheets[0];
+  return parsedSheets.find((rows) => rows.some((row) => matchesHeaderRow(row, { contactsOnly, eventsOnly }))) || parsedSheets[0];
 }
 
 function normalizeHeader(header) {
   return text(header).toLowerCase().replace(/[^a-z0-9]+/g, "");
 }
 
-function matchesHeaderRow(row, contactsOnly = false) {
+function matchesHeaderRow(row, { contactsOnly = false, eventsOnly = false } = {}) {
   const normalized = row.map(normalizeHeader);
   const hasProject = normalized.some((cell) => /^project$|projectname|meedtitle|projecttitle/.test(cell));
   const hasCountry = normalized.some((cell) => /country|meedcountry/.test(cell));
   const hasContactFields = normalized.some((cell) => /contactname|contactjobtitle|contactphone|companyphonenumber|companyname/.test(cell));
+  const hasEventFields = normalized.some((cell) => /^eventtype$/.test(cell)) && normalized.some((cell) => /^eventdate$/.test(cell));
+  if (eventsOnly) return hasEventFields && normalized.some((cell) => /oldprojectid|newprojectid/.test(cell));
   return contactsOnly
     ? (hasProject || normalized.some((cell) => /projectid|meedid|recordid/.test(cell))) && hasContactFields
     : hasProject && hasCountry;
 }
 
-function objectRows(rows, { contactsOnly = false } = {}) {
-  const headerIndex = rows.findIndex((row) => matchesHeaderRow(row, contactsOnly));
+function objectRows(rows, { contactsOnly = false, eventsOnly = false } = {}) {
+  const headerIndex = rows.findIndex((row) => matchesHeaderRow(row, { contactsOnly, eventsOnly }));
   if (headerIndex < 0) throw new Error("Could not detect the MEED header row");
   const headers = rows[headerIndex];
   return rows.slice(headerIndex + 1).map((row) => {
@@ -340,6 +342,68 @@ function mergeContactExport(records, entries) {
   return { matchedRows, contactRows };
 }
 
+
+/**
+ * MEED's project export can include a separate "Projects with Events" worksheet.
+ * Treat these dated source events as project milestones, matching either the old
+ * or new MEED project ID. Do not synthesize news/update text from event rows.
+ */
+function mergeProjectEvents(records, entries) {
+  const byId = new Map();
+  for (const record of records) {
+    const ids = [...new Set([...(record.sourceProjectIds || []), record.meedId].filter(Boolean))];
+    for (const id of ids) {
+      const key = String(id).trim().toLowerCase();
+      if (!byId.has(key)) byId.set(key, []);
+      byId.get(key).push(record);
+    }
+  }
+
+  let matchedEvents = 0;
+  let unmatchedEvents = 0;
+  const eventKeys = new Set();
+  for (const entry of entries) {
+    const ids = [
+      pick(entry, [/^oldprojectid$/]),
+      pick(entry, [/^newprojectid$/]),
+    ].filter(Boolean);
+    const eventType = pick(entry, [/^eventtype$/]);
+    const eventDate = parseDate(pick(entry, [/^eventdate$/]));
+    if (!eventType && !eventDate) continue;
+
+    const matchingRecords = [...new Set(ids.flatMap((id) => byId.get(id.trim().toLowerCase()) || []))];
+    if (!matchingRecords.length) {
+      unmatchedEvents++;
+      continue;
+    }
+
+    const milestone = [eventType, eventDate].filter(Boolean).join(" — ");
+    if (!milestone) continue;
+    matchedEvents++;
+    for (const record of matchingRecords) {
+      const key = `${record.meedId}|${milestone.toLowerCase()}`;
+      if (eventKeys.has(key)) continue;
+      eventKeys.add(key);
+      const existing = text(record.keyProjectMilestones);
+      const items = existing ? existing.split(/\\s*;\\s*/).filter(Boolean) : [];
+      if (!items.some((item) => item.toLowerCase() === milestone.toLowerCase())) {
+        items.push(milestone);
+        // Sort dated milestones chronologically while preserving undated items at the end.
+        items.sort((a, b) => {
+          const dateA = Date.parse(a.match(/(\\d{4}-\\d{2}-\\d{2})$/)?.[1] || "");
+          const dateB = Date.parse(b.match(/(\\d{4}-\\d{2}-\\d{2})$/)?.[1] || "");
+          if (Number.isFinite(dateA) && Number.isFinite(dateB)) return dateA - dateB;
+          if (Number.isFinite(dateA)) return -1;
+          if (Number.isFinite(dateB)) return 1;
+          return a.localeCompare(b);
+        });
+        record.keyProjectMilestones = items.join("; ");
+      }
+    }
+  }
+  return { sourceEvents: entries.length, matchedEvents, unmatchedEvents, recordsWithMilestones: records.filter((record) => text(record.keyProjectMilestones)).length };
+}
+
 function selectPromoted(records) {
   return [...records]
     .filter((record) => isActiveStage(record.stage))
@@ -551,6 +615,15 @@ async function main() {
     const buffer = await (await import("node:fs/promises")).readFile(filePath);
     const entries = objectRows(parseWorkbook(buffer));
     const records = toRecords(entries);
+    let milestoneStats = { enabled: false, sourceEvents: 0, matchedEvents: 0, unmatchedEvents: 0, recordsWithMilestones: records.filter((record) => text(record.keyProjectMilestones)).length, warning: "" };
+    try {
+      const eventEntries = objectRows(parseWorkbook(buffer, { eventsOnly: true }), { eventsOnly: true });
+      milestoneStats = { enabled: true, ...mergeProjectEvents(records, eventEntries) };
+      console.log(`MEED event worksheet: ${JSON.stringify(milestoneStats)}`);
+    } catch (error) {
+      milestoneStats.warning = error instanceof Error ? error.message : String(error);
+      console.warn(`MEED event worksheet unavailable; continuing without event-derived milestones: ${milestoneStats.warning}`);
+    }
     let contactStats = { enabled: false, sourceRows: 0, matchedRows: 0, contactRowsAdded: 0, warning: "" };
     const contactSearchUrl = text(process.env.MEED_CONTACT_SEARCH_URL, defaultContactSearchUrl);
     if (contactSearchUrl) {
@@ -585,7 +658,7 @@ async function main() {
       searchUrl: projectSearchUrl,
       contactSearchUrl: contactSearchUrl || null,
       status: "completed",
-      stats: { ...statsFrom(records, promoted), contacts: contactStats },
+      stats: { ...statsFrom(records, promoted), milestones: milestoneStats, contacts: contactStats },
       records: promoted,
     };
     await writeFile(join(artifactDir, "meed-ingest-payload.json"), JSON.stringify(payload, null, 2));
