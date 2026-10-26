@@ -1031,11 +1031,14 @@ function DispatchView({ lang, queue, onToast, onRespond }: { lang: Lang; queue: 
 function ExportModal({ items, lang, canInternal, close, onToast }: { items: Opportunity[]; lang: Lang; canInternal: boolean; close: () => void; onToast: (message: string) => void }) {
   const [mode, setMode] = useState<"response-template" | "custom">("response-template");
   const [templateContext, setTemplateContext] = useState<ResponseTemplateContext>(() => defaultResponseTemplateContext());
-  const [columns, setColumns] = useState(() => exportColumnDefinitions.filter(definition=>canInternal||!["priority","score","confidence","addressable","owner","funding","participation","win","competitors","summary"].includes(definition.key)).map((definition,index)=>({ ...definition, selected:definition.defaultSelected ?? index<19, header:lang==='zh'?definition.zh:definition.en })));
+  const [selectedResponseIds, setSelectedResponseIds] = useState<Set<string>>(() => new Set());
+  const selectedResponseItems = items.filter(item => selectedResponseIds.has(item.id));
+  const [columns, setColumns = useState(() => exportColumnDefinitions.filter(definition=>canInternal||!["priority","score","confidence","addressable","owner","funding","participation","win","competitors","summary"].includes(definition.key)).map((definition,index)=>({ ...definition, selected:definition.defaultSelected ?? index<19, header:lang==='zh'?definition.zh:definition.en })));
   const selectedColumns = columns.filter(column=>column.selected && column.header.trim());
-  const sampleIndustry = items[0] ? inferTemplateIndustry(items[0]) : { industryL1: "Government & Public Services", industryL2: "Government Sector" };
-  const sampleProducts = items[0] ? inferPreferredProducts(items[0]) : "Others";
-  const responsePreflightErrors = mode === "response-template" ? validateResponseTemplateRows(items, templateContext) : [];
+  const sampleItem = selectedResponseItems[0] ?? items[0];
+  const sampleIndustry = sampleItem ? inferTemplateIndustry(sampleItem) : { industryL1: "Government & Public Services", industryL2: "Government Sector" };
+  const sampleProducts = sampleItem ? inferPreferredProducts(sampleItem) : "Others";
+  const responsePreflightErrors = mode === "response-template" && selectedResponseItems.length ? validateResponseTemplateRows(selectedResponseItems, templateContext) : [];
   useEffect(() => setColumns(current => current.map(column => ({ ...column, header: lang === "zh" ? column.zh : column.en }))), [lang]);
   const updateColumn = (index:number, patch:Partial<{selected:boolean;header:string}>) => setColumns(current=>current.map((column,columnIndex)=>columnIndex===index?{...column,...patch}:column));
   const updateTemplate = (key:keyof ResponseTemplateContext,value:string) => setTemplateContext(current=>({...current,[key]:value}));
@@ -1048,8 +1051,12 @@ function ExportModal({ items, lang, canInternal, close, onToast }: { items: Oppo
   const exportExcel = () => { const header=selectedColumns.map(column=>`<th>${xmlCell(column.header)}</th>`).join(''); const rows=items.map(item=>`<tr>${selectedColumns.map(column=>`<td>${xmlCell(column.value(item,lang))}</td>`).join('')}</tr>`).join(''); saveFile(`<!doctype html><html><head><meta charset="utf-8"></head><body><table><thead><tr>${header}</tr></thead><tbody>${rows}</tbody></table></body></html>`,'application/vnd.ms-excel;charset=utf-8','xls'); };
   const exportResponseTemplate = async () => {
     try {
-      const blob = await createResponseTemplateXlsx(items, templateContext);
-      saveBlob(blob, `MSSD-response-import-${new Date().toISOString().slice(0,10)}.xlsx`, tr(lang,`已基于原始内部Response模板导出 ${Math.min(items.length,MAX_RESPONSE_TEMPLATE_ROWS)} 条，表头、样式和下拉验证已保留；导入前请补齐联系人邮箱或电话`,`Exported ${Math.min(items.length,MAX_RESPONSE_TEMPLATE_ROWS)} rows from the original internal Response template; headers, styling and dropdown validations are preserved. Complete email or phone before import`));
+      if (!selectedResponseItems.length) {
+        onToast(tr(lang,"请先勾选要导出的机会点","Select at least one opportunity to export"));
+        return;
+      }
+      const blob = await createResponseTemplateXlsx(selectedResponseItems, templateContext);
+      saveBlob(blob, `MSSD-response-import-${new Date().toISOString().slice(0,10)}.xlsx`, tr(lang,`已基于原始内部Response模板导出 ${Math.min(selectedResponseItems.length,MAX_RESPONSE_TEMPLATE_ROWS)} 条，表头、样式和下拉验证已保留；导入前请补齐联系人邮箱或电话`,`Exported ${Math.min(selectedResponseItems.length,MAX_RESPONSE_TEMPLATE_ROWS)} selected rows from the original internal Response template; headers, styling and dropdown validations are preserved. Complete email or phone before import`));
     } catch (error) {
       onToast(tr(lang,`导出失败：${error instanceof Error ? error.message : "模板生成异常"}`,`Export failed: ${error instanceof Error ? error.message : "template generation error"}`));
     }
@@ -1057,8 +1064,24 @@ function ExportModal({ items, lang, canInternal, close, onToast }: { items: Oppo
   return <div className="modal-backdrop" onMouseDown={close}><div className="modal export-modal" onMouseDown={event=>event.stopPropagation()}>
     <div className="modal-head"><div><span className="section-kicker">CUSTOM EXPORT</span><h2>{tr(lang,"自定义表头导出","Custom header export")}</h2></div><button onClick={close}>×</button></div>
     <div className="export-mode-switch"><button className={mode==='response-template'?'active':''} onClick={()=>setMode('response-template')}><strong>{tr(lang,"内部Response导入模板","Internal Response template")}</strong><small>{tr(lang,"固定29列表头 · 行业自动填充 · .xlsx","Fixed 29 headers · Industry autofill · .xlsx")}</small></button><button className={mode==='custom'?'active':''} onClick={()=>setMode('custom')}><strong>{tr(lang,"通用自定义导出","General custom export")}</strong><small>{tr(lang,"自由选择字段、改表头和顺序","Choose fields, headers and order")}</small></button></div>
-    <div className="export-scope"><strong>{items.length}</strong><span>{tr(lang,"条机会将按当前筛选或勾选范围导出","opportunities from the current filter or selection")}</span><em>{mode==='response-template'?`${responseTemplateColumns.length} ${tr(lang,"列","columns")}`:`${selectedColumns.length} ${tr(lang,"列","columns")}`}</em></div>
+    <div className="export-scope"><strong>{mode === "response-template" ? selectedResponseItems.length : items.length}</strong><span>{tr(lang,"条机会将按当前筛选或勾选范围导出","opportunities from the current filter or selection")}</span><em>{mode==='response-template'?`${responseTemplateColumns.length} ${tr(lang,"列","columns")}`:`${selectedColumns.length} ${tr(lang,"列","columns")}`}</em></div>
     {mode === 'response-template' ? <>
+      <section className="response-opportunity-picker">
+        <div className="response-picker-head">
+          <div><strong>{tr(lang,"选择要导出的机会点","Select opportunities to export")}</strong><small>{tr(lang,"默认不勾选；仅导出你手动选中的项目。","Nothing is selected by default; only manually selected opportunities will be exported.")}</small></div>
+          <em>{selectedResponseItems.length}/{items.length} {tr(lang,"已选","selected")}</em>
+        </div>
+        <div className="response-picker-actions">
+          <button type="button" onClick={() => setSelectedResponseIds(new Set(items.map(item => item.id)))}>{tr(lang,"全选当前列表","Select all")}</button>
+          <button type="button" onClick={() => setSelectedResponseIds(new Set())}>{tr(lang,"清空选择","Clear selection")}</button>
+        </div>
+        <div className="response-picker-list">
+          {items.map(item => <label key={item.id} className={selectedResponseIds.has(item.id) ? "selected" : ""}>
+            <input type="checkbox" checked={selectedResponseIds.has(item.id)} onChange={event => setSelectedResponseIds(current => { const next = new Set(current); if (event.target.checked) next.add(item.id); else next.delete(item.id); return next; })}/>
+            <span><strong>{lang === "zh" ? item.title : item.titleEn || item.title}</strong><small>{item.id} · {localTerm(lang,item.country)} · {localTerm(lang,item.industry)} · {exportText(lang,item.value)}</small></span>
+          </label>)}
+        </div>
+      </section>
       <div className="template-controls">
         <label><span>Tactic Code *</span><input value={FIXED_RESPONSE_TACTIC_CODE} readOnly aria-readonly="true" title={tr(lang,"固定编码，导出时强制写入","Fixed code, enforced during export")}/><small>{tr(lang,"固定编码，不允许修改","Fixed code, not editable")}</small></label>
         <label><span>{tr(lang,"动作类型","Action Type")}</span><select value={templateContext.actionType} onChange={event=>updateTemplate('actionType',event.target.value)}>{responseTemplateDropdowns.actionType.map(value=><option key={value}>{value}</option>)}</select></label>
@@ -1072,7 +1095,7 @@ function ExportModal({ items, lang, canInternal, close, onToast }: { items: Oppo
         <div><small>{tr(lang,"样例产品兴趣","Sample preferred product")}</small><strong>{sampleProducts}</strong></div>
         <div><small>{tr(lang,"导入限制","Import limit")}</small><strong>{tr(lang,`每次最多${MAX_RESPONSE_TEMPLATE_ROWS}条`,`Max ${MAX_RESPONSE_TEMPLATE_ROWS} rows per batch`)}</strong></div>
       </div>
-      {responsePreflightErrors.length ? <div className="response-preflight warning"><strong>{tr(lang,`自检发现 ${responsePreflightErrors.length} 个导入风险`,`Self-check found ${responsePreflightErrors.length} import risks`)}</strong><span>{tr(lang,"系统会优先自动补齐机构电话/采购入口电话；仍失败时会在点击导出后显示具体错误。","The system first auto-fills institution or procurement-entry phone numbers; if export still fails, clicking Export will show the exact error.")}</span><ul>{responsePreflightErrors.slice(0,3).map(error=><li key={error}>{error}</li>)}</ul></div> : <div className="response-preflight ok"><strong>{tr(lang,"自检通过","Self-check passed")}</strong><span>{tr(lang,"当前范围满足英文数据、联系人必填、国家-城市匹配和下拉值规则。","Current scope satisfies English-only data, mandatory contact, country-location and dropdown rules.")}</span></div>}
+      {!selectedResponseItems.length ? <div className="response-preflight warning"><strong>{tr(lang,"尚未选择机会点","No opportunities selected")}</strong><span>{tr(lang,"请先勾选至少一个机会点，再检查并导出Response模板。","Select at least one opportunity before validating and exporting the Response template.")}</span></div> : responsePreflightErrors.length ? <div className="response-preflight warning"><strong>{tr(lang,`自检发现 ${responsePreflightErrors.length} 个导入风险`,`Self-check found ${responsePreflightErrors.length} import risks`)}</strong><span>{tr(lang,"系统会优先自动补齐机构电话/采购入口电话；仍失败时会在点击导出后显示具体错误。","The system first auto-fills institution or procurement-entry phone numbers; if export still fails, clicking Export will show the exact error.")}</span><ul>{responsePreflightErrors.slice(0,3).map(error=><li key={error}>{error}</li>)}</ul></div> : <div className="response-preflight ok"><strong>{tr(lang,"自检通过","Self-check passed")}</strong><span>{tr(lang,"当前范围满足英文数据、联系人必填、国家-城市匹配和下拉值规则。","Current scope satisfies English-only data, mandatory contact, country-location and dropdown rules.")}</span></div>}
       <div className="template-column-preview"><div className="template-column-head"><span>{tr(lang,"表头","Header")}</span><span>{tr(lang,"自动填充规则","Autofill rule")}</span></div>{responseTemplateColumns.map(column=><div key={column.key}><strong>{column.header}</strong><span>{column.description}</span></div>)}</div>
       <div className="export-note">{tr(lang,"该模式以 Response Import Template 202605 原始工作簿为母版，仅写入 Data Import 数据行；表头、批注、冻结窗格、隐藏 Option 页和下拉验证不会被重建或破坏。Response导出默认全英文；E/G/H/I/K/M/Q/R/S 强制使用原模板下拉值；N/O按E列国家自动归一；C/D邮箱或电话必须至少一个，否则导出会被自检拦截。","This mode uses the original Response Import Template 202605 workbook as the master file and only writes Data Import rows; headers, comments, frozen panes, the hidden Option sheet and dropdown validations are not rebuilt or damaged. Response export is English-only by default; E/G/H/I/K/M/Q/R/S are forced to original template dropdown values; N/O are normalized against column E; C/D must include at least email or telephone or the self-check blocks export.")}</div>
     </> : <>
@@ -1080,7 +1103,7 @@ function ExportModal({ items, lang, canInternal, close, onToast }: { items: Oppo
       <div className="export-columns">{columns.map((column,index)=><div className={column.selected?'selected':''} key={column.key}><label><input type="checkbox" checked={column.selected} onChange={event=>updateColumn(index,{selected:event.target.checked})}/><span>✓</span></label><strong>{lang==='zh'?column.zh:column.en}</strong><input value={column.header} disabled={!column.selected} onChange={event=>updateColumn(index,{header:event.target.value})}/><aside><button disabled={index===0} onClick={()=>moveColumn(index,-1)}>↑</button><button disabled={index===columns.length-1} onClick={()=>moveColumn(index,1)}>↓</button></aside></div>)}</div>
       <div className="export-note">{tr(lang,"表头名称和列顺序会原样写入导出文件；可用字段已按账户角色控制。Excel格式为兼容.xls，CSV使用UTF-8编码。","Header names and column order are written exactly as configured; available fields are role-controlled. Excel uses compatible .xls and CSV uses UTF-8.")}</div>
     </>}
-    <div className="modal-actions"><button onClick={close}>{tr(lang,"取消","Cancel")}</button>{mode==='custom'?<><button disabled={!selectedColumns.length} onClick={exportCsv}>{tr(lang,"导出CSV","Export CSV")}</button><button className="primary" disabled={!selectedColumns.length} onClick={exportExcel}>{tr(lang,"导出Excel","Export Excel")} →</button></>:<button className="primary" disabled={!items.length || !templateContext.actionType || !templateContext.platformName || !templateContext.agreeToContact} onClick={exportResponseTemplate}>{tr(lang,"导出内部模板.xlsx","Export template .xlsx")} →</button>}</div>
+    <div className="modal-actions"><button onClick={close}>{tr(lang,"取消","Cancel")}</button>{mode==='custom'?<><button disabled={!selectedColumns.length} onClick={exportCsv}>{tr(lang,"导出CSV","Export CSV")}</button><button className="primary" disabled={!selectedColumns.length} onClick={exportExcel}>{tr(lang,"导出Excel","Export Excel")} →</button></>:<button className="primary" disabled={!selectedResponseItems.length || !templateContext.actionType || !templateContext.platformName || !templateContext.agreeToContact} onClick={exportResponseTemplate}>{tr(lang,"导出内部模板.xlsx","Export template .xlsx")} →</button>}</div>
   </div></div>;
 }
 
