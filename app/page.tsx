@@ -2,7 +2,7 @@ import { OpsConsole } from "./OpsConsole";
 import { AccountGate } from "./AccountGate";
 import { PartnerPortal, type PartnerOpportunityView } from "./PartnerPortal";
 import { getNotificationConfiguration } from "./notifications";
-import { getCurrentAccountState, getLatestOpportunityRefreshAt, getLeadDistributions, getManualOpportunities, getOpportunityTracking, getPartnerShareableOpportunities, getPushJobs, getSourceScanRuns } from "./actions";
+import { getCurrentAccountState, getLatestOpportunityRefreshAt, getLeadDistributions, getManualOpportunities, getOpportunityTracking, getPartnerShareableOpportunities, getPushJobs, getSourceScanRunCount, getSourceScanRuns } from "./actions";
 import type { Opportunity } from "./data";
 import { localText, localTerm, opportunityBrief } from "./localization";
 
@@ -70,6 +70,6 @@ export default async function Home() {
     return <PartnerPortal profile={accountState.profile} items={partnerCatalog} latestOpportunityRefreshAt={latestOpportunityRefreshAt}/>;
   }
 
-  const [manualOpportunities, leadDistributions, sourceScanRuns, pushJobs] = await Promise.all([getManualOpportunities(), getLeadDistributions(), getSourceScanRuns(), getPushJobs()]);
-  return <OpsConsole authUser={accountState.authUser} initialProfile={accountState.profile} initialPending={accountState.pending} initialManualOpportunities={manualOpportunities} initialLeadDistributions={leadDistributions} initialSourceScanRuns={sourceScanRuns} initialPushJobs={pushJobs} initialOpportunityTracking={opportunityTracking} latestOpportunityRefreshAt={latestOpportunityRefreshAt} deliveryStatus={getNotificationConfiguration()}/>;
+  const [manualOpportunities, leadDistributions, sourceScanRuns, sourceScanRunCount, pushJobs] = await Promise.all([getManualOpportunities(), getLeadDistributions(), getSourceScanRuns(), getSourceScanRunCount(), getPushJobs()]);
+  return <OpsConsole authUser={accountState.authUser} initialProfile={accountState.profile} initialPending={accountState.pending} initialManualOpportunities={manualOpportunities} initialLeadDistributions={leadDistributions} initialSourceScanRuns={sourceScanRuns} initialSourceScanRunCount={sourceScanRunCount} initialPushJobs={pushJobs} initialOpportunityTracking={opportunityTracking} latestOpportunityRefreshAt={latestOpportunityRefreshAt} deliveryStatus={getNotificationConfiguration()}/>;
 }
