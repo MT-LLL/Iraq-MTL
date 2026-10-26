@@ -189,7 +189,7 @@ function mergeParentChildRecords(records: MeedRecord[]) {
       const key = contactKey(contact);
       if (key.replace(/\|/g, "")) contactsByKey.set(key, contact);
     }
-    const mergeText = (primary: unknown, secondary: unknown) => [...new Set([primary, ...children.map(child => (child as MeedRecord)[secondary as string])].map(value => safeText(value)).filter(Boolean))].join("\n\n");
+    const mergeText = (primary: unknown, secondary: "keyProjectMilestones" | "newsAndUpdates" | "latestNews") => [...new Set([primary, ...children.map(child => child[secondary])].map(value => safeText(value)).filter(Boolean))].join("\n\n");
     merged.set(id, {
       ...record,
       valueUsdM,
@@ -210,7 +210,7 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
   if (!country || !meedId || !title) return { skipped: true, existing: false };
 
   const id = `MEED-${country.code}-${meedId}`;
-  const existing = await db.prepare("SELECT id, title, country, industry, stage, priority, score, project_value, bid_deadline, summary FROM opportunities WHERE id = ?").bind(id).first<{ id: string; title: string; country: string; industry: string; stage: string; priority: string; score: number; project_value: number | null; bid_deadline: number | null; summary: string | null }>();
+  const existing = await db.prepare("SELECT id, title, country, industry, stage, priority, score, project_value, bid_deadline, summary, key_project_milestones, news_and_updates, latest_news FROM opportunities WHERE id = ?").bind(id).first<{ id: string; title: string; country: string; industry: string; stage: string; priority: string; score: number; project_value: number | null; bid_deadline: number | null; summary: string | null; key_project_milestones: string | null; news_and_updates: string | null; latest_news: string | null }>();
   const industry = normalizeIndustry(record);
   const stage = safeText(record.stage || record.status, "待核实");
   const city = safeText(record.city, country.fallbackCity);
@@ -233,7 +233,7 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     ? sourceDescription.slice(0, 6000)
     : `MEED原始导出暂未提供可用的项目背景/介绍字段。当前已核实的结构化信息：项目“${title}”，国家${country.zh}，行业${industry}，阶段${stage}。请打开原始MEED记录核验项目范围、建设目标和采购包；不得仅根据标题推测项目内容。`;
   const updatedAt = dateToMs(record.updatedOn) ?? now;
-  const changedFields = existing ? ([["title", existing.title, title], ["country", existing.country, country.zh], ["industry", existing.industry, industry], ["stage", existing.stage, stage], ["priority", existing.priority, priority], ["score", existing.score, score], ["projectValue", existing.project_value, projectValue], ["bidDeadline", existing.bid_deadline, dateToMs(record.awardDate)], ["summary", existing.summary, summary], ["keyProjectMilestones", null, keyProjectMilestones], ["newsAndUpdates", null, newsAndUpdates], ["latestNews", null, latestNews]] as const).filter(([, before, after]) => (before ?? null) !== (after ?? null)).map(([field]) => field) : [];
+  const changedFields = existing ? ([["title", existing.title, title], ["country", existing.country, country.zh], ["industry", existing.industry, industry], ["stage", existing.stage, stage], ["priority", existing.priority, priority], ["score", existing.score, score], ["projectValue", existing.project_value, projectValue], ["bidDeadline", existing.bid_deadline, dateToMs(record.awardDate)], ["summary", existing.summary, summary], ["keyProjectMilestones", existing.key_project_milestones, keyProjectMilestones], ["newsAndUpdates", existing.news_and_updates, newsAndUpdates], ["latestNews", existing.latest_news, latestNews]] as const).filter(([, before, after]) => (before ?? null) !== (after ?? null)).map(([field]) => field) : [];
 
   await db.prepare(`
     INSERT INTO opportunities (
@@ -331,7 +331,8 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     .first<{ id: string; title: string; project_value: number | null; currency: string | null; summary: string | null; key_project_milestones: string | null; news_and_updates: string | null; latest_news: string | null }>();
   const amountMatches = (persisted?.project_value ?? null) === (projectValue ?? null);
   const summaryMatches = persisted?.summary === summary;
-  const readbackVerified = Boolean(persisted && persisted.id === id && persisted.title === title && amountMatches && persisted.currency === "USD" && summaryMatches);
+  const detailFieldsMatch = persisted?.key_project_milestones === keyProjectMilestones && persisted?.news_and_updates === newsAndUpdates && persisted?.latest_news === latestNews;
+  const readbackVerified = Boolean(persisted && persisted.id === id && persisted.title === title && amountMatches && persisted.currency === "USD" && summaryMatches && detailFieldsMatch);
   return { skipped: false, existing: Boolean(existing), changedFields, id, title, country: country.zh, industry, priority, score, projectValue, readbackVerified, readback: persisted ?? null };
 }
 
