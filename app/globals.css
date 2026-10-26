@@ -588,3 +588,64 @@ body { font-size: 15px; line-height: 1.55; }
 
 
 .response-opportunity-picker{border:1px solid #dce8e4;border-radius:9px;margin-bottom:10px;overflow:hidden}.response-picker-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 12px;background:#f5faf8}.response-picker-head>div{display:flex;flex-direction:column;gap:4px}.response-picker-head strong{font-size:9px;color:#244950}.response-picker-head small{font-size:7px;color:#708288}.response-picker-head em{font-style:normal;font-size:8px;font-weight:800;color:#177d77;white-space:nowrap}.response-picker-actions{display:flex;gap:6px;padding:8px 10px;border-top:1px solid #e7efec}.response-picker-actions button{border:1px solid #d6e3df;background:#fff;border-radius:6px;padding:6px 9px;font-size:7px;color:#365b60;cursor:pointer}.response-picker-list{max-height:190px;overflow-y:auto;border-top:1px solid #e7efec}.response-picker-list label{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;border-top:1px solid #edf2f0;cursor:pointer}.response-picker-list label:first-child{border-top:0}.response-picker-list label.selected{background:#eff9f6}.response-picker-list input{margin-top:3px;accent-color:#177d77}.response-picker-list label>span{display:flex;flex-direction:column;gap:4px;min-width:0}.response-picker-list strong{font-size:8px;color:#244950;line-height:1.4}.response-picker-list small{font-size:7px;color:#708288;line-height:1.4}
+
+
+/* Response template picker: keep native checkboxes visible and make long export dialogs scrollable. */
+.export-modal {
+  max-height: calc(100dvh - 24px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+.response-opportunity-picker {
+  flex: 0 0 auto;
+  min-height: 0;
+}
+.response-picker-list {
+  display: block;
+  max-height: min(32vh, 240px);
+  min-height: 96px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
+}
+.response-picker-list label {
+  display: flex;
+  align-items: flex-start;
+}
+.response-picker-list input[type="checkbox"] {
+  appearance: auto !important;
+  -webkit-appearance: checkbox !important;
+  position: static !important;
+  inset: auto !important;
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  flex: 0 0 16px;
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px;
+  margin: 2px 0 0 !important;
+  accent-color: #177d77;
+  cursor: pointer;
+}
+@media (max-width: 680px) {
+  .modal-backdrop {
+    padding: 8px;
+    place-items: start center;
+    overflow-y: auto;
+  }
+  .export-modal {
+    width: 100%;
+    max-height: calc(100dvh - 16px);
+    padding: 14px;
+    margin: 0;
+  }
+  .response-picker-list {
+    max-height: 28vh;
+  }
+}
