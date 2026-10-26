@@ -1228,7 +1228,7 @@ function DeliverySettingsModal({ lang, deliveryStatus, close, onTestPush }: { la
   </div></div>;
 }
 
-export function OpsConsole({ authUser, initialProfile, initialPending, initialManualOpportunities, initialLeadDistributions, initialSourceScanRuns, initialPushJobs, initialOpportunityTracking, latestOpportunityRefreshAt, deliveryStatus }: { authUser: { name: string; email: string }; initialProfile: AppProfile | null; initialPending: PendingRegistrationView[]; initialManualOpportunities: Opportunity[]; initialLeadDistributions: LeadDistributionView[]; initialSourceScanRuns: SourceScanRunView[]; initialPushJobs: PushJobView[]; initialOpportunityTracking: OpportunityTrackingView[]; latestOpportunityRefreshAt: string | null; deliveryStatus: DeliveryStatus }) {
+export function OpsConsole({ authUser, initialProfile, initialPending, initialManualOpportunities, initialLeadDistributions, initialSourceScanRuns, initialSourceScanRunCount, initialPushJobs, initialOpportunityTracking, latestOpportunityRefreshAt, deliveryStatus }: { authUser: { name: string; email: string }; initialProfile: AppProfile | null; initialPending: PendingRegistrationView[]; initialManualOpportunities: Opportunity[]; initialLeadDistributions: LeadDistributionView[]; initialSourceScanRuns: SourceScanRunView[]; initialSourceScanRunCount: number; initialPushJobs: PushJobView[]; initialOpportunityTracking: OpportunityTrackingView[]; latestOpportunityRefreshAt: string | null; deliveryStatus: DeliveryStatus }) {
   const profile = initialProfile;
   const [pendingAccounts, setPendingAccounts] = useState<PendingRegistrationView[]>(initialPending);
   const [refreshingApprovals, setRefreshingApprovals] = useState(false);
@@ -1236,6 +1236,7 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
   const [mtlAssets, setMtlAssets] = useState<MarketingContent[]>(marketingContentLibrary);
   const [leadDistributions, setLeadDistributions] = useState<LeadDistributionView[]>(initialLeadDistributions);
   const [sourceScanRuns, setSourceScanRuns] = useState<SourceScanRunView[]>(initialSourceScanRuns);
+  const [sourceScanRunCount, setSourceScanRunCount] = useState(initialSourceScanRunCount);
   const [pushJobs, setPushJobs] = useState<PushJobView[]>(initialPushJobs);
   const [opportunityTrackingRows, setOpportunityTrackingRows] = useState<OpportunityTrackingView[]>(initialOpportunityTracking);
   const [trackingFilter, setTrackingFilter] = useState<"tracked" | "archived" | "all">("tracked");
@@ -1303,7 +1304,7 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
     finally { setTrackingSaving(false); }
   };
   const pushItems = (items: Opportunity[]) => { if(!items.length){showToast(tr(lang,'请先选择机会','Select opportunities first'));return;} setShareItems(items); setShareOpen(true); };
-  const scanNow = async () => { try { const result = await runWeeklySourceScan({ trigger: "manual" }); setSourceScanRuns(current => [result.run, ...current].slice(0,10)); showToast(tr(lang,"扫描完成，已生成候选复核批次","Scan completed and review batch created")); } catch { showToast(tr(lang,"扫描失败：请确认管理员权限或数据库迁移","Scan failed: check admin permission or database migration")); } };
+  const scanNow = async () => { try { const result = await runWeeklySourceScan({ trigger: "manual" }); setSourceScanRuns(current => [result.run, ...current].slice(0,10)); setSourceScanRunCount(current => current + 1); showToast(tr(lang,"扫描完成，已生成候选复核批次","Scan completed and review batch created")); } catch { showToast(tr(lang,"扫描失败：请确认管理员权限或数据库迁移","Scan failed: check admin permission or database migration")); } };
   const sendEmailPackage = async (audience: "internal" | "partner", recipient: string, items: Opportunity[], partners: Array<Pick<PartnerDirectoryEntry,"id"|"name"|"manager"|"managerEmail">>) => {
     try {
       const result = await recordPush({ audience, channel: "email", recipient, opportunityIds: items.map(item => item.id), partners, lang });
@@ -1350,7 +1351,7 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
   const isPartnerUser = profile.identityType === "partner";
   const pendingDispatchCount = leadDistributions.filter(row => row.status === "pending").length;
   const visibleNav = isPartnerUser ? navItems.filter(item=>item.id === "radar") : profile.identityType === 'huawei_admin' ? navItems : navItems.filter(item=>item.id!=='approvals');
-  const navBadge = (item: typeof navItems[number]) => item.id === "radar" ? String(activeOpportunities.length) : item.id === "updates" ? String(releaseUpdateLog.length) : item.id === "mtl" ? String(mtlAssets.length) : item.id === "dispatch" ? String(pendingDispatchCount) : item.id === "approvals" ? String(pendingAccounts.length) : item.badge;
+  const navBadge = (item: typeof navItems[number]) => item.id === "radar" ? String(activeOpportunities.length) : item.id === "updates" ? String(sourceScanRunCount) : item.id === "mtl" ? String(mtlAssets.length) : item.id === "dispatch" ? String(pendingDispatchCount) : item.id === "approvals" ? String(pendingAccounts.length) : item.badge;
   const opportunityRefreshDate = latestOpportunityRefreshAt
     ? new Intl.DateTimeFormat(lang === "zh" ? "zh-CN" : "en-GB", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Baghdad" }).format(new Date(latestOpportunityRefreshAt))
     : tr(lang, "暂无记录", "No record");
