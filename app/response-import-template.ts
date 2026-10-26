@@ -399,7 +399,7 @@ export const responseTemplateColumns: ResponseTemplateColumn[] = [
   { key: "agree", header: responseTemplateHeaders[10], description: "只能使用模板下拉值 Y/N", value: (_item, context) => pickAllowed(context.agreeToContact, responseTemplateDropdowns.agreeToContact, "Y") },
   { key: "time", header: responseTemplateHeaders[11], description: "导出时间，可由管理员调整", value: (_item, context) => context.responseTime },
   { key: "platform", header: responseTemplateHeaders[12], description: "只能使用模板 Response Collection Platform 下拉值，默认固定为 Others", value: (_item, context) => pickAllowed(context.platformName, responseTemplateDropdowns.platformName, "Others") },
-  { key: "state", header: responseTemplateHeaders[13], description: "按国家自动归一到匹配的省/州/省份英文值", value: item => responseLocation(item).state },
+  { key: "state", header: responseTemplateHeaders[13], description: "按要求留空，不自动填充 State/Province", value: () => "" },
   { key: "city", header: responseTemplateHeaders[14], description: "按国家自动归一到匹配的城市英文值", value: item => responseLocation(item).city },
   { key: "district", header: responseTemplateHeaders[15], description: "暂无区县字段，保留为空", value: () => "" },
   { key: "jobTitle", header: responseTemplateHeaders[16], description: "把联系人职位归一到模板 Job Title 下拉值", value: item => contactJobTitle(item) },
@@ -411,7 +411,7 @@ export const responseTemplateColumns: ResponseTemplateColumn[] = [
   { key: "utmCampaign", header: responseTemplateHeaders[22], description: "默认沿用固定 Tactic Code，便于内部系统归因", value: (_item, context) => context.utmCampaign || FIXED_RESPONSE_TACTIC_CODE },
   { key: "utmMedium", header: responseTemplateHeaders[23], description: "固定标识为机会洞察平台", value: () => "opportunity-insight" },
   { key: "utmSource", header: responseTemplateHeaders[24], description: "固定标识为 Iraq MSSD 沙盘", value: () => "iraq-mssd-sandbox" },
-  { key: "source", header: responseTemplateHeaders[25], description: "原始机会来源，Response导出统一英文或URL", value: item => englishSource(item) },
+  { key: "source", header: responseTemplateHeaders[25], description: "按要求留空，不自动填充 Source", value: () => "" },
   { key: "utmContent", header: responseTemplateHeaders[26], description: "优先级、评分、行业组合", value: item => `${item.priority}_${item.score}_${inferTemplateIndustry(item).industryL2}` },
   { key: "utmTerm", header: responseTemplateHeaders[27], description: "行业二级和单一产品兴趣关键词", value: item => `${inferTemplateIndustry(item).industryL2}; ${inferPreferredProducts(item)}` },
   { key: "utmObject", header: responseTemplateHeaders[28], description: "内部机会编号", value: item => item.id },
@@ -451,7 +451,14 @@ const dropdownColumnChecks = [
 
 function locationMatchesCountry(country: string, state: string, city: string) {
   if (!country) return false;
-  if (!state && !city) return false;
+  // State/Province is intentionally blank in the exported template. Validate
+  // the optional city independently against known country-specific locations.
+  if (!state) {
+    if (!city) return true;
+    return locationRules.some(rule => rule.country === country && rule.city === city)
+      || countryLocationFallback[country]?.city === city;
+  }
+  if (!city) return false;
   return locationRules.some(rule => rule.country === country && rule.state === state && rule.city === city)
     || (countryLocationFallback[country]?.state === state && countryLocationFallback[country]?.city === city);
 }
