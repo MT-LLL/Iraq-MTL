@@ -1,7 +1,7 @@
 "use server";
 
 import { env } from "cloudflare:workers";
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getDb } from "../db";
 import { auditLogs, leadDistributions, opportunities as storedOpportunities, opportunityContacts, opportunityTracking, pushJobs, savedViews, sourceScanRuns, users } from "../db/schema";
@@ -702,6 +702,13 @@ export async function getLeadDistributions() {
   return rows
     .sort((a, b) => b.requestedAt.getTime() - a.requestedAt.getTime())
     .map(row => toDistributionView(row, catalog, profile.name));
+}
+
+export async function getSourceScanRunCount(): Promise<number> {
+  const { profile, db } = await currentIdentity();
+  if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) return 0;
+  const [result] = await db.select({ value: count() }).from(sourceScanRuns);
+  return Number(result?.value ?? 0);
 }
 
 export async function getSourceScanRuns() {
