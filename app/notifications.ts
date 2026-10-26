@@ -475,7 +475,7 @@ function outlookOpportunityCard(item: Opportunity, audience: Audience, lang: Lan
 
 export function buildContent(opportunities: Opportunity[], audience: Audience, actorName: string, lang: Lang, context: PushDeliveryContext = {}, enhancements: Map<string, AiEnhancement> = new Map()) {
   const config = runtimeEnv();
-  const siteUrl = config.MSSD_SITE_URL || "https://opportunity-compass-levant.foggy-dill-4470.chatgpt.site";
+  const siteUrl = (config.MSSD_SITE_URL || "https://opportunity-compass-levant.foggy-dill-4470.chatgpt.site").trim().replace(/\/+$/, "");
   const platformZh = "伊拉克代表处面向伙伴MTL营销作战平台";
   const platformEn = "Iraq Partner MTL Marketing War-room";
   const ackUrl = audience === "partner" && context.pushId && context.ackToken ? `${siteUrl}/partner-ack?push=${encodeURIComponent(context.pushId)}&token=${encodeURIComponent(context.ackToken)}&lang=${lang}` : siteUrl;
