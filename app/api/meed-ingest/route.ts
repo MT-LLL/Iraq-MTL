@@ -7,6 +7,9 @@ type MeedRecord = {
   projectDescription?: string;
   projectObjectives?: string;
   projectScope?: string;
+  keyProjectMilestones?: string;
+  newsAndUpdates?: string;
+  latestNews?: string;
   country?: string;
   city?: string;
   industry?: string;
@@ -186,7 +189,15 @@ function mergeParentChildRecords(records: MeedRecord[]) {
       const key = contactKey(contact);
       if (key.replace(/\|/g, "")) contactsByKey.set(key, contact);
     }
-    merged.set(id, { ...record, valueUsdM, contacts: [...contactsByKey.values()] });
+    const mergeText = (primary: unknown, secondary: unknown) => [...new Set([primary, ...children.map(child => (child as MeedRecord)[secondary as string])].map(value => safeText(value)).filter(Boolean))].join("\n\n");
+    merged.set(id, {
+      ...record,
+      valueUsdM,
+      keyProjectMilestones: mergeText(record.keyProjectMilestones, "keyProjectMilestones"),
+      newsAndUpdates: mergeText(record.newsAndUpdates, "newsAndUpdates"),
+      latestNews: mergeText(record.latestNews, "latestNews"),
+      contacts: [...contactsByKey.values()],
+    });
     for (const child of children) removedChildIds.add(safeText(child.meedId));
   }
   return [...merged.values()];
@@ -215,19 +226,22 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     .map((value) => safeText(value))
     .filter((value, index, values) => value && values.indexOf(value) === index)
     .join("\n\n");
+  const keyProjectMilestones = safeText(record.keyProjectMilestones).slice(0, 12000);
+  const newsAndUpdates = safeText(record.newsAndUpdates).slice(0, 12000);
+  const latestNews = safeText(record.latestNews).slice(0, 12000);
   const summary = sourceDescription
     ? sourceDescription.slice(0, 6000)
     : `MEED原始导出暂未提供可用的项目背景/介绍字段。当前已核实的结构化信息：项目“${title}”，国家${country.zh}，行业${industry}，阶段${stage}。请打开原始MEED记录核验项目范围、建设目标和采购包；不得仅根据标题推测项目内容。`;
   const updatedAt = dateToMs(record.updatedOn) ?? now;
-  const changedFields = existing ? ([["title", existing.title, title], ["country", existing.country, country.zh], ["industry", existing.industry, industry], ["stage", existing.stage, stage], ["priority", existing.priority, priority], ["score", existing.score, score], ["projectValue", existing.project_value, projectValue], ["bidDeadline", existing.bid_deadline, dateToMs(record.awardDate)], ["summary", existing.summary, summary]] as const).filter(([, before, after]) => (before ?? null) !== (after ?? null)).map(([field]) => field) : [];
+  const changedFields = existing ? ([["title", existing.title, title], ["country", existing.country, country.zh], ["industry", existing.industry, industry], ["stage", existing.stage, stage], ["priority", existing.priority, priority], ["score", existing.score, score], ["projectValue", existing.project_value, projectValue], ["bidDeadline", existing.bid_deadline, dateToMs(record.awardDate)], ["summary", existing.summary, summary], ["keyProjectMilestones", null, keyProjectMilestones], ["newsAndUpdates", null, newsAndUpdates], ["latestNews", null, latestNews]] as const).filter(([, before, after]) => (before ?? null) !== (after ?? null)).map(([field]) => field) : [];
 
   await db.prepare(`
     INSERT INTO opportunities (
       id, external_id, title, title_en, country, city, industry, stage, priority, score, confidence,
       project_value, addressable_value, currency, funding_status, bid_deadline, participation_space, win_band,
-      summary, source_name, source_url, source_license, review_status, is_golden_seed, created_at, updated_at
+      summary, key_project_milestones, news_and_updates, latest_news, source_name, source_url, source_license, review_status, is_golden_seed, created_at, updated_at
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(id) DO UPDATE SET
       title = excluded.title,
       title_en = excluded.title_en,
@@ -246,6 +260,9 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
       participation_space = excluded.participation_space,
       win_band = excluded.win_band,
       summary = excluded.summary,
+      key_project_milestones = excluded.key_project_milestones,
+      news_and_updates = excluded.news_and_updates,
+      latest_news = excluded.latest_news,
       source_name = excluded.source_name,
       source_url = excluded.source_url,
       source_license = excluded.source_license,
@@ -271,6 +288,9 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     priority === "P1" ? "高" : "中",
     priority === "P1" ? "中高" : "中",
     summary,
+    keyProjectMilestones,
+    newsAndUpdates,
+    latestNews,
     "MEED Projects GitHub Actions",
     sourceUrl,
     "MEED licensed export; internal use subject to subscription terms",
@@ -306,9 +326,9 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     `).bind(contactId, id, normalized.role, normalized.company, normalized.name, normalized.title, normalized.email, normalized.phone, normalized.companyPhone, normalized.source, now).run();
   }
 
-  const persisted = await db.prepare("SELECT id, title, project_value, currency, summary FROM opportunities WHERE id = ?")
+  const persisted = await db.prepare("SELECT id, title, project_value, currency, summary, key_project_milestones, news_and_updates, latest_news FROM opportunities WHERE id = ?")
     .bind(id)
-    .first<{ id: string; title: string; project_value: number | null; currency: string | null; summary: string | null }>();
+    .first<{ id: string; title: string; project_value: number | null; currency: string | null; summary: string | null; key_project_milestones: string | null; news_and_updates: string | null; latest_news: string | null }>();
   const amountMatches = (persisted?.project_value ?? null) === (projectValue ?? null);
   const summaryMatches = persisted?.summary === summary;
   const readbackVerified = Boolean(persisted && persisted.id === id && persisted.title === title && amountMatches && persisted.currency === "USD" && summaryMatches);
