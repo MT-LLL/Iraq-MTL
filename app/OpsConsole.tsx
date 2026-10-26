@@ -103,8 +103,22 @@ function exportText(lang: Lang, value: string) {
 }
 
 function opportunityInsight(item: Opportunity, lang: Lang) {
-  if (lang === "zh") return item.summary;
-  return `${item.titleEn} is a ${localTerm(lang, item.country)} ${localTerm(lang, item.industry)} opportunity at ${exportText(lang, item.stage)} stage. Huawei participation space is ${localTerm(lang, item.participation)}, win assessment is ${localTerm(lang, item.win)}, and the estimated addressable scope is ${exportText(lang, item.addressable)}. Recommended next step: validate the owner entry point, budget path and ICT work packages before partner engagement.`;
+  // Keep the homepage spotlight scannable; the full source description remains available in the detail view.
+  if (lang === "zh") {
+    const source = String(item.summary || "").replace(/\\s+/g, " ").trim();
+    if (!source) return `当前处于${item.stage}阶段，建议优先核实业主、预算和ICT工作范围。`;
+    const sentences = source.split(/(?<=[。！？.!?])\\s*/).filter(Boolean);
+    let concise = "";
+    for (const sentence of sentences) {
+      if ((concise + sentence).length > 112) break;
+      concise += sentence;
+      if (concise.length >= 65) break;
+    }
+    if (!concise) concise = source.slice(0, 108) + (source.length > 108 ? "…" : "");
+    return concise + (source.length > concise.length && !concise.endsWith("…") ? "…" : "");
+  }
+  const concise = `${item.titleEn} is a ${localTerm(lang, item.country)} ${localTerm(lang, item.industry)} opportunity at ${exportText(lang, item.stage)} stage. Validate the owner, budget and ICT work packages before engagement.`;
+  return concise.length > 250 ? concise.slice(0, 247) + "…" : concise;
 }
 
 function partnerSafeOpportunityInsight(item: Opportunity, lang: Lang) {
