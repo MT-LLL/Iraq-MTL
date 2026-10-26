@@ -1033,7 +1033,7 @@ function ExportModal({ items, lang, canInternal, close, onToast }: { items: Oppo
   const [templateContext, setTemplateContext] = useState<ResponseTemplateContext>(() => defaultResponseTemplateContext());
   const [selectedResponseIds, setSelectedResponseIds] = useState<Set<string>>(() => new Set());
   const selectedResponseItems = items.filter(item => selectedResponseIds.has(item.id));
-  const [columns, setColumns = useState(() => exportColumnDefinitions.filter(definition=>canInternal||!["priority","score","confidence","addressable","owner","funding","participation","win","competitors","summary"].includes(definition.key)).map((definition,index)=>({ ...definition, selected:definition.defaultSelected ?? index<19, header:lang==='zh'?definition.zh:definition.en })));
+  const [columns, setColumns] = useState(() => exportColumnDefinitions.filter(definition=>canInternal||!["priority","score","confidence","addressable","owner","funding","participation","win","competitors","summary"].includes(definition.key)).map((definition,index)=>({ ...definition, selected:definition.defaultSelected ?? index<19, header:lang==='zh'?definition.zh:definition.en })));
   const selectedColumns = columns.filter(column=>column.selected && column.header.trim());
   const sampleItem = selectedResponseItems[0] ?? items[0];
   const sampleIndustry = sampleItem ? inferTemplateIndustry(sampleItem) : { industryL1: "Government & Public Services", industryL2: "Government Sector" };
