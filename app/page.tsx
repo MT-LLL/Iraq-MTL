@@ -8,6 +8,15 @@ import { localText, localTerm, opportunityBrief } from "./localization";
 
 export const dynamic = "force-dynamic";
 
+async function safeDashboardLoad<T>(label: string, load: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await load();
+  } catch (error) {
+    console.error(`[MTL] Dashboard data unavailable (${label}):`, error);
+    return fallback;
+  }
+}
+
 function partnerSafeOpportunities(catalog: Opportunity[]): PartnerOpportunityView[] {
   // Stable ID de-duplication: dynamic D1 records override catalog entries if IDs ever overlap.
   const unique = [...new Map(catalog.map(item => [item.id, item])).values()];
@@ -58,18 +67,28 @@ export default async function Home() {
 
   if (accountState.profile.identityType.startsWith("huawei_")) {
     const { autoArchiveExpiredOpportunities } = await import("./actions");
-    await autoArchiveExpiredOpportunities();
+    await safeDashboardLoad("auto-archive", () => autoArchiveExpiredOpportunities(), undefined);
   }
-  const [latestOpportunityRefreshAt, opportunityTracking] = await Promise.all([getLatestOpportunityRefreshAt(), getOpportunityTracking()]);
+  const [latestOpportunityRefreshAt, opportunityTracking] = await Promise.all([
+    safeDashboardLoad("latest-refresh-time", () => getLatestOpportunityRefreshAt(), null),
+    safeDashboardLoad("opportunity-tracking", () => getOpportunityTracking(), []),
+  ]);
   const archivedIds = new Set(opportunityTracking.filter(row => row.status === "archived").map(row => row.opportunityId));
 
   if (accountState.profile.identityType === "partner") {
-    const partnerApprovedD1Opportunities = await getPartnerShareableOpportunities();
+    const partnerApprovedD1Opportunities = await safeDashboardLoad("partner-opportunities", () => getPartnerShareableOpportunities(), []);
     const partnerCatalog = partnerSafeOpportunities(partnerApprovedD1Opportunities)
       .filter(item => !archivedIds.has(item.id));
     return <PartnerPortal profile={accountState.profile} items={partnerCatalog} latestOpportunityRefreshAt={latestOpportunityRefreshAt}/>;
   }
 
-  const [manualOpportunities, leadDistributions, sourceScanRuns, sourceScanRunCount, pushJobs, collaborationActivity] = await Promise.all([getManualOpportunities(), getLeadDistributions(), getSourceScanRuns(), getSourceScanRunCount(), getPushJobs(), getCollaborationActivity()]);
+  const [manualOpportunities, leadDistributions, sourceScanRuns, sourceScanRunCount, pushJobs, collaborationActivity] = await Promise.all([
+    safeDashboardLoad("manual-opportunities", () => getManualOpportunities(), []),
+    safeDashboardLoad("lead-distributions", () => getLeadDistributions(), []),
+    safeDashboardLoad("source-scan-runs", () => getSourceScanRuns(), []),
+    safeDashboardLoad("source-scan-run-count", () => getSourceScanRunCount(), 0),
+    safeDashboardLoad("push-jobs", () => getPushJobs(), []),
+    safeDashboardLoad("collaboration-activity", () => getCollaborationActivity(), []),
+  ]);
   return <OpsConsole authUser={accountState.authUser} initialProfile={accountState.profile} initialPending={accountState.pending} initialManualOpportunities={manualOpportunities} initialLeadDistributions={leadDistributions} initialSourceScanRuns={sourceScanRuns} initialSourceScanRunCount={sourceScanRunCount} initialPushJobs={pushJobs} initialCollaborationActivity={collaborationActivity} initialOpportunityTracking={opportunityTracking} latestOpportunityRefreshAt={latestOpportunityRefreshAt} deliveryStatus={getNotificationConfiguration()}/>;
 }
