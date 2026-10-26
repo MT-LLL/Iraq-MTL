@@ -373,7 +373,7 @@ function parseJson<T>(value: string | null | undefined, fallback: T): T {
 }
 
 function siteUrl() {
-  return ((env as unknown as Record<string, string | undefined>).MSSD_SITE_URL || "http://localhost:3000").replace(/\/$/, "");
+  return ((env as unknown as Record<string, string | undefined>).MSSD_SITE_URL || "http://localhost:3000").trim().replace(/\/+$/, "");
 }
 
 function partnerSafeInsight(item: Opportunity, lang: "zh" | "en") {
