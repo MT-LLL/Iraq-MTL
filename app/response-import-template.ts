@@ -18,7 +18,7 @@ export type ResponseTemplateContext = {
 };
 
 export const MAX_RESPONSE_TEMPLATE_ROWS = 499;
-export const FIXED_RESPONSE_TACTIC_CODE = "01CHN0226A2O03M";
+export const FIXED_RESPONSE_TACTIC_CODE = "01MEAIQ26A6M01O";
 const RESPONSE_TEMPLATE_WORKBOOK_URL = "/templates/response-import-template-202605.xlsx";
 
 export const responseTemplateHeaders = [
