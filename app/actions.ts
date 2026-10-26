@@ -1,7 +1,7 @@
 "use server";
 
 import { env } from "cloudflare:workers";
-import { count, eq } from "drizzle-orm";
+import { count, desc, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getDb } from "../db";
 import { auditLogs, leadDistributions, opportunities as storedOpportunities, opportunityContacts, opportunityTracking, pushJobs, savedViews, sourceScanRuns, users } from "../db/schema";
@@ -693,6 +693,53 @@ export async function createLeadDistribution(input: {
   await db.insert(leadDistributions).values(rows);
   await db.insert(auditLogs).values({ id: crypto.randomUUID(), actorId: profile.id, action: "lead.distributed", entityType: "lead_distribution", entityId: rows[0].id, metadata: JSON.stringify({ count: rows.length, opportunityIds, industryTags, assigneeIds }), createdAt: now });
   return { ok: true as const, distributions: rows.map(row => toDistributionView(row as StoredLeadDistribution, catalog, profile.name)) };
+}
+
+export type CollaborationActivityView = {
+  id: string;
+  actor: string;
+  action: string;
+  time: string;
+  tone: "cyan" | "coral" | "violet" | "green";
+};
+
+/** Live feed built from persisted audit events rather than the static demo activity list. */
+export async function getCollaborationActivity(): Promise<CollaborationActivityView[]> {
+  const { profile, db } = await currentIdentity();
+  if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) return [];
+  const rows = await db.select({
+    id: auditLogs.id,
+    actorName: users.name,
+    actorEmail: users.email,
+    action: auditLogs.action,
+    createdAt: auditLogs.createdAt,
+  }).from(auditLogs)
+    .leftJoin(users, eq(auditLogs.actorId, users.id))
+    .orderBy(desc(auditLogs.createdAt))
+    .limit(8);
+  const labels: Record<string, { text: string; tone: CollaborationActivityView["tone"] }> = {
+    "opportunity.manual_created": { text: "新增了机会记录", tone: "green" },
+    "opportunity.tracking.archived": { text: "将机会移入暂不跟踪", tone: "coral" },
+    "opportunity.tracking.restored": { text: "恢复机会跟踪", tone: "green" },
+    "opportunity.tracking.auto_archived_expired_milestone": { text: "系统按过期节点归档机会", tone: "coral" },
+    "lead.distributed": { text: "发起机会协同分发", tone: "violet" },
+    "push.sent": { text: "完成伙伴推送", tone: "cyan" },
+    "push.failed": { text: "伙伴推送失败，需检查", tone: "coral" },
+    "registration.submitted": { text: "提交了账号申请", tone: "violet" },
+    "registration.approved": { text: "审批通过账号申请", tone: "green" },
+    "registration.needs_info": { text: "要求补充账号申请信息", tone: "coral" },
+    "source_scan.completed": { text: "完成一次数据源扫描", tone: "cyan" },
+  };
+  return rows.map(row => {
+    const label = labels[row.action] ?? { text: row.action.replace(/[._]/g, " "), tone: "cyan" as const };
+    return {
+      id: row.id,
+      actor: row.actorName || row.actorEmail || "系统",
+      action: label.text,
+      time: row.createdAt.toISOString(),
+      tone: label.tone,
+    };
+  });
 }
 
 export async function getLeadDistributions() {
