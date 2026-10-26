@@ -705,9 +705,10 @@ export type CollaborationActivityView = {
 
 /** Live feed built from persisted audit events rather than the static demo activity list. */
 export async function getCollaborationActivity(): Promise<CollaborationActivityView[]> {
-  const { profile, db } = await currentIdentity();
-  if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) return [];
-  const rows = await db.select({
+  try {
+    const { profile, db } = await currentIdentity();
+    if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) return [];
+    const rows = await db.select({
     id: auditLogs.id,
     actorName: users.name,
     actorEmail: users.email,
@@ -730,16 +731,20 @@ export async function getCollaborationActivity(): Promise<CollaborationActivityV
     "registration.needs_info": { text: "要求补充账号申请信息", tone: "coral" },
     "source_scan.completed": { text: "完成一次数据源扫描", tone: "cyan" },
   };
-  return rows.map(row => {
+    return rows.map(row => {
     const label = labels[row.action] ?? { text: row.action.replace(/[._]/g, " "), tone: "cyan" as const };
     return {
       id: row.id,
       actor: row.actorName || row.actorEmail || "系统",
       action: label.text,
-      time: row.createdAt.toISOString(),
+      time: (row.createdAt instanceof Date ? row.createdAt : new Date(row.createdAt as unknown as string | number)).toISOString(),
       tone: label.tone,
     };
-  });
+    });
+  } catch (error) {
+    console.error("[MTL] Collaboration activity unavailable:", error);
+    return [];
+  }
 }
 
 export async function getLeadDistributions() {
