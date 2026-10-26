@@ -65,10 +65,6 @@ export default async function Home() {
     return <AccountGate authUser={accountState.authUser} profile={accountState.profile}/>;
   }
 
-  if (accountState.profile.identityType.startsWith("huawei_")) {
-    const { autoArchiveExpiredOpportunities } = await import("./actions");
-    await safeDashboardLoad("auto-archive", () => autoArchiveExpiredOpportunities(), undefined);
-  }
   const [latestOpportunityRefreshAt, opportunityTracking] = await Promise.all([
     safeDashboardLoad("latest-refresh-time", () => getLatestOpportunityRefreshAt(), null),
     safeDashboardLoad("opportunity-tracking", () => getOpportunityTracking(), []),
