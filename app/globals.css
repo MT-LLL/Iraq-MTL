@@ -649,3 +649,92 @@ body { font-size: 15px; line-height: 1.55; }
     max-height: 28vh;
   }
 }
+
+
+/* Expandable MEED project milestones and news cards in the opportunity detail view. */
+.meed-intelligence-section {
+  margin: 14px 0 18px;
+  min-width: 0;
+}
+.meed-intel-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 9px;
+  align-items: start;
+}
+.meed-intel-card {
+  min-width: 0;
+  border: 1px solid #dce8e4;
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+.meed-intel-card[open] {
+  border-color: #9dcfc5;
+  box-shadow: 0 5px 18px rgba(19, 91, 83, .06);
+}
+.meed-intel-card summary {
+  min-height: 62px;
+  padding: 11px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  list-style: none;
+  background: #f8fbfa;
+}
+.meed-intel-card summary::-webkit-details-marker { display: none; }
+.meed-intel-summary-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.meed-intel-summary-copy strong {
+  color: #244950;
+  font-size: 9px;
+  line-height: 1.45;
+}
+.meed-intel-summary-copy small {
+  color: #708288;
+  font-size: 7px;
+  line-height: 1.4;
+}
+.meed-intel-status {
+  display: grid;
+  place-items: center;
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: #eef2f1;
+  color: #81908e;
+  font-size: 11px;
+  font-weight: 800;
+}
+.meed-intel-status.available {
+  background: #e4f5ef;
+  color: #177d77;
+}
+.meed-intel-content {
+  max-height: 240px;
+  overflow: auto;
+  padding: 12px;
+  border-top: 1px solid #e8efec;
+  color: #38575d;
+  font-size: 8px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  -webkit-overflow-scrolling: touch;
+}
+.meed-intel-content.missing {
+  color: #839195;
+  background: #fbfcfb;
+}
+@media (max-width: 760px) {
+  .meed-intel-grid { grid-template-columns: 1fr; }
+  .meed-intel-card summary { min-height: 54px; }
+}
