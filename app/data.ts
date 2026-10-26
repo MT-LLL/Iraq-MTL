@@ -305,6 +305,9 @@ export type Opportunity = {
   participation: "极高" | "高" | "中" | "低";
   win: "高" | "中高" | "中" | "低";
   summary: string;
+  keyProjectMilestones?: string;
+  newsAndUpdates?: string;
+  latestNews?: string;
   evidence: string[];
   solutions: { domain: string; name: string; fit: number }[];
   competitors: { name: string; type: "已确认" | "潜在类型"; note: string }[];
