@@ -385,13 +385,13 @@ function mergeProjectEvents(records, entries) {
       if (eventKeys.has(key)) continue;
       eventKeys.add(key);
       const existing = text(record.keyProjectMilestones);
-      const items = existing ? existing.split(/\\s*;\\s*/).filter(Boolean) : [];
+      const items = existing ? existing.split(/\s*;\s*/).filter(Boolean) : [];
       if (!items.some((item) => item.toLowerCase() === milestone.toLowerCase())) {
         items.push(milestone);
         // Sort dated milestones chronologically while preserving undated items at the end.
         items.sort((a, b) => {
-          const dateA = Date.parse(a.match(/(\\d{4}-\\d{2}-\\d{2})$/)?.[1] || "");
-          const dateB = Date.parse(b.match(/(\\d{4}-\\d{2}-\\d{2})$/)?.[1] || "");
+          const dateA = Date.parse(a.match(/(\d{4}-\d{2}-\d{2})$/)?.[1] || "");
+          const dateB = Date.parse(b.match(/(\d{4}-\d{2}-\d{2})$/)?.[1] || "");
           if (Number.isFinite(dateA) && Number.isFinite(dateB)) return dateA - dateB;
           if (Number.isFinite(dateA)) return -1;
           if (Number.isFinite(dateB)) return 1;
