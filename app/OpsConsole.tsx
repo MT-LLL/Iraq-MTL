@@ -301,7 +301,7 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
     <section className="detail-panel">
       <div className="detail-head">
         <div>
-          <div className="eyebrow"><span className={`priority-pill ${priorityClass[item.priority]}`}>{item.priority}</span>{item.id} · {item.source}</div>
+          <div className="eyebrow"><span className={`priority-pill ${priorityClass[item.priority]}`}>{item.priority}</span>{item.id}</div>
           <h2>{lang === "zh" ? item.title : item.titleEn}</h2>
           <p className="en-title">{lang === "zh" ? item.titleEn : item.title}</p>
           <div className="tag-row"><span>{localTerm(lang,item.country)} · {item.city}</span><span>{localTerm(lang,item.industry)}</span><span>{localTerm(lang,item.stage)}</span><span>{tr(lang,"更新","Updated")} {item.updated}</span></div>
