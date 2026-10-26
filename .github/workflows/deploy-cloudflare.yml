@@ -68,21 +68,20 @@ jobs:
           npx wrangler d1 execute mssd_mtl_prod --remote --command "SELECT name FROM sqlite_master WHERE type='table' AND name IN ('users','opportunities','audit_logs','evidence','push_jobs','saved_views','lead_distributions','source_scan_runs','opportunity_tracking','opportunity_contacts') ORDER BY name;"
 
       - name: Deploy to Cloudflare Workers
-        run: npx wrangler deploy --config wrangler.toml
+        shell: bash
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
-      - name: Restore Resend sender address
-        shell: bash
-        env:
           RESEND_FROM_EMAIL: ${{ secrets.RESEND_FROM_EMAIL }}
         run: |
           if [ -n "$RESEND_FROM_EMAIL" ]; then
-            printf '%s' "$RESEND_FROM_EMAIL" | npx wrangler secret put RESEND_FROM_EMAIL --config wrangler.toml
-            echo "Resend sender address restored to the Worker."
+            node -e 'require("fs").writeFileSync("/tmp/worker-secrets.json", JSON.stringify({ RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL }), { mode: 0o600 })'
+            npx wrangler deploy --config wrangler.toml --secrets-file /tmp/worker-secrets.json
+            rm -f /tmp/worker-secrets.json
+            echo "Worker deployed with the configured Resend sender address."
           else
-            echo "::warning::GitHub Actions secret RESEND_FROM_EMAIL is not configured. Add it in repository Actions secrets to restore the sender address after deployment."
+            echo "::warning::GitHub Actions secret RESEND_FROM_EMAIL is not configured; existing Worker secrets are not intentionally modified."
+            npx wrangler deploy --config wrangler.toml
           fi
 
       - name: Deployment verification marker
