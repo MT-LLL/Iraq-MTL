@@ -102,7 +102,7 @@ async function callModel(
   // on long-lived serverless connections. Retry once before surfacing an error.
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {
-      response = await fetch(`${endpoint.replace(/\\/+$/, "")}/chat/completions`, {
+      response = await fetch(`${endpoint.replace(/\/+$/, "")}/chat/completions`, {
         method: "POST",
         headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
         body: requestBody,
