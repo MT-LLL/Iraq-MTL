@@ -325,7 +325,26 @@ function toClientContact(row: typeof opportunityContacts.$inferSelect): Opportun
 // do not execute one D1 write per contact on every dashboard request.
 let curatedContactSeedKey = "";
 
-async function allAvailableOpportunities(db: ReturnType<typeof getDb>) {
+// Cache the opportunity catalog briefly and share the in-flight load between
+// homepage server actions. This prevents parallel dashboard panels from each
+// scanning the entire opportunities and contacts tables during the same render.
+let opportunityCatalogCache: { expiresAt: number; promise: Promise<Opportunity[]> } | null = null;
+
+async function allAvailableOpportunities(db: ReturnType<typeof getDb>): Promise<Opportunity[]> {
+  const now = Date.now();
+  if (opportunityCatalogCache && opportunityCatalogCache.expiresAt > now) {
+    return opportunityCatalogCache.promise;
+  }
+
+  const promise = loadAllAvailableOpportunities(db).catch(error => {
+    if (opportunityCatalogCache?.promise === promise) opportunityCatalogCache = null;
+    throw error;
+  });
+  opportunityCatalogCache = { expiresAt: now + 2000, promise };
+  return promise;
+}
+
+async function loadAllAvailableOpportunities(db: ReturnType<typeof getDb>) {
   const rows = await db.select().from(storedOpportunities);
   if (!rows.length) return [];
   const availableIds = new Set(rows.map(row => row.id));
