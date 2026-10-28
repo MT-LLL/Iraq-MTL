@@ -41,6 +41,10 @@ jobs:
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
           TELEGRAM_RECENT_DAYS: "7"
           TELEGRAM_MAX_MESSAGES: "240"
+          TELEGRAM_MAX_PAGES_PER_CHANNEL: "5"
+          KIMI_API_KEY: ${{ secrets.KIMI_API_KEY || secrets.MOONSHOT_API_KEY }}
+          KIMI_MODEL: ${{ vars.KIMI_MODEL || 'kimi-k2.6' }}
+          KIMI_API_BASE_URL: ${{ vars.KIMI_API_BASE_URL || 'https://api.moonshot.cn/v1' }}
         run: node scripts/telegram-tender-ingest.mjs
 
       - name: Upload Telegram ingest artifacts
