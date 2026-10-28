@@ -215,6 +215,7 @@ function toClientOpportunity(row: StoredOpportunity, ownerName = "Manual Import"
     title: row.title, titleEn: row.titleEn, industry: row.industry, stage: row.stage,
     summary: row.summary, projectValue: row.projectValue, fundingStatus: row.fundingStatus,
     bidDeadline: row.bidDeadline?.toISOString(), contactsCount, milestones: row.keyProjectMilestones,
+    ...(aiSolutions !== undefined ? { aiSolutions } : {}),
   });
   return {
     id: row.id,
