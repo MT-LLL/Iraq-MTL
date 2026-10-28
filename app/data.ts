@@ -309,10 +309,10 @@ export type Opportunity = {
   newsAndUpdates?: string;
   latestNews?: string;
   evidence: string[];
-  solutions: { domain: string; name: string; fit: number }[];
+  solutions: { domain: string; name: string; fit: number; rationale?: string; evidence?: string }[];
   competitors: { name: string; type: "已确认" | "潜在类型"; note: string }[];
   actions: { horizon: string; text: string; owner: string; done?: boolean }[];
-  scoreParts: { label: string; value: number; total: number }[];
+  scoreParts: { label: string; value: number; total: number; rationale?: string }[];
   risk: number;
   contacts?: OpportunityContact[];
   partner?: string;
