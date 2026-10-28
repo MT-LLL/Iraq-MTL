@@ -298,16 +298,6 @@ export async function getCurrentAccountState() {
  * Static catalog entries in app/data.ts are illustrative/demo content and must
  * never be used for tracking, exports, dispatches, or outbound email.
  */
-function stableContactId(opportunityId: string, contact: OpportunityContact) {
-  const raw = [opportunityId, contact.role, contact.company, contact.name, contact.title, contact.source].join("|");
-  let hash = 2166136261;
-  for (let index = 0; index < raw.length; index++) {
-    hash ^= raw.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
-  }
-  return `oc-${(hash >>> 0).toString(16).padStart(8, "0")}`;
-}
-
 function toClientContact(row: typeof opportunityContacts.$inferSelect): OpportunityContact {
   return {
     role: row.role,
@@ -321,64 +311,13 @@ function toClientContact(row: typeof opportunityContacts.$inferSelect): Opportun
   };
 }
 
-// Worker isolates are reused across requests. Curated contacts are static seed data;
-// do not execute one D1 write per contact on every dashboard request.
-let curatedContactSeedKey = "";
-
-// Cache the opportunity catalog briefly and share the in-flight load between
-// homepage server actions. This prevents parallel dashboard panels from each
-// scanning the entire opportunities and contacts tables during the same render.
-let opportunityCatalogCache: { expiresAt: number; promise: Promise<Opportunity[]> } | null = null;
-
+// Keep homepage reads read-only. In stateless Worker execution, module-level
+// seed guards are not reliable across requests, so seeding here can repeatedly
+// perform D1 writes during every homepage render.
 async function allAvailableOpportunities(db: ReturnType<typeof getDb>): Promise<Opportunity[]> {
-  const now = Date.now();
-  if (opportunityCatalogCache && opportunityCatalogCache.expiresAt > now) {
-    return opportunityCatalogCache.promise;
-  }
-
-  const promise = loadAllAvailableOpportunities(db).catch(error => {
-    if (opportunityCatalogCache?.promise === promise) opportunityCatalogCache = null;
-    throw error;
-  });
-  opportunityCatalogCache = { expiresAt: now + 2000, promise };
-  return promise;
-}
-
-async function loadAllAvailableOpportunities(db: ReturnType<typeof getDb>) {
   const rows = await db.select().from(storedOpportunities);
   if (!rows.length) return [];
   const availableIds = new Set(rows.map(row => row.id));
-
-  // Seed curated MEED role-chain records in bounded bulk writes, at most once per
-  // opportunity-catalog signature in this isolate. A failed seed never blocks reads.
-  const seedEntries = Object.entries(meedContactDirectory) as Array<[string, readonly OpportunityContact[]]>;
-  const seedKey = [...availableIds].filter(id => seedEntries.some(([opportunityId]) => opportunityId === id)).sort().join("|");
-  if (seedKey && seedKey !== curatedContactSeedKey) {
-    try {
-      const seedRows = seedEntries.flatMap(([opportunityId, contacts]) => {
-        if (!availableIds.has(opportunityId)) return [];
-        return contacts.map(contact => ({
-          id: stableContactId(opportunityId, contact),
-          opportunityId,
-          role: contact.role || "",
-          company: contact.company || "",
-          name: contact.name || "",
-          title: contact.title || "",
-          email: contact.email || "",
-          phone: contact.phone || "",
-          companyPhone: contact.companyPhone || "",
-          source: contact.source || "Curated contact directory",
-          updatedAt: new Date(),
-        }));
-      });
-      for (let offset = 0; offset < seedRows.length; offset += 20) {
-        await db.insert(opportunityContacts).values(seedRows.slice(offset, offset + 20)).onConflictDoNothing();
-      }
-      curatedContactSeedKey = seedKey;
-    } catch (error) {
-      console.warn("Curated opportunity contact seeding failed; continuing with persisted contacts.", error);
-    }
-  }
 
   try {
     const contactRows = await db.select().from(opportunityContacts);
@@ -389,6 +328,25 @@ async function loadAllAvailableOpportunities(db: ReturnType<typeof getDb>) {
       list.push(toClientContact(row));
       contactsByOpportunity.set(row.opportunityId, list);
     }
+
+    // Include curated MEED role-chain contacts in memory, without writing them
+    // to D1 on page load. Avoid duplicates already persisted in opportunityContacts.
+    for (const [opportunityId, curatedContacts] of Object.entries(meedContactDirectory) as Array<[string, readonly OpportunityContact[]]>) {
+      if (!availableIds.has(opportunityId)) continue;
+      const list = contactsByOpportunity.get(opportunityId) ?? [];
+      const keys = new Set(list.map(contact => [
+        contact.role, contact.company, contact.name ?? "", contact.title ?? "", contact.source,
+      ].join("|")));
+      for (const contact of curatedContacts) {
+        const key = [contact.role, contact.company, contact.name ?? "", contact.title ?? "", contact.source].join("|");
+        if (!keys.has(key)) {
+          list.push(contact);
+          keys.add(key);
+        }
+      }
+      contactsByOpportunity.set(opportunityId, list);
+    }
+
     return rows.map(row => {
       const contacts = contactsByOpportunity.get(row.id);
       const item = toClientOpportunity(row, "Manual Import", contacts?.length ?? 0);
