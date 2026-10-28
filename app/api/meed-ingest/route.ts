@@ -218,7 +218,7 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
   if (!country || !meedId || !title) return { skipped: true, existing: false };
 
   const id = `MEED-${country.code}-${meedId}`;
-  const existing = await db.prepare("SELECT id, title, country, industry, stage, priority, score, project_value, bid_deadline, summary, key_project_milestones, news_and_updates, latest_news FROM opportunities WHERE id = ?").bind(id).first<{ id: string; title: string; country: string; industry: string; stage: string; priority: string; score: number; project_value: number | null; bid_deadline: number | null; summary: string | null; key_project_milestones: string | null; news_and_updates: string | null; latest_news: string | null }>();
+  const existing = await db.prepare("SELECT id, title, country, industry, stage, priority, score, project_value, bid_deadline, summary, key_project_milestones, news_and_updates, latest_news, solution_matches FROM opportunities WHERE id = ?").bind(id).first<{ id: string; title: string; country: string; industry: string; stage: string; priority: string; score: number; project_value: number | null; bid_deadline: number | null; summary: string | null; key_project_milestones: string | null; news_and_updates: string | null; latest_news: string | null; solution_matches: string | null }>();
   const industry = normalizeIndustry(record);
   const stage = safeText(record.stage || record.status, "待核实");
   const city = safeText(record.city, country.fallbackCity);
@@ -249,15 +249,15 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
   });
   const { score, priority, confidence } = scoring;
   const updatedAt = dateToMs(record.updatedOn) ?? now;
-  const changedFields = existing ? ([["title", existing.title, title], ["country", existing.country, country.zh], ["industry", existing.industry, industry], ["stage", existing.stage, stage], ["priority", existing.priority, priority], ["score", existing.score, score], ["projectValue", existing.project_value, projectValue], ["bidDeadline", existing.bid_deadline, dateToMs(record.awardDate)], ["summary", existing.summary, summary], ["keyProjectMilestones", existing.key_project_milestones, keyProjectMilestones], ["newsAndUpdates", existing.news_and_updates, newsAndUpdates], ["latestNews", existing.latest_news, latestNews]] as const).filter(([, before, after]) => (before ?? null) !== (after ?? null)).map(([field]) => field) : [];
+  const changedFields = existing ? ([["title", existing.title, title], ["country", existing.country, country.zh], ["industry", existing.industry, industry], ["stage", existing.stage, stage], ["priority", existing.priority, priority], ["score", existing.score, score], ["projectValue", existing.project_value, projectValue], ["bidDeadline", existing.bid_deadline, dateToMs(record.awardDate)], ["summary", existing.summary, summary], ["keyProjectMilestones", existing.key_project_milestones, keyProjectMilestones], ["newsAndUpdates", existing.news_and_updates, newsAndUpdates], ["latestNews", existing.latest_news, latestNews], ["solutionMatches", existing.solution_matches, aiAnalysis ? JSON.stringify(aiAnalysis) : existing.solution_matches]] as const).filter(([, before, after]) => (before ?? null) !== (after ?? null)).map(([field]) => field) : [];
 
   await db.prepare(`
     INSERT INTO opportunities (
       id, external_id, title, title_en, country, city, industry, stage, priority, score, confidence,
       project_value, addressable_value, currency, funding_status, bid_deadline, participation_space, win_band,
-      summary, key_project_milestones, news_and_updates, latest_news, source_name, source_url, source_license, review_status, is_golden_seed, created_at, updated_at
+      summary, key_project_milestones, news_and_updates, latest_news, solution_matches, source_name, source_url, source_license, review_status, is_golden_seed, created_at, updated_at
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(id) DO UPDATE SET
       title = excluded.title,
       title_en = excluded.title_en,
@@ -279,6 +279,7 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
       key_project_milestones = excluded.key_project_milestones,
       news_and_updates = excluded.news_and_updates,
       latest_news = excluded.latest_news,
+      solution_matches = COALESCE(excluded.solution_matches, opportunities.solution_matches),
       source_name = excluded.source_name,
       source_url = excluded.source_url,
       source_license = excluded.source_license,
@@ -307,6 +308,7 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     keyProjectMilestones,
     newsAndUpdates,
     latestNews,
+    aiAnalysis ? JSON.stringify(aiAnalysis) : existing?.solution_matches ?? null,
     "MEED Projects GitHub Actions",
     sourceUrl,
     "MEED licensed export; internal use subject to subscription terms",
@@ -315,19 +317,6 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     now,
     updatedAt,
   ).run();
-
-  if (aiAnalysis) {
-    const analysisPayload = JSON.stringify(aiAnalysis);
-    const existingAiEvidence = await db.prepare("SELECT id FROM evidence WHERE opportunity_id = ? AND kind = ? LIMIT 1")
-      .bind(id, "ai_solution_match").first<{ id: string }>();
-    if (existingAiEvidence) {
-      await db.prepare("UPDATE evidence SET excerpt = ?, source_url = ?, collected_at = ? WHERE id = ?")
-        .bind(analysisPayload, "https://e.huawei.com/cn/products-and-solutions", now, existingAiEvidence.id).run();
-    } else {
-      await db.prepare("INSERT INTO evidence (id, opportunity_id, kind, excerpt, source_url, collected_at) VALUES (?, ?, ?, ?, ?, ?)")
-        .bind(crypto.randomUUID(), id, "ai_solution_match", analysisPayload, "https://e.huawei.com/cn/products-and-solutions", now).run();
-    }
-  }
 
   // Persist contact/role-chain records separately from the project row. Existing
   // contacts are upserted by a stable ID, so weekly imports do not create duplicates.
@@ -355,13 +344,14 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     `).bind(contactId, id, normalized.role, normalized.company, normalized.name, normalized.title, normalized.email, normalized.phone, normalized.companyPhone, normalized.source, now).run();
   }
 
-  const persisted = await db.prepare("SELECT id, title, project_value, currency, summary, key_project_milestones, news_and_updates, latest_news FROM opportunities WHERE id = ?")
+  const persisted = await db.prepare("SELECT id, title, project_value, currency, summary, key_project_milestones, news_and_updates, latest_news, solution_matches FROM opportunities WHERE id = ?")
     .bind(id)
-    .first<{ id: string; title: string; project_value: number | null; currency: string | null; summary: string | null; key_project_milestones: string | null; news_and_updates: string | null; latest_news: string | null }>();
+    .first<{ id: string; title: string; project_value: number | null; currency: string | null; summary: string | null; key_project_milestones: string | null; news_and_updates: string | null; latest_news: string | null; solution_matches: string | null }>();
   const amountMatches = (persisted?.project_value ?? null) === (projectValue ?? null);
   const summaryMatches = persisted?.summary === summary;
   const detailFieldsMatch = persisted?.key_project_milestones === keyProjectMilestones && persisted?.news_and_updates === newsAndUpdates && persisted?.latest_news === latestNews;
-  const readbackVerified = Boolean(persisted && persisted.id === id && persisted.title === title && amountMatches && persisted.currency === "USD" && summaryMatches && detailFieldsMatch);
+  const solutionMatchesVerified = !aiAnalysis || persisted?.solution_matches === JSON.stringify(aiAnalysis);
+  const readbackVerified = Boolean(persisted && persisted.id === id && persisted.title === title && amountMatches && persisted.currency === "USD" && summaryMatches && detailFieldsMatch && solutionMatchesVerified);
   return { skipped: false, existing: Boolean(existing), changedFields, id, title, country: country.zh, industry, priority, score, projectValue, readbackVerified, readback: persisted ?? null };
 }
 
