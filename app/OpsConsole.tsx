@@ -1437,6 +1437,7 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
   const openOpportunity = (item: Opportunity) => { setSelected(item); setDetailOpen(true); setView('radar'); };
   const runOpportunityAIAnalysis = async () => {
     const result = await analyzeOpportunityWithAI(selected.id);
+    if (!result.ok) throw new Error(result.error);
     const rows = await getManualOpportunities();
     setManualOpportunities(rows);
     const refreshed = rows.find(item => item.id === selected.id);
