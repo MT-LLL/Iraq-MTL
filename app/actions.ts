@@ -321,20 +321,25 @@ function toClientContact(row: typeof opportunityContacts.$inferSelect): Opportun
   };
 }
 
+// Worker isolates are reused across requests. Curated contacts are static seed data;
+// do not execute one D1 write per contact on every dashboard request.
+let curatedContactSeedKey = "";
+
 async function allAvailableOpportunities(db: ReturnType<typeof getDb>) {
   const rows = await db.select().from(storedOpportunities);
   if (!rows.length) return [];
   const availableIds = new Set(rows.map(row => row.id));
 
-  // Seed curated MEED role-chain records idempotently. A failed seed must never
-  // prevent already-persisted contacts from being read and shown.
-  try {
-    for (const [opportunityId, contacts] of Object.entries(meedContactDirectory) as Array<[string, readonly OpportunityContact[]]>) {
-      if (!availableIds.has(opportunityId)) continue;
-      for (const contact of contacts) {
-        const id = stableContactId(opportunityId, contact);
-        await db.insert(opportunityContacts).values({
-          id,
+  // Seed curated MEED role-chain records in bounded bulk writes, at most once per
+  // opportunity-catalog signature in this isolate. A failed seed never blocks reads.
+  const seedEntries = Object.entries(meedContactDirectory) as Array<[string, readonly OpportunityContact[]]>;
+  const seedKey = [...availableIds].filter(id => seedEntries.some(([opportunityId]) => opportunityId === id)).sort().join("|");
+  if (seedKey && seedKey !== curatedContactSeedKey) {
+    try {
+      const seedRows = seedEntries.flatMap(([opportunityId, contacts]) => {
+        if (!availableIds.has(opportunityId)) return [];
+        return contacts.map(contact => ({
+          id: stableContactId(opportunityId, contact),
           opportunityId,
           role: contact.role || "",
           company: contact.company || "",
@@ -345,11 +350,15 @@ async function allAvailableOpportunities(db: ReturnType<typeof getDb>) {
           companyPhone: contact.companyPhone || "",
           source: contact.source || "Curated contact directory",
           updatedAt: new Date(),
-        }).onConflictDoNothing();
+        }));
+      });
+      for (let offset = 0; offset < seedRows.length; offset += 20) {
+        await db.insert(opportunityContacts).values(seedRows.slice(offset, offset + 20)).onConflictDoNothing();
       }
+      curatedContactSeedKey = seedKey;
+    } catch (error) {
+      console.warn("Curated opportunity contact seeding failed; continuing with persisted contacts.", error);
     }
-  } catch (error) {
-    console.warn("Curated opportunity contact seeding failed; continuing with persisted contacts.", error);
   }
 
   try {
