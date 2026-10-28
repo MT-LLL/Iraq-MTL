@@ -139,8 +139,8 @@ export async function analyzeOpportunitySolutions(
     try {
       const matches = await callModel(endpoint, apiKey, model, batch, catalog);
       for (const opportunity of batch) {
-        const solutions = matches.get(opportunity.meedId);
-        if (solutions) output.set(opportunity.meedId, { model, analyzedAt, solutions });
+        const solutions = matches.get(opportunity.meedId) ?? [];
+        output.set(opportunity.meedId, { model, analyzedAt, solutions });
       }
     } catch (error) {
       // AI failure must not block MEED ingestion. Those records retain the deterministic fallback.
