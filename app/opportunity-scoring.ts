@@ -36,7 +36,7 @@ export function scoreOpportunity(input:OpportunityScoringInput):OpportunityScori
    if(!keywords.length&&!scenarios.length)fit=industryMatch?48:0;
    fit=clamp(fit,0,96);
    return {c,fit,keywords:keywords.slice(0,5),scenarios:scenarios.slice(0,2),industryMatch};
- }).filter(x=>x.fit>=42).sort((a,b)=>b.fit-a.fit);
+ }).filter(x=>x.fit>=42&&(x.keywords.length>0||x.scenarios.length>0)).sort((a,b)=>b.fit-a.fit);
  const solutions=ranked.slice(0,4).map(x=>({
    domain:x.c.category,name:x.c.productFamilies.slice(0,3).join(" / "),fit:x.fit,
    rationale:[x.industryMatch?`行业适用：${industry}`:"",x.keywords.length?`项目关键词：${x.keywords.join("、")}`:"",x.scenarios.length?`场景匹配：${x.scenarios.join("、")}`:""].filter(Boolean).join("；"),
