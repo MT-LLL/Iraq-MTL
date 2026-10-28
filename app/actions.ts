@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { getDb } from "../db";
 import { auditLogs, leadDistributions, opportunities as storedOpportunities, opportunityContacts, opportunityTracking, pushJobs, savedViews, sourceScanRuns, users } from "../db/schema";
 import { industryDispatchDirectory, partnerDirectory, sourceConnectorConfig, sourceCoverage, type Country, type Opportunity, type OpportunityContact, type Priority } from "./data";
+import { scoreOpportunity } from "./opportunity-scoring";
 import { meedContactDirectory } from "./meed-contacts";
 import { getChatGPTUser } from "./chatgpt-auth";
 import { deliverNotification, NotificationError } from "./notifications";
@@ -208,6 +209,11 @@ function toClientOpportunity(row: StoredOpportunity, ownerName = "Manual Import"
   const deadline = row.bidDeadline ? row.bidDeadline.toISOString().slice(0, 10) : "待公布";
   const daysLeft = row.bidDeadline ? Math.ceil((row.bidDeadline.getTime() - Date.now()) / 86400000) : null;
   const source = `${row.sourceName}${row.sourceUrl ? ` · ${row.sourceUrl}` : ""}`;
+  const scoring = scoreOpportunity({
+    title: row.title, titleEn: row.titleEn, industry: row.industry, stage: row.stage,
+    summary: row.summary, projectValue: row.projectValue, fundingStatus: row.fundingStatus,
+    bidDeadline: row.bidDeadline?.toISOString(), contactsCount: 0, milestones: row.keyProjectMilestones,
+  });
   return {
     id: row.id,
     title: row.title,
@@ -216,9 +222,9 @@ function toClientOpportunity(row: StoredOpportunity, ownerName = "Manual Import"
     city: row.city || "待核实",
     industry: row.industry,
     stage: row.stage,
-    priority: row.priority as Priority,
-    score: row.score,
-    confidence: row.confidence,
+    priority: scoring.priority,
+    score: scoring.score,
+    confidence: scoring.confidence,
     value: row.projectValue == null ? "未披露" : `${row.currency || "USD"} ${row.projectValue.toLocaleString()}M`,
     addressable: row.addressableValue == null ? "待拆分ICT工作包" : `${row.currency || "USD"} ${row.addressableValue.toLocaleString()}M`,
     deadline,
@@ -236,10 +242,11 @@ function toClientOpportunity(row: StoredOpportunity, ownerName = "Manual Import"
     newsAndUpdates: row.newsAndUpdates || undefined,
     latestNews: row.latestNews || undefined,
     evidence: [`${row.sourceName}手工录入，时间${row.createdAt.toISOString()}`, row.sourceUrl ? `来源链接：${row.sourceUrl}` : "来源链接待补充", "内部评分和方案匹配需由行业及解决方案团队复核。"],
-    solutions: [{ domain: "数据通信", name: "CloudEngine / NetEngine / AirEngine待匹配", fit: 70 }, { domain: "云与存储", name: "华为云Stack / OceanStor待匹配", fit: 65 }, { domain: "运维", name: "eSight统一运维", fit: 62 }],
+    solutions: scoring.solutions,
+    scoreParts: scoring.scoreParts,
     competitors: [{ name: "待核实参标方", type: "潜在类型", note: "手工录入时尚未提供已确认竞争对手" }],
     actions: [{ horizon: "7天", text: "补齐资金、技术规格、客户和采购窗口证据", owner: ownerName }, { horizon: "30天", text: "完成方案匹配与伙伴进入路径复核", owner: "解决方案团队" }, { horizon: "90天", text: "形成竞争策略和经营计划", owner: "机会Owner" }],
-    scoreParts: [{ label: "资金成熟度", value: 8, total: 20 }, { label: "采购窗口", value: 8, total: 15 }, { label: "方案匹配", value: 12, total: 20 }, { label: "参与空间", value: 9, total: 15 }, { label: "赢单驱动", value: 7, total: 15 }, { label: "客户触达", value: 3, total: 10 }, { label: "战略价值", value: 3, total: 5 }],
+
     risk: row.reviewStatus === "pending" ? 5 : 2,
     golden: row.isGoldenSeed,
     gate: [{ label: "实施主体", state: "待核实" }, { label: "资金路径", state: "待核实" }, { label: "方案匹配", state: "待核实" }, { label: "合规检查", state: "待核实" }],
