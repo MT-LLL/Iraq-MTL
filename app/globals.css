@@ -769,3 +769,22 @@ body { font-size: 15px; line-height: 1.55; }
 .meed-intel-content{max-height:300px;overflow:auto;padding:14px 15px;border-top:1px solid #e8efec;color:#38575d;font-size:12px;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere;-webkit-overflow-scrolling:touch}
 .meed-intel-content.missing{color:#839195;background:#fbfcfb}
 @media(max-width:760px){.meed-intel-grid{grid-template-columns:minmax(0,1fr);gap:9px}.meed-intel-card summary{min-height:70px;padding:13px 14px}.meed-intel-summary-copy strong{font-size:12px}.meed-intel-summary-copy small{font-size:10px}.meed-intel-content{font-size:11px;padding:12px 13px}.meed-intelligence-section>.section-label{align-items:flex-start;font-size:13px}.meed-intelligence-section>.section-label span{font-size:10px}}
+
+
+/* Visual roadmap for source-backed project milestones. */
+.milestone-roadmap-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin:0 0 15px}
+.milestone-roadmap-head p{margin:6px 0 0;color:#6d8185;font-size:9px;line-height:1.6;max-width:620px}
+.roadmap-count{flex:none;display:inline-flex;align-items:center;justify-content:center;border:1px solid #cfe5de;background:#eff8f4;color:#23766c;border-radius:999px;padding:5px 9px;font-size:8px;font-weight:800}
+.milestone-roadmap{display:flex;flex-direction:column;gap:0;max-width:900px}
+.milestone-step{display:grid;grid-template-columns:36px minmax(0,1fr);gap:12px;min-width:0}
+.milestone-rail{display:flex;flex-direction:column;align-items:center;min-height:100%;padding-top:2px}
+.milestone-dot{width:30px;height:30px;display:grid;place-items:center;flex:none;border:1px solid #b8ddd3;border-radius:50%;background:#e9f7f2;color:#19786f;font-size:9px;font-weight:900;box-shadow:0 0 0 4px #f5faf8}
+.milestone-connector{width:2px;flex:1;min-height:22px;margin:6px 0 2px;background:linear-gradient(180deg,#9bd4c6,#d9e9e4)}
+.milestone-card{min-width:0;margin:0 0 14px;padding:13px 15px;border:1px solid #dfeae6;border-radius:10px;background:linear-gradient(120deg,#fff 0%,#fbfdfc 100%);box-shadow:0 3px 10px rgba(22,75,67,.035)}
+.milestone-card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:7px}
+.milestone-stage{font-size:7px;letter-spacing:.08em;font-weight:900;color:#64847e;text-transform:uppercase}
+.milestone-date{display:inline-flex;align-items:center;border-radius:5px;background:#eaf5f1;color:#24776d;padding:4px 7px;font-size:8px;font-weight:800}
+.milestone-date.undated{background:#f2f4f3;color:#82908e;font-weight:600}
+.milestone-card h3{margin:0;color:#244b50;font-size:12px;line-height:1.5;font-weight:850;overflow-wrap:anywhere}
+.milestone-card p{margin:6px 0 0;color:#60777b;font-size:9px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:640px){.milestone-roadmap-head{gap:8px}.milestone-step{grid-template-columns:30px minmax(0,1fr);gap:9px}.milestone-dot{width:26px;height:26px;font-size:8px}.milestone-card{padding:11px;margin-bottom:12px}.milestone-card h3{font-size:11px}}
