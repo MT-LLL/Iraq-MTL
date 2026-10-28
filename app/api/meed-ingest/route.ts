@@ -382,8 +382,9 @@ export async function POST(request: Request) {
   const newlyAdded: Array<{ id: string; title: string; country: string; industry: string; priority: string; score: number; projectValue: number | null }> = [];
   const readbackFailures: Array<{ id: string; expectedProjectValue: number | null; persisted: unknown }> = [];
   const aiConfig = configuredEnv();
-  const aiAnalyses = await analyzeOpportunitySolutions(
-    records.filter(record => safeText(record.meedId) && safeText(record.title)).map(record => ({
+  const aiInputRecords = records.filter(record => safeText(record.meedId) && safeText(record.title));
+  const aiResult = await analyzeOpportunitySolutions(
+    aiInputRecords.map(record => ({
       meedId: safeText(record.meedId),
       title: safeText(record.title),
       industry: [record.industry, record.sector, record.subSector].map(value => safeText(value)).filter(Boolean).join(" / "),
@@ -402,6 +403,7 @@ export async function POST(request: Request) {
     },
   );
 
+  const aiAnalyses = aiResult.analyses;
   for (const record of records) {
     const aiAnalysis = aiAnalyses.get(safeText(record.meedId));
     const result = await upsertOpportunity(db, record, now, aiAnalysis);
@@ -439,9 +441,12 @@ export async function POST(request: Request) {
     mergedParentChildCount,
     readbackVerified: readbackFailures.length === 0,
     readbackFailureCount: readbackFailures.length,
+    aiInputCount: aiResult.inputCount,
     aiSolutionMatchCount: aiAnalyses.size,
-    aiModel: aiAnalyses.values().next().value?.model ?? null,
-    aiAnalysisConfigured: Boolean(aiConfig.MOONSHOT_API_KEY || aiConfig.ZHIPU_API_KEY),
+    aiModel: aiResult.model,
+    aiAnalysisConfigured: aiResult.configured,
+    aiFailureCount: aiResult.failures.length,
+    aiFailures: aiResult.failures.slice(0, 8),
     readbackFailures,
     opportunityIds,
     changedOpportunities,
@@ -470,8 +475,12 @@ export async function POST(request: Request) {
     readbackVerified: readbackFailures.length === 0,
     readbackFailureCount: readbackFailures.length, readbackFailures,
     aiAnalysisConfigured: Boolean(aiConfig.MOONSHOT_API_KEY || aiConfig.ZHIPU_API_KEY),
+    aiInputCount: aiResult.inputCount,
     aiSolutionMatchCount: aiAnalyses.size,
-    aiModel: aiAnalyses.values().next().value?.model ?? null,
+    aiModel: aiResult.model,
+    aiAnalysisConfigured: aiResult.configured,
+    aiFailureCount: aiResult.failures.length,
+    aiFailures: aiResult.failures.slice(0, 8),
     opportunityIds, status,
   }, readbackFailures.length === 0 ? 200 : 500);
   } catch (error) {
