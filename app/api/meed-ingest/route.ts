@@ -232,10 +232,10 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     ? sourceDescription.slice(0, 6000)
     : `MEED原始导出暂未提供可用的项目背景/介绍字段。当前已核实的结构化信息：项目“${title}”，国家${country.zh}，行业${industry}，阶段${stage}。请打开原始MEED记录核验项目范围、建设目标和采购包；不得仅根据标题推测项目内容。`;
   const scoring = scoreOpportunity({
-    title, titleEn: record.titleEn || title, industry, stage, summary,
+    title, titleEn: title, industry, stage, summary,
     projectScope: record.projectScope, projectValue,
-    fundingStatus: safeText(record.fundingStatus || "MEED待核实"),
-    bidDeadline: record.awardDate, contactsCount: record.contacts?.length ?? 0,
+    fundingStatus: "MEED待核实",
+    bidDeadline: record.awardDate, contactsCount: 0,
     milestones: keyProjectMilestones,
   });
   const { score, priority, confidence } = scoring;
