@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { countrySourceStrategies, enrichmentFieldMatrix, enrichmentSourcePlaybook, huaweiOfficialSolutionCatalog, industryDispatchDirectory, marketingContentLibrary, meedAudit, meedLatestIngestion, meedLiveVerification, opportunities, opportunityRadarLayers, partnerDirectory, releaseUpdateLog, sourceConnectorConfig, sourceCoverage, sourceKeywordLibrary, sourceScanCadencePlan, type Country, type MarketingContent, type MarketingContentType, type Opportunity, type PartnerDirectoryEntry, type Priority } from "./data";
-import { createLeadDistribution, createManualOpportunity, decideRegistration, getCollaborationActivity, getPendingRegistrations, recordPush, respondLeadDistribution, runWeeklySourceScan, saveOpportunityView, setOpportunityTracking, type CollaborationActivityView, type LeadDistributionView, type OpportunityTrackingView, type PendingRegistrationView, type PushJobView, type SourceScanRunView } from "./actions";
+import { createLeadDistribution, createManualOpportunity, decideRegistration, getCollaborationActivity, getManualOpportunities, getPendingRegistrations, getSourceScanRunCount, getSourceScanRuns, getLatestOpportunityRefreshAt, recordPush, respondLeadDistribution, runWeeklySourceScan, saveOpportunityView, setOpportunityTracking, type CollaborationActivityView, type LeadDistributionView, type OpportunityTrackingView, type PendingRegistrationView, type PushJobView, type SourceScanRunView } from "./actions";
 import type { AppProfile } from "./AccountGate";
 import { LogoutButton } from "./LogoutButton";
 import { FIXED_RESPONSE_TACTIC_CODE, MAX_RESPONSE_TEMPLATE_ROWS, createResponseTemplateXlsx, defaultResponseTemplateContext, inferPreferredProducts, inferTemplateIndustry, responseTemplateColumns, responseTemplateDropdowns, validateResponseTemplateRows, type ResponseTemplateContext } from "./response-import-template";
@@ -1355,6 +1355,7 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
   const [leadDistributions, setLeadDistributions] = useState<LeadDistributionView[]>(initialLeadDistributions);
   const [sourceScanRuns, setSourceScanRuns] = useState<SourceScanRunView[]>(initialSourceScanRuns);
   const [sourceScanRunCount, setSourceScanRunCount] = useState(initialSourceScanRunCount);
+  const [latestRefreshAt, setLatestRefreshAt] = useState(latestOpportunityRefreshAt);
   const [pushJobs, setPushJobs] = useState<PushJobView[]>(initialPushJobs);
   const [opportunityTrackingRows, setOpportunityTrackingRows] = useState<OpportunityTrackingView[]>(initialOpportunityTracking);
   const [trackingFilter, setTrackingFilter] = useState<"tracked" | "archived" | "all">("tracked");
@@ -1401,6 +1402,27 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
     let active = true;
     const refresh = () => { void getPendingRegistrations().then(rows => { if (active) setPendingAccounts(rows); }).catch(() => undefined); };
     const timer = window.setInterval(refresh, 30000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [profile?.identityType, profile?.status]);
+  useEffect(() => {
+    if (profile?.status !== "approved" || !profile.identityType.startsWith("huawei_")) return;
+    let active = true;
+    let busy = false;
+    const refreshOpportunityData = async () => {
+      if (busy) return;
+      busy = true;
+      try {
+        const [rows, runs, count, refreshedAt] = await Promise.all([getManualOpportunities(), getSourceScanRuns(), getSourceScanRunCount(), getLatestOpportunityRefreshAt()]);
+        if (!active) return;
+        setManualOpportunities(rows);
+        setSourceScanRuns(runs);
+        setSourceScanRunCount(count);
+        setLatestRefreshAt(refreshedAt);
+        setGoldenIds(new Set(rows.filter(item => item.golden).map(item => item.id)));
+      } catch { /* Keep the last successfully loaded dashboard state. */ }
+      finally { busy = false; }
+    };
+    const timer = window.setInterval(() => { void refreshOpportunityData(); }, 30000);
     return () => { active = false; window.clearInterval(timer); };
   }, [profile?.identityType, profile?.status]);
 
@@ -1480,7 +1502,7 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
   const pendingDispatchCount = leadDistributions.filter(row => row.status === "pending").length;
   const visibleNav = isPartnerUser ? navItems.filter(item=>item.id === "radar") : profile.identityType === 'huawei_admin' ? navItems : navItems.filter(item=>item.id!=='approvals');
   const navBadge = (item: typeof navItems[number]) => item.id === "radar" ? String(activeOpportunities.length) : item.id === "updates" ? String(sourceScanRunCount) : item.id === "mtl" ? String(mtlAssets.length) : item.id === "dispatch" ? String(pendingDispatchCount) : item.id === "approvals" ? String(pendingAccounts.length) : item.badge;
-  const opportunityRefreshDate = latestOpportunityRefreshAt
+  const opportunityRefreshDate = latestRefreshAt
     ? new Intl.DateTimeFormat(lang === "zh" ? "zh-CN" : "en-GB", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Baghdad" }).format(new Date(latestOpportunityRefreshAt))
     : tr(lang, "暂无记录", "No record");
 
