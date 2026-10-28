@@ -86,21 +86,45 @@ async function callModel(
     "Projects to analyze:",
     JSON.stringify(opportunities),
   ].join("\n\n");
-  const response = await fetch(`${endpoint.replace(/\/+$/, "")}/chat/completions`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model,
-      // Kimi K2.6 only accepts temperature=1; other providers keep the conservative default.
-      temperature: /^kimi-k2/i.test(model) ? 1 : 0.1,
-      max_tokens: 8000,
-      messages: [
-        { role: "system", content: "Return concise, evidence-grounded JSON only. Never invent project scope." },
-        { role: "user", content: prompt },
-      ],
-    }),
-    signal: AbortSignal.timeout(45000),
+  const requestBody = JSON.stringify({
+    model,
+    // Kimi K2.6 only accepts temperature=1; other providers keep the conservative default.
+    temperature: /^kimi-k2/i.test(model) ? 1 : 0.1,
+    max_tokens: 8000,
+    messages: [
+      { role: "system", content: "Return concise, evidence-grounded JSON only. Never invent project scope." },
+      { role: "user", content: prompt },
+    ],
   });
+  let response: Response | undefined;
+  let lastNetworkError: unknown;
+  // Transient upstream resets ("Connection closed" / fetch failed) are common
+  // on long-lived serverless connections. Retry once before surfacing an error.
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      response = await fetch(`${endpoint.replace(/\\/+$/, "")}/chat/completions`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        body: requestBody,
+        signal: AbortSignal.timeout(45000),
+      });
+      if (response.status >= 500 && attempt < 2) {
+        lastNetworkError = new Error(`AI provider returned HTTP ${response.status}`);
+        continue;
+      }
+      break;
+    } catch (error) {
+      lastNetworkError = error;
+      if (attempt === 2) {
+        const detail = error instanceof Error ? error.message : String(error);
+        throw new Error(`AI provider connection failed after retry: ${detail}`);
+      }
+    }
+  }
+  if (!response) {
+    const detail = lastNetworkError instanceof Error ? lastNetworkError.message : String(lastNetworkError ?? "unknown network error");
+    throw new Error(`AI provider connection failed: ${detail}`);
+  }
   if (!response.ok) { const detail = (await response.text()).slice(0, 600); throw new Error(`AI solution analysis failed with HTTP ${response.status}: ${detail}`); }
   const payload = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
   const content = payload.choices?.[0]?.message?.content;
