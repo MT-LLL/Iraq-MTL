@@ -168,13 +168,13 @@ async function fetchViaBot() {
 
 
 function containsArabic(text) {
-  return /[\\u0600-\\u06FF]/.test(text || "");
+  return /[\u0600-\u06FF]/.test(text || "");
 }
 
 async function translateRelevantRecords(records, errors) {
   const apiKey = process.env.KIMI_API_KEY?.trim() || process.env.MOONSHOT_API_KEY?.trim();
   const model = process.env.KIMI_MODEL?.trim() || "kimi-k2.6";
-  const endpoint = (process.env.KIMI_API_BASE_URL?.trim() || "https://api.moonshot.cn/v1").replace(/\\/$/, "");
+  const endpoint = (process.env.KIMI_API_BASE_URL?.trim() || "https://api.moonshot.cn/v1").replace(/\/$/, "");
   const pending = records.filter(record => containsArabic(record.text) || containsArabic(record.title));
   if (!pending.length) return records.map(record => ({
     ...record, titleEn: record.title, translatedText: record.text, translationStatus: "not_needed",
