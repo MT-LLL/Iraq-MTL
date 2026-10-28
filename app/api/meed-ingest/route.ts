@@ -464,7 +464,16 @@ export async function POST(request: Request) {
     .bind(crypto.randomUUID(), "github-actions", "meed.github_actions_ingested", "source_scan_run", runId, metadata, finishedAt)
     .run();
 
-  return json({ ok: readbackFailures.length === 0, runId, inserted, updated, skipped, mergedParentChildCount, readbackVerified: readbackFailures.length === 0, readbackFailureCount: readbackFailures.length, readbackFailures, opportunityIds, status }, readbackFailures.length === 0 ? 200 : 500);
+  return json({
+    ok: readbackFailures.length === 0,
+    runId, inserted, updated, skipped, mergedParentChildCount,
+    readbackVerified: readbackFailures.length === 0,
+    readbackFailureCount: readbackFailures.length, readbackFailures,
+    aiAnalysisConfigured: Boolean(aiConfig.MOONSHOT_API_KEY || aiConfig.ZHIPU_API_KEY),
+    aiSolutionMatchCount: aiAnalyses.size,
+    aiModel: aiAnalyses.values().next().value?.model ?? null,
+    opportunityIds, status,
+  }, readbackFailures.length === 0 ? 200 : 500);
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error);
     console.error("[MEED ingest] request failed:", detail);
