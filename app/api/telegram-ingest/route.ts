@@ -155,9 +155,9 @@ async function upsertTenderSignal(db: D1Database, record: TelegramTenderRecord, 
   const country = normalizeCountry(record.country);
   const text = safeText(record.text);
   const translatedText = safeText(record.translatedText);
-  const hasArabic = /[\\u0600-\\u06FF]/.test(text);
+  const hasArabic = /[\u0600-\u06FF]/.test(text);
   if (!country || !text || !looksRelevant(`${record.titleEn || record.title || ""} ${translatedText} ${text}`)) return { skipped: true, existing: false };
-  if (hasArabic && (!translatedText || /[\\u0600-\\u06FF]/.test(translatedText) || record.translationStatus !== "translated")) return { skipped: true, existing: false };
+  if (hasArabic && (!translatedText || /[\u0600-\u06FF]/.test(translatedText) || record.translationStatus !== "translated")) return { skipped: true, existing: false };
 
   const id = stableRecordId(record, country.code);
   const existing = await db.prepare("SELECT id FROM opportunities WHERE id = ?").bind(id).first<{ id: string }>();
