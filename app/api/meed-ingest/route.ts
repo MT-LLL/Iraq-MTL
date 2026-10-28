@@ -386,7 +386,7 @@ export async function POST(request: Request) {
       title: safeText(record.title),
       industry: [record.industry, record.sector, record.subSector].map(value => safeText(value)).filter(Boolean).join(" / "),
       stage: safeText(record.stage || record.status),
-      background: [record.projectDescription, record.projectObjectives].map(value => safeText(value)).filter(Boolean).join("\\n\\n").slice(0, 2400),
+      background: [record.projectDescription, record.projectObjectives].map(value => safeText(value)).filter(Boolean).join("\n\n").slice(0, 2400),
       scope: safeText(record.projectScope).slice(0, 2400),
     })),
     huaweiOfficialSolutionCatalog,
@@ -437,6 +437,9 @@ export async function POST(request: Request) {
     mergedParentChildCount,
     readbackVerified: readbackFailures.length === 0,
     readbackFailureCount: readbackFailures.length,
+    aiSolutionMatchCount: aiAnalyses.size,
+    aiModel: aiAnalyses.values().next().value?.model ?? null,
+    aiAnalysisConfigured: Boolean(aiConfig.MOONSHOT_API_KEY || aiConfig.ZHIPU_API_KEY),
     readbackFailures,
     opportunityIds,
     changedOpportunities,
@@ -450,7 +453,7 @@ export async function POST(request: Request) {
     ? `GitHub Actions MEED采集失败：${(payload.errors ?? ["unknown error"]).join("; ").slice(0, 480)}`
     : status === "partial"
       ? `GitHub Actions MEED采集部分完成（结果不作为完整对比）：暂新增${inserted}条，检测到变化${updated}条，跳过${skipped}条。`
-      : `GitHub Actions MEED清单刷新完成：新增${inserted}条，实际变化${updated}条，跳过${skipped}条；源文件${stats.sourceRows ?? records.length}条，候选${stats.promotedCount ?? records.length}条。`;
+      : `GitHub Actions MEED清单刷新完成：新增${inserted}条，实际变化${updated}条，跳过${skipped}条；源文件${stats.sourceRows ?? records.length}条，候选${stats.promotedCount ?? records.length}条；AI方案分析完成${aiAnalyses.size}条。`;
 
   await db.prepare("INSERT INTO source_scan_runs (id, trigger, status, source_count, new_lead_count, updated_lead_count, promoted_count, summary, metadata, started_at, finished_at, next_run_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
     .bind(runId, "github_actions", status, sourceCount, inserted, updated, stats.promotedCount ?? opportunityIds.length, summary, metadata, now, finishedAt, nextRunAt)
