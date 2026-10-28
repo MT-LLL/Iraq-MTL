@@ -5,7 +5,8 @@ import { and, count, desc, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getDb } from "../db";
 import { auditLogs, leadDistributions, opportunities as storedOpportunities, opportunityContacts, opportunityTracking, pushJobs, savedViews, sourceScanRuns, users } from "../db/schema";
-import { industryDispatchDirectory, partnerDirectory, sourceConnectorConfig, sourceCoverage, type Country, type Opportunity, type OpportunityContact, type Priority } from "./data";
+import { huaweiOfficialSolutionCatalog, industryDispatchDirectory, partnerDirectory, sourceConnectorConfig, sourceCoverage, type Country, type Opportunity, type OpportunityContact, type Priority } from "./data";
+import { analyzeOpportunitySolutions } from "./ai-solution-matching";
 import { scoreOpportunity } from "./opportunity-scoring";
 import { meedContactDirectory } from "./meed-contacts";
 import { getChatGPTUser } from "./chatgpt-auth";
@@ -608,6 +609,53 @@ export async function getPartnerShareableOpportunities(): Promise<Opportunity[]>
   return (await allAvailableOpportunities(db))
     .filter(item => allowedIds.has(item.id))
     .map(item => ({ ...item, owner: "Partner-safe feed" }));
+}
+
+
+export async function analyzeOpportunityWithAI(opportunityId: string) {
+  const { profile, db } = await currentIdentity();
+  if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) throw new Error("FORBIDDEN");
+  const id = String(opportunityId || "").trim();
+  if (!id || id.length > 160) throw new Error("INVALID_OPPORTUNITY_ID");
+  const rows = await db.select().from(storedOpportunities).where(eq(storedOpportunities.id, id)).limit(1);
+  const row = rows[0];
+  if (!row) throw new Error("OPPORTUNITY_NOT_FOUND");
+
+  const config = env as unknown as Record<string, string | undefined>;
+  const externalId = row.externalId || row.id;
+  const result = await analyzeOpportunitySolutions([{
+    meedId: externalId,
+    title: row.title,
+    industry: row.industry,
+    stage: row.stage,
+    background: String(row.summary || "").slice(0, 4000),
+    scope: String(row.summary || "").slice(0, 4000),
+  }], huaweiOfficialSolutionCatalog, {
+    moonshotApiKey: config.MOONSHOT_API_KEY,
+    moonshotModel: config.MOONSHOT_MODEL,
+    moonshotBaseUrl: config.MOONSHOT_API_BASE_URL,
+    zhipuApiKey: config.ZHIPU_API_KEY,
+    zhipuModel: config.ZHIPU_MODEL,
+    zhipuBaseUrl: config.ZHIPU_API_BASE_URL,
+  });
+
+  const analysis = result.analyses.get(externalId);
+  if (!analysis) throw new Error(result.failures[0] || "AI_ANALYSIS_NO_RESULT");
+  const now = new Date();
+  await db.update(storedOpportunities).set({
+    solutionMatches: JSON.stringify(analysis),
+    updatedAt: now,
+  }).where(eq(storedOpportunities.id, id));
+  await db.insert(auditLogs).values({
+    id: crypto.randomUUID(),
+    actorId: profile.id,
+    action: "opportunity.ai_solution_analysis_completed",
+    entityType: "opportunity",
+    entityId: id,
+    metadata: JSON.stringify({ model: analysis.model, analyzedAt: analysis.analyzedAt, solutionCount: analysis.solutions.length }),
+    createdAt: now,
+  });
+  return { ok: true as const, opportunityId: id, model: analysis.model, analyzedAt: analysis.analyzedAt, solutionCount: analysis.solutions.length };
 }
 
 export async function createManualOpportunity(input: ManualOpportunityInput) {

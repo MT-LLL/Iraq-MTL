@@ -111,6 +111,10 @@ async function callModel(
     const id = String(match.meedId ?? "").trim();
     if (id) results.set(id, normalizeSolutions(match.solutions, catalog));
   }
+  // An omitted match entry means no supported catalog fit was found, not that analysis failed.
+  for (const opportunity of opportunities) {
+    if (!results.has(opportunity.meedId)) results.set(opportunity.meedId, []);
+  }
   return results;
 }
 

@@ -1,6 +1,5 @@
 import { env } from "cloudflare:workers";
-import { huaweiOfficialSolutionCatalog } from "../../data";
-import { analyzeOpportunitySolutions, type AiSolutionAnalysis } from "../../ai-solution-matching";
+import type { AiSolutionAnalysis } from "../../ai-solution-matching";
 import { scoreOpportunity } from "../../opportunity-scoring";
 
 type MeedRecord = {
@@ -381,32 +380,9 @@ export async function POST(request: Request) {
   const changedOpportunities: Array<{ id: string; title: string; changedFields: string[] }> = [];
   const newlyAdded: Array<{ id: string; title: string; country: string; industry: string; priority: string; score: number; projectValue: number | null }> = [];
   const readbackFailures: Array<{ id: string; expectedProjectValue: number | null; persisted: unknown }> = [];
-  const aiConfig = configuredEnv();
-  const aiInputRecords = records.filter(record => safeText(record.meedId) && safeText(record.title));
-  const aiResult = await analyzeOpportunitySolutions(
-    aiInputRecords.map(record => ({
-      meedId: safeText(record.meedId),
-      title: safeText(record.title),
-      industry: [record.industry, record.sector, record.subSector].map(value => safeText(value)).filter(Boolean).join(" / "),
-      stage: safeText(record.stage || record.status),
-      background: [record.projectDescription, record.projectObjectives].map(value => safeText(value)).filter(Boolean).join("\n\n").slice(0, 2400),
-      scope: safeText(record.projectScope).slice(0, 2400),
-    })),
-    huaweiOfficialSolutionCatalog,
-    {
-      moonshotApiKey: aiConfig.MOONSHOT_API_KEY,
-      moonshotModel: aiConfig.MOONSHOT_MODEL,
-      moonshotBaseUrl: aiConfig.MOONSHOT_API_BASE_URL,
-      zhipuApiKey: aiConfig.ZHIPU_API_KEY,
-      zhipuModel: aiConfig.ZHIPU_MODEL,
-      zhipuBaseUrl: aiConfig.ZHIPU_API_BASE_URL,
-    },
-  );
-
-  const aiAnalyses = aiResult.analyses;
+  // MEED ingestion is deliberately AI-free. On-demand analysis is triggered from the opportunity detail page.
   for (const record of records) {
-    const aiAnalysis = aiAnalyses.get(safeText(record.meedId));
-    const result = await upsertOpportunity(db, record, now, aiAnalysis);
+    const result = await upsertOpportunity(db, record, now);
     if (result.skipped) {
       skipped += 1;
     } else if (result.existing) {
@@ -441,12 +417,7 @@ export async function POST(request: Request) {
     mergedParentChildCount,
     readbackVerified: readbackFailures.length === 0,
     readbackFailureCount: readbackFailures.length,
-    aiInputCount: aiResult.inputCount,
-    aiSolutionMatchCount: aiAnalyses.size,
-    aiModel: aiResult.model,
-    aiAnalysisConfigured: aiResult.configured,
-    aiFailureCount: aiResult.failures.length,
-    aiFailures: aiResult.failures.slice(0, 8),
+    aiAnalysisDeferred: true,
     readbackFailures,
     opportunityIds,
     changedOpportunities,
@@ -460,7 +431,7 @@ export async function POST(request: Request) {
     ? `GitHub Actions MEED采集失败：${(payload.errors ?? ["unknown error"]).join("; ").slice(0, 480)}`
     : status === "partial"
       ? `GitHub Actions MEED采集部分完成（结果不作为完整对比）：暂新增${inserted}条，检测到变化${updated}条，跳过${skipped}条。`
-      : `GitHub Actions MEED清单刷新完成：新增${inserted}条，实际变化${updated}条，跳过${skipped}条；源文件${stats.sourceRows ?? records.length}条，候选${stats.promotedCount ?? records.length}条；AI方案分析完成${aiAnalyses.size}条。`;
+      : `GitHub Actions MEED清单刷新完成：新增${inserted}条，实际变化${updated}条，跳过${skipped}条；源文件${stats.sourceRows ?? records.length}条，候选${stats.promotedCount ?? records.length}条；AI方案分析改为机会详情页按需触发。`;
 
   await db.prepare("INSERT INTO source_scan_runs (id, trigger, status, source_count, new_lead_count, updated_lead_count, promoted_count, summary, metadata, started_at, finished_at, next_run_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
     .bind(runId, "github_actions", status, sourceCount, inserted, updated, stats.promotedCount ?? opportunityIds.length, summary, metadata, now, finishedAt, nextRunAt)
@@ -475,12 +446,7 @@ export async function POST(request: Request) {
     readbackVerified: readbackFailures.length === 0,
     readbackFailureCount: readbackFailures.length, readbackFailures,
     aiAnalysisConfigured: Boolean(aiConfig.MOONSHOT_API_KEY || aiConfig.ZHIPU_API_KEY),
-    aiInputCount: aiResult.inputCount,
-    aiSolutionMatchCount: aiAnalyses.size,
-    aiModel: aiResult.model,
-    aiAnalysisConfigured: aiResult.configured,
-    aiFailureCount: aiResult.failures.length,
-    aiFailures: aiResult.failures.slice(0, 8),
+    aiAnalysisDeferred: true,
     opportunityIds, status,
   }, readbackFailures.length === 0 ? 200 : 500);
   } catch (error) {
