@@ -169,7 +169,7 @@ async function upsertTenderSignal(db: D1Database, record: TelegramTenderRecord, 
   const sourceUrl = safeText(record.url);
   const publishedAt = dateToMs(record.publishedAt, now);
   // Confidence reflects evidence completeness, not proof that the tender is valid.
-  const hasTenderReference = /\\b(?:RFP|RFQ|EOI|ITB|ITT|tender\\s*(?:no|number|#))\\s*[-:#]?\\s*[A-Z0-9/-]{3,}/i.test(analysisText);
+  const hasTenderReference = /\b(?:RFP|RFQ|EOI|ITB|ITT|tender\s*(?:no|number|#))\s*[-:#]?\s*[A-Z0-9/-]{3,}/i.test(analysisText);
   const confidence = Math.min(0.70, Math.round((0.35 + (sourceUrl ? 0.10 : 0) + (publishedAt ? 0.08 : 0) + (record.translationStatus === "translated" || !hasArabic ? 0.05 : 0) + (hasTenderReference ? 0.12 : 0)) * 100) / 100);
   const stage = /award|awarded|contract award|إحالة|ترسية/i.test(analysisText) ? "Award / result notice" : /clarification|extension|تمديد|توضيح/i.test(analysisText) ? "Clarification / extension notice" : "Tender / procurement notice";
   const summary = `Telegram procurement lead (machine-translated where applicable): ${(translatedText || text).slice(0, 900)}${(translatedText || text).length > 900 ? "…" : ""} Review the original source to verify tender ID, deadline, procuring entity, contacts, attachments and ICT work packages.`;
