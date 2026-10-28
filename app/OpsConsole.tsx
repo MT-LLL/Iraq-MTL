@@ -144,29 +144,29 @@ function parseMilestoneRoadmap(raw: string, lang: Lang): MilestoneStep[] {
   } catch { /* MEED fields are commonly plain text rather than JSON. */ }
   if (!entries.length) {
     entries = source
-      .replace(/\\r/g, "")
-      .split(/\\n+|\\s*[•●▪◦]\\s*|\\s*;\\s*|\\s*；\\s*|\\s*\\|\\s*|(?<=[。！？])\\s*|(?<=[.!?])\\s+(?=[A-Z0-9])/)
-      .map((part) => part.replace(/^\\s*(?:[-*–—]|\\d+[.)、])\\s*/, "").trim())
+      .replace(/\r/g, "")
+      .split(/\n+|\s*[•●▪◦]\s*|\s*;\s*|\s*；\s*|\s*\|\s*|(?<=[。！？])\s*|(?<=[.!?])\s+(?=[A-Z0-9])/)
+      .map((part) => part.replace(/^\s*(?:[-*–—]|\d+[.)、])\s*/, "").trim())
       .filter(Boolean);
   }
   if (entries.length === 1 && entries[0].length > 180) {
-    const splitByMilestone = entries[0].split(/(?=(?:预计|计划|目标|完成|启动|开工|授标|签约|招标|投标|资格预审|交付|投运|commissioning|pre[- ]?qualification|tender|bid(?:ding)?|award(?:ed)?|contract signing|construction|completion|delivery|operation(?:al)?|expected|planned|scheduled)\\b?)/i)
+    const splitByMilestone = entries[0].split(/(?=(?:预计|计划|目标|完成|启动|开工|授标|签约|招标|投标|资格预审|交付|投运|commissioning|pre[- ]?qualification|tender|bid(?:ding)?|award(?:ed)?|contract signing|construction|completion|delivery|operation(?:al)?|expected|planned|scheduled))/i)
       .map((part) => part.trim()).filter(Boolean);
     if (splitByMilestone.length > 1) entries = splitByMilestone;
   }
-  const datePattern = /\\b(?:Q[1-4]\\s*20\\d{2}|20\\d{2}(?:[-/.年]\\d{1,2}(?:[-/.月]\\d{1,2}日?)?)?|\\d{1,2}[-/. ](?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\\.?\\s+20\\d{2}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\\.?\\s+\\d{1,2},?\\s+20\\d{2})\\b/i;
+  const datePattern = /\b(?:Q[1-4]\s*20\d{2}|20\d{2}(?:[-/.年]\d{1,2}(?:[-/.月]\d{1,2}日?)?)?|\d{1,2}[-/. ](?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+20\d{2}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s+\d{1,2},?\s+20\d{2})\b/i;
   return entries.map((entry, index) => {
     const cleaned = entry.replace(/^["'“”]+|["'“”]+$/g, "").trim();
     const match = cleaned.match(datePattern);
     const date = match?.[0];
-    const withoutDate = date ? cleaned.replace(date, "").replace(/^[\\s,:;–—-]+|[\\s,:;–—-]+$/g, "").trim() : cleaned;
-    const parts = withoutDate.split(/\\s*(?:：|:| — | – | — | -> |→)\\s*/, 2);
+    const withoutDate = date ? cleaned.replace(date, "").replace(/^[\s,:;–—-]+|[\s,:;–—-]+$/g, "").trim() : cleaned;
+    const parts = withoutDate.split(/\s*(?:：|:| — | – | — | -> |→)\s*/, 2);
     let title = parts.length > 1 ? parts[0].trim() : "";
     let detail = parts.length > 1 ? parts.slice(1).join(" — ").trim() : withoutDate;
     if (!title) {
       const firstSentence = detail.match(/^.{1,52}?(?=[，,。.!?；;]|$)/);
       title = firstSentence?.[0]?.trim() || detail.slice(0, 48).trim();
-      if (title.length < detail.length) detail = detail.slice(title.length).replace(/^[，,。.!?；;\\s]+/, "").trim();
+      if (title.length < detail.length) detail = detail.slice(title.length).replace(/^[，,。.!?；;\s]+/, "").trim();
     }
     if (!title) title = tr(lang, `里程碑 ${String(index + 1).padStart(2, "0")}`, `Milestone ${String(index + 1).padStart(2, "0")}`);
     return { title, detail: detail || title, ...(date ? { date } : {}) };
