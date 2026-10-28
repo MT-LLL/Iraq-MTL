@@ -92,7 +92,7 @@ async function callModel(
     body: JSON.stringify({
       model,
       temperature: 0.1,
-      max_tokens: 4000,
+      max_tokens: 8000,
       messages: [
         { role: "system", content: "Return concise, evidence-grounded JSON only. Never invent project scope." },
         { role: "user", content: prompt },
@@ -100,7 +100,7 @@ async function callModel(
     }),
     signal: AbortSignal.timeout(45000),
   });
-  if (!response.ok) throw new Error(`AI solution analysis failed with HTTP ${response.status}`);
+  if (!response.ok) { const detail = (await response.text()).slice(0, 600); throw new Error(`AI solution analysis failed with HTTP ${response.status}: ${detail}`); }
   const payload = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
   const content = payload.choices?.[0]?.message?.content;
   if (!content) throw new Error("AI solution analysis returned an empty response");
@@ -114,15 +114,23 @@ async function callModel(
 }
 
 /** Batch AI matching during ingestion so homepage requests never call an LLM. */
+export type AiSolutionAnalysisBatchResult = {
+  analyses: Map<string, AiSolutionAnalysis>;
+  model: string | null;
+  configured: boolean;
+  inputCount: number;
+  failures: string[];
+};
+
 export async function analyzeOpportunitySolutions(
   opportunities: AiOpportunityInput[],
   catalog: HuaweiOfficialSolutionCatalogItem[],
   config: AiConfig,
-): Promise<Map<string, AiSolutionAnalysis>> {
+): Promise<AiSolutionAnalysisBatchResult> {
   const moonshotKey = config.moonshotApiKey?.trim();
   const zhipuKey = config.zhipuApiKey?.trim();
   const apiKey = moonshotKey || zhipuKey;
-  if (!apiKey || !opportunities.length) return new Map();
+  if (!apiKey || !opportunities.length) return { analyses: new Map(), model: null, configured: Boolean(apiKey), inputCount: opportunities.length, failures: apiKey ? [] : ["No Moonshot or Zhipu API key configured"] };
 
   const model = moonshotKey
     ? (config.moonshotModel?.trim() || "kimi-k2.6")
@@ -131,11 +139,12 @@ export async function analyzeOpportunitySolutions(
     ? (config.moonshotBaseUrl?.trim() || "https://api.moonshot.cn/v1")
     : (config.zhipuBaseUrl?.trim() || "https://open.bigmodel.cn/api/paas/v4");
   const output = new Map<string, AiSolutionAnalysis>();
+  const failures: string[] = [];
   const analyzedAt = new Date().toISOString();
 
   // Keep each prompt bounded and reduce request count for a typical MEED batch.
-  for (let offset = 0; offset < opportunities.length; offset += 8) {
-    const batch = opportunities.slice(offset, offset + 8);
+  for (let offset = 0; offset < opportunities.length; offset += 4) {
+    const batch = opportunities.slice(offset, offset + 4);
     try {
       const matches = await callModel(endpoint, apiKey, model, batch, catalog);
       for (const opportunity of batch) {
@@ -143,9 +152,10 @@ export async function analyzeOpportunitySolutions(
         output.set(opportunity.meedId, { model, analyzedAt, solutions });
       }
     } catch (error) {
-      // AI failure must not block MEED ingestion. Those records retain the deterministic fallback.
-      console.error("[MTL] AI solution matching batch failed:", error instanceof Error ? error.message : "unknown error");
+      const message = error instanceof Error ? error.message : "unknown error";
+      failures.push(`batch ${Math.floor(offset / 4) + 1}: ${message}`.slice(0, 900));
+      console.error("[MTL] AI solution matching batch failed:", message);
     }
   }
-  return output;
+  return { analyses: output, model, configured: true, inputCount: opportunities.length, failures };
 }
