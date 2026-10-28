@@ -364,7 +364,7 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
         <div className="two-column">
           <div className="subsection">
             <div className="section-label">{tr(lang,"方案组合","Solution portfolio")} <span>{item.solutions.length} {tr(lang,"个工作包","work packages")}</span></div>
-            <div className="solution-list">{item.solutions.map((solution) => <div key={solution.name}><span className="solution-icon">{solution.domain.slice(0,1)}</span><span><strong>{exportText(lang,solution.name)}</strong><small>{exportText(lang,solution.domain)}</small></span><span className="fit">{solution.fit}%</span></div>)}</div>
+            <div className="solution-list">{item.solutions.length ? item.solutions.map((solution) => <div key={solution.name}><span className="solution-icon">{solution.domain.slice(0,1)}</span><span><strong>{exportText(lang,solution.name)}</strong><small>{exportText(lang,solution.domain)}</small>{solution.rationale ? <small className="solution-rationale">{tr(lang,"匹配依据：","Match basis: ")}{exportText(lang,solution.rationale)}</small> : null}{solution.evidence ? <small className="solution-rationale">{tr(lang,"项目证据：","Project evidence: ")}{exportText(lang,solution.evidence)}</small> : null}</span><span className="fit">{solution.fit}%</span></div>) : <p>{tr(lang,"当前项目资料不足，暂未匹配到有证据支持的具体方案。请补充项目 Scope 后重新分析。","Insufficient project evidence to recommend a specific solution. Add project scope and re-run the analysis.")}</p>}</div>
           </div>
           {canInternal ? <div className="subsection">
             <div className="section-label">{tr(lang,"竞争态势","Competition")} <span>{tr(lang,"证据约束","Evidence-bound")}</span></div>
@@ -375,7 +375,7 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
 
       {canInternal && tab === "score" && <div className="tab-content score-view">
         <div className="score-explainer"><ScoreRing value={item.score} size="large"/><div><h3>{item.priority} · {item.priority === "P0" ? tr(lang,"重点经营","Key engagement") : item.priority === "P1" ? tr(lang,"优先培育","Priority nurture") : tr(lang,"选择性跟踪","Selective watch")}</h3><p>{tr(lang,`基础维度合计 ${item.score + item.risk} 分，风险扣减 ${item.risk} 分。P0 需同时满足四项硬门槛。`,`Base score ${item.score + item.risk}, risk deduction ${item.risk}. P0 opportunities must pass all four hard gates.`)}</p></div></div>
-        <div className="score-bars">{item.scoreParts.map(part => <div key={part.label}><span>{localTerm(lang,part.label)}</span><div><i style={{width:`${part.value / part.total * 100}%`}}></i></div><strong>{part.value}/{part.total}</strong></div>)}</div>
+        <div className="score-bars">{item.scoreParts.map(part => <div key={part.label}><span>{localTerm(lang,part.label)}</span><div><i style={{width:`${part.value / part.total * 100}%`}}></i></div><strong>{part.value}/{part.total}</strong>{part.rationale ? <small className="score-rationale">{exportText(lang,part.rationale)}</small> : null}</div>)}</div>
       </div>}
 
       {tab === "contacts" && <div className="tab-content contact-view">
