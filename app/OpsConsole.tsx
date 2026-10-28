@@ -309,9 +309,7 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
         <div className="detail-head-actions"><button type="button" className="detail-close" onClick={onClose} aria-label={tr(lang,"关闭机会详情","Close opportunity details")} title={tr(lang,"关闭详情","Close details")}>×</button>{canInternal ? <ScoreRing value={item.score} size="large" /> : <span className="partner-safe-badge">{tr(lang,"伙伴安全版","Partner-safe")}</span>}</div>
       </div>
 
-      {canInternal ? <div className="hard-gates">
-        {item.gate.map((gate) => <div key={gate.label}><span className={`gate-dot ${gate.state}`}></span><small>{localTerm(lang,gate.label)}</small><strong>{localTerm(lang,gate.state)}</strong></div>)}
-      </div> : <div className="partner-access-notice"><strong>{tr(lang,"伙伴受限视图","Partner restricted view")}</strong><span>{tr(lang,"已隐藏内部评分、赢单判断、竞争态势、机会Owner、其他伙伴与金种子审批信息；如需更多背景，请通过伙伴经理申请。","Internal score, win assessment, competition, opportunity owner, other partners and golden-seed approval information are hidden. Request more context through the partner manager.")}</span></div>}
+      {!canInternal ? <div className="partner-access-notice"><strong>{tr(lang,"伙伴受限视图","Partner restricted view")}</strong><span>{tr(lang,"已隐藏内部评分、赢单判断、竞争态势、机会Owner、其他伙伴与金种子审批信息；如需更多背景，请通过伙伴经理申请。","Internal score, win assessment, competition, opportunity owner, other partners and golden-seed approval information are hidden. Request more context through the partner manager.")}</span></div> : null}
 
       <div className="detail-tabs" role="tablist">
         {availableTabs.map(([id,label]) => (
