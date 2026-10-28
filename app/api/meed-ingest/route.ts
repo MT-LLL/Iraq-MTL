@@ -367,6 +367,7 @@ export async function POST(request: Request) {
     return json({ ok: false, error: "INVALID_JSON" }, 400);
   }
 
+  try {
   const now = Date.now();
   const runId = sourceRunId(payload);
   const incomingRecords = Array.isArray(payload.records) ? payload.records.slice(0, 250) : [];
@@ -463,4 +464,9 @@ export async function POST(request: Request) {
     .run();
 
   return json({ ok: readbackFailures.length === 0, runId, inserted, updated, skipped, mergedParentChildCount, readbackVerified: readbackFailures.length === 0, readbackFailureCount: readbackFailures.length, readbackFailures, opportunityIds, status }, readbackFailures.length === 0 ? 200 : 500);
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    console.error("[MEED ingest] request failed:", detail);
+    return json({ ok: false, error: "MEED_INGEST_INTERNAL_ERROR", detail: detail.slice(0, 1200) }, 500);
+  }
 }
