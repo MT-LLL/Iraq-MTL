@@ -5,6 +5,7 @@ export type OpportunityScoringInput = {
   stage?: string | null; summary?: string | null; projectScope?: string | null;
   projectValue?: number | null; fundingStatus?: string | null; bidDeadline?: string | null;
   contactsCount?: number; milestones?: string | null;
+  aiSolutions?: Array<{domain:string;name:string;fit:number;rationale:string;evidence:string}>;
 };
 export type OpportunityScoringResult = {
   score: number; priority: "P0" | "P1" | "P2" | "WATCH"; confidence: number;
@@ -28,20 +29,28 @@ function inferIndustry(t:string) {
 export function scoreOpportunity(input:OpportunityScoringInput):OpportunityScoringResult {
  const raw=[input.title,input.titleEn,input.industry,input.stage,input.summary,input.projectScope].filter(Boolean).join(" ");
  const t=norm(raw); const industry=inferIndustry(t)||input.industry||"";
- const ranked=huaweiOfficialSolutionCatalog.map(c=>{
-   const keywords=c.keywords.filter(k=>t.includes(norm(k)));
-   const scenarios=c.scenarios.filter(s=>t.includes(norm(s)));
-   const industryMatch=!!industry&&c.industries.some(i=>norm(i)===norm(industry));
-   let fit=28+(industryMatch?18:0)+Math.min(45,keywords.length*15)+Math.min(15,scenarios.length*8);
-   if(!keywords.length&&!scenarios.length)fit=industryMatch?48:0;
-   fit=clamp(fit,0,96);
-   return {c,fit,keywords:keywords.slice(0,5),scenarios:scenarios.slice(0,2),industryMatch};
- }).filter(x=>x.fit>=42&&(x.keywords.length>0||x.scenarios.length>0)).sort((a,b)=>b.fit-a.fit);
- const solutions=ranked.slice(0,4).map(x=>({
-   domain:x.c.category,name:x.c.productFamilies.slice(0,3).join(" / "),fit:x.fit,
-   rationale:x.keywords.length?`关键词识别：${x.keywords.join("、")}`:"",
-   evidence:x.keywords.length||x.scenarios.length?raw.slice(0,500):`仅行业级初筛（${industry||"行业未识别"}），需核实项目Scope`
- }));
+ const solutions = input.aiSolutions?.length
+   ? input.aiSolutions.slice().sort((a,b)=>b.fit-a.fit).slice(0,4).map(solution=>({
+       domain: solution.domain,
+       name: solution.name,
+       fit: clamp(solution.fit,0,100),
+       rationale: solution.rationale ? `AI分析：${solution.rationale}` : "AI语义分析匹配",
+       evidence: solution.evidence || raw.slice(0,500),
+     }))
+   : huaweiOfficialSolutionCatalog.map(c=>{
+       const keywords=c.keywords.filter(k=>t.includes(norm(k)));
+       const scenarios=c.scenarios.filter(s=>t.includes(norm(s)));
+       const industryMatch=!!industry&&c.industries.some(i=>norm(i)===norm(industry));
+       let fit=28+(industryMatch?18:0)+Math.min(45,keywords.length*15)+Math.min(15,scenarios.length*8);
+       if(!keywords.length&&!scenarios.length)fit=industryMatch?48:0;
+       fit=clamp(fit,0,96);
+       return {c,fit,keywords:keywords.slice(0,5),scenarios:scenarios.slice(0,2),industryMatch};
+     }).filter(x=>x.fit>=42&&(x.keywords.length>0||x.scenarios.length>0))
+       .sort((a,b)=>b.fit-a.fit).slice(0,4).map(x=>({
+         domain:x.c.category,name:x.c.productFamilies.slice(0,3).join(" / "),fit:x.fit,
+         rationale:x.keywords.length?`关键词识别：${x.keywords.join("、")}`:"",
+         evidence:x.keywords.length||x.scenarios.length?raw.slice(0,500):`仅行业级初筛（${industry||"行业未识别"}），需核实项目Scope`
+       }));
  const scope=!!(input.summary||input.projectScope)&&!/暂未提供|待补充|仅根据标题推测/.test(input.summary||input.projectScope||"");
  const amount=Number(input.projectValue||0), stage=norm(input.stage||"");
  const pre=/study|design|feed|bid|pq|pre qual|tender|招标|资格预审|设计|研究/.test(stage);
