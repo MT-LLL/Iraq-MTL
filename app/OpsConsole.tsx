@@ -121,6 +121,58 @@ function opportunityInsight(item: Opportunity, lang: Lang) {
   return concise.length > 250 ? concise.slice(0, 247) + "…" : concise;
 }
 
+type MilestoneStep = { title: string; detail: string; date?: string };
+
+function parseMilestoneRoadmap(raw: string, lang: Lang): MilestoneStep[] {
+  const source = String(raw || "").trim();
+  if (!source) return [];
+  let entries: string[] = [];
+  try {
+    const parsed: unknown = JSON.parse(source);
+    if (Array.isArray(parsed)) {
+      entries = parsed.map((value) => {
+        if (typeof value === "string") return value;
+        if (value && typeof value === "object") {
+          const record = value as Record<string, unknown>;
+          return [record.date, record.milestone, record.title, record.name, record.description, record.status]
+            .filter((part) => part !== undefined && part !== null && String(part).trim())
+            .map(String).join(" — ");
+        }
+        return String(value ?? "");
+      }).filter(Boolean);
+    }
+  } catch { /* MEED fields are commonly plain text rather than JSON. */ }
+  if (!entries.length) {
+    entries = source
+      .replace(/\\r/g, "")
+      .split(/\\n+|\\s*[•●▪◦]\\s*|\\s*;\\s*|\\s*；\\s*|\\s*\\|\\s*|(?<=[。！？])\\s*|(?<=[.!?])\\s+(?=[A-Z0-9])/)
+      .map((part) => part.replace(/^\\s*(?:[-*–—]|\\d+[.)、])\\s*/, "").trim())
+      .filter(Boolean);
+  }
+  if (entries.length === 1 && entries[0].length > 180) {
+    const splitByMilestone = entries[0].split(/(?=(?:预计|计划|目标|完成|启动|开工|授标|签约|招标|投标|资格预审|交付|投运|commissioning|pre[- ]?qualification|tender|bid(?:ding)?|award(?:ed)?|contract signing|construction|completion|delivery|operation(?:al)?|expected|planned|scheduled)\\b?)/i)
+      .map((part) => part.trim()).filter(Boolean);
+    if (splitByMilestone.length > 1) entries = splitByMilestone;
+  }
+  const datePattern = /\\b(?:Q[1-4]\\s*20\\d{2}|20\\d{2}(?:[-/.年]\\d{1,2}(?:[-/.月]\\d{1,2}日?)?)?|\\d{1,2}[-/. ](?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\\.?\\s+20\\d{2}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\\.?\\s+\\d{1,2},?\\s+20\\d{2})\\b/i;
+  return entries.map((entry, index) => {
+    const cleaned = entry.replace(/^["'“”]+|["'“”]+$/g, "").trim();
+    const match = cleaned.match(datePattern);
+    const date = match?.[0];
+    const withoutDate = date ? cleaned.replace(date, "").replace(/^[\\s,:;–—-]+|[\\s,:;–—-]+$/g, "").trim() : cleaned;
+    const parts = withoutDate.split(/\\s*(?:：|:| — | – | — | -> |→)\\s*/, 2);
+    let title = parts.length > 1 ? parts[0].trim() : "";
+    let detail = parts.length > 1 ? parts.slice(1).join(" — ").trim() : withoutDate;
+    if (!title) {
+      const firstSentence = detail.match(/^.{1,52}?(?=[，,。.!?；;]|$)/);
+      title = firstSentence?.[0]?.trim() || detail.slice(0, 48).trim();
+      if (title.length < detail.length) detail = detail.slice(title.length).replace(/^[，,。.!?；;\\s]+/, "").trim();
+    }
+    if (!title) title = tr(lang, `里程碑 ${String(index + 1).padStart(2, "0")}`, `Milestone ${String(index + 1).padStart(2, "0")}`);
+    return { title, detail: detail || title, ...(date ? { date } : {}) };
+  }).filter((step) => step.title || step.detail);
+}
+
 function partnerSafeOpportunityInsight(item: Opportunity, lang: Lang) {
   const title = lang === "zh" ? item.title : item.titleEn;
   return tr(
@@ -384,10 +436,22 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
       </div>}
 
       {tab === "milestones" && <div className="tab-content intelligence-view">
-        <div className="section-label">{tr(lang,"关键项目里程碑","Key project milestones")} <span>{tr(lang,"MEED 来源字段","MEED source field")}</span></div>
-        <div className={item.keyProjectMilestones ? "meed-intel-content" : "meed-intel-content missing"}>
-          {item.keyProjectMilestones || tr(lang,"本次 MEED 导出尚未提供该字段。系统不会根据项目名称编造里程碑；可在后续采集包含此字段的授权记录后自动补充。","This MEED export did not provide this field. The system will not invent milestones from the project title; a later authorized export can populate it.")}
+        <div className="milestone-roadmap-head">
+          <div><div className="section-label">{tr(lang,"项目关键节点路线图","Project milestone roadmap")}</div><p>{tr(lang,"按来源记录顺序梳理关键节点；仅在原文提供时显示日期，不推测缺失时间。","Milestones are arranged in source order. Dates appear only when present in the source; missing dates are not inferred.")}</p></div>
+          <span className="roadmap-count">{parseMilestoneRoadmap(item.keyProjectMilestones || "", lang).length} {tr(lang,"个节点","steps")}</span>
         </div>
+        {item.keyProjectMilestones ? <div className="milestone-roadmap">
+          {parseMilestoneRoadmap(item.keyProjectMilestones, lang).map((step, index) => (
+            <article className="milestone-step" key={index}>
+              <div className="milestone-rail"><span className="milestone-dot">{String(index + 1).padStart(2, "0")}</span>{index < parseMilestoneRoadmap(item.keyProjectMilestones || "", lang).length - 1 ? <span className="milestone-connector" /> : null}</div>
+              <div className="milestone-card">
+                <div className="milestone-card-top"><span className="milestone-stage">{tr(lang,"关键节点","MILESTONE")} {String(index + 1).padStart(2, "0")}</span>{step.date ? <time className="milestone-date">{step.date}</time> : <span className="milestone-date undated">{tr(lang,"日期未注明","Date not specified")}</span>}</div>
+                <h3>{step.title}</h3>
+                {step.detail !== step.title ? <p>{step.detail}</p> : null}
+              </div>
+            </article>
+          ))}
+        </div> : <div className="meed-intel-content missing">{tr(lang,"本次 MEED 导出尚未提供该字段。系统不会根据项目名称编造里程碑；可在后续采集包含此字段的授权记录后自动补充。","This MEED export did not provide this field. The system will not invent milestones from the project title; a later authorized export can populate it.")}</div>}
       </div>}
       {tab === "updates" && <div className="tab-content intelligence-view">
         <div className="section-label">{tr(lang,"新闻与进展更新","News and updates")} <span>{tr(lang,"MEED 来源字段","MEED source field")}</span></div>
