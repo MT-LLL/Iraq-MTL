@@ -214,7 +214,6 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
   const industry = normalizeIndustry(record);
   const stage = safeText(record.stage || record.status, "待核实");
   const city = safeText(record.city, country.fallbackCity);
-  const { score, priority } = scoreRecord(record);
   // The persisted opportunity amount is NetValue, falling back to ProjectValue.
   // ContractValue is intentionally kept as separate source metadata and is never
   // substituted for either field. valueUsdM remains for older payload compatibility.
@@ -232,6 +231,14 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
   const summary = sourceDescription
     ? sourceDescription.slice(0, 6000)
     : `MEED原始导出暂未提供可用的项目背景/介绍字段。当前已核实的结构化信息：项目“${title}”，国家${country.zh}，行业${industry}，阶段${stage}。请打开原始MEED记录核验项目范围、建设目标和采购包；不得仅根据标题推测项目内容。`;
+  const scoring = scoreOpportunity({
+    title, titleEn: record.titleEn || title, industry, stage, summary,
+    projectScope: record.projectScope, projectValue,
+    fundingStatus: safeText(record.fundingStatus || "MEED待核实"),
+    bidDeadline: record.awardDate, contactsCount: record.contacts?.length ?? 0,
+    milestones: keyProjectMilestones,
+  });
+  const { score, priority, confidence } = scoring;
   const updatedAt = dateToMs(record.updatedOn) ?? now;
   const changedFields = existing ? ([["title", existing.title, title], ["country", existing.country, country.zh], ["industry", existing.industry, industry], ["stage", existing.stage, stage], ["priority", existing.priority, priority], ["score", existing.score, score], ["projectValue", existing.project_value, projectValue], ["bidDeadline", existing.bid_deadline, dateToMs(record.awardDate)], ["summary", existing.summary, summary], ["keyProjectMilestones", existing.key_project_milestones, keyProjectMilestones], ["newsAndUpdates", existing.news_and_updates, newsAndUpdates], ["latestNews", existing.latest_news, latestNews]] as const).filter(([, before, after]) => (before ?? null) !== (after ?? null)).map(([field]) => field) : [];
 
@@ -279,7 +286,7 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     stage,
     priority,
     score,
-    0.64,
+    confidence,
     projectValue,
     projectValue ? Math.round(projectValue * 0.035 * 10) / 10 : null,
     "USD",
