@@ -1,7 +1,7 @@
 "use server";
 
 import { env } from "cloudflare:workers";
-import { count, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getDb } from "../db";
 import { auditLogs, leadDistributions, opportunities as storedOpportunities, opportunityContacts, opportunityTracking, pushJobs, savedViews, sourceScanRuns, users } from "../db/schema";
@@ -804,17 +804,18 @@ export async function getSourceScanRunCount(): Promise<number> {
 export async function getSourceScanRuns() {
   const { profile, db } = await currentIdentity();
   if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) return [];
-  const rows = await db.select().from(sourceScanRuns);
-  return rows.sort((a, b) => b.startedAt.getTime() - a.startedAt.getTime()).slice(0, 10).map(toSourceScanRunView);
+  const rows = await db.select().from(sourceScanRuns).orderBy(desc(sourceScanRuns.startedAt)).limit(10);
+  return rows.map(toSourceScanRunView);
 }
 
 export async function getLatestOpportunityRefreshAt(): Promise<string | null> {
   const { profile, db } = await currentIdentity();
   if (!profile || profile.status !== "approved") return null;
-  const rows = await db.select().from(sourceScanRuns);
-  const latest = rows
-    .filter(row => row.trigger === "github_actions" && row.status === "completed" && row.finishedAt)
-    .sort((a, b) => (b.finishedAt?.getTime() ?? 0) - (a.finishedAt?.getTime() ?? 0))[0];
+  const [latest] = await db.select({ finishedAt: sourceScanRuns.finishedAt })
+    .from(sourceScanRuns)
+    .where(and(eq(sourceScanRuns.trigger, "github_actions"), eq(sourceScanRuns.status, "completed")))
+    .orderBy(desc(sourceScanRuns.finishedAt))
+    .limit(1);
   return latest?.finishedAt?.toISOString() ?? null;
 }
 
