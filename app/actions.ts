@@ -205,14 +205,14 @@ async function hasValidAdminLinkCookie(email: string) {
   return verifyAdminLinkCookie(token, email, expected);
 }
 
-function toClientOpportunity(row: StoredOpportunity, ownerName = "Manual Import"): Opportunity {
+function toClientOpportunity(row: StoredOpportunity, ownerName = "Manual Import", contactsCount = 0): Opportunity {
   const deadline = row.bidDeadline ? row.bidDeadline.toISOString().slice(0, 10) : "待公布";
   const daysLeft = row.bidDeadline ? Math.ceil((row.bidDeadline.getTime() - Date.now()) / 86400000) : null;
   const source = `${row.sourceName}${row.sourceUrl ? ` · ${row.sourceUrl}` : ""}`;
   const scoring = scoreOpportunity({
     title: row.title, titleEn: row.titleEn, industry: row.industry, stage: row.stage,
     summary: row.summary, projectValue: row.projectValue, fundingStatus: row.fundingStatus,
-    bidDeadline: row.bidDeadline?.toISOString(), contactsCount: 0, milestones: row.keyProjectMilestones,
+    bidDeadline: row.bidDeadline?.toISOString(), contactsCount, milestones: row.keyProjectMilestones,
   });
   return {
     id: row.id,
@@ -362,8 +362,8 @@ async function allAvailableOpportunities(db: ReturnType<typeof getDb>) {
       contactsByOpportunity.set(row.opportunityId, list);
     }
     return rows.map(row => {
-      const item = toClientOpportunity(row);
       const contacts = contactsByOpportunity.get(row.id);
+      const item = toClientOpportunity(row, "Manual Import", contacts?.length ?? 0);
       return contacts?.length ? { ...item, contacts } : item;
     });
   } catch (error) {
