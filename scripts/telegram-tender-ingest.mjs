@@ -99,22 +99,44 @@ function isRecent(record, days) {
   return Date.now() - time <= days * 86400000;
 }
 
+function hasTerm(text, terms) {
+  const lower = text.toLowerCase();
+  return terms.some(term => lower.includes(term.toLowerCase()));
+}
+
 function looksRelevant(record) {
-  const text = `${record.title} ${record.text}`.toLowerCase();
-  return tenderTerms.some(term => text.includes(term.toLowerCase()));
+  const text = `${record.title} ${record.text}`;
+  // Require both a procurement signal and a substantive sector signal.
+  return hasTerm(text, tenderTerms) && hasTerm(text, industryContextTerms);
 }
 
 async function fetchPublicChannel(channelInfo) {
-  const url = `https://t.me/s/${channelInfo.channel.replace(/^@/, "")}`;
-  const response = await fetch(url, {
-    headers: {
-      "user-agent": "Mozilla/5.0 MSSD Telegram Tender Radar/1.0",
-      "accept-language": "en,ar;q=0.9",
-    },
-  });
-  if (!response.ok) throw new Error(`${url} returned ${response.status}`);
-  const html = await response.text();
-  return parseMessages(html, channelInfo);
+  const channel = channelInfo.channel.replace(/^@/, "");
+  const maxPages = Math.max(1, Math.min(10, Number(process.env.TELEGRAM_MAX_PAGES_PER_CHANNEL || "5")));
+  const all = new Map();
+  let before = "";
+  for (let page = 0; page < maxPages; page++) {
+    const url = `https://t.me/s/${channel}${before ? `?before=${before}` : ""}`;
+    const response = await fetch(url, {
+      headers: {
+        "user-agent": "Mozilla/5.0 MTL Telegram Tender Radar/1.1",
+        "accept-language": "en,ar;q=0.9",
+      },
+    });
+    if (!response.ok) throw new Error(`${url} returned ${response.status}`);
+    const messages = parseMessages(await response.text(), channelInfo);
+    if (!messages.length) break;
+    let oldest = Number.POSITIVE_INFINITY;
+    for (const message of messages) {
+      all.set(message.id || message.url, message);
+      const id = Number(String(message.id || "").split("/").pop());
+      if (Number.isFinite(id)) oldest = Math.min(oldest, id);
+    }
+    if (!Number.isFinite(oldest) || String(oldest) === before) break;
+    before = String(oldest);
+    if (messages.every(message => !isRecent(message, Number(process.env.TELEGRAM_RECENT_DAYS || "7")))) break;
+  }
+  return [...all.values()];
 }
 
 async function fetchViaBot() {
@@ -142,6 +164,73 @@ async function fetchViaBot() {
       lang: /[\u0600-\u06FF]/.test(text) ? "ar" : "en",
     };
   }).filter(Boolean);
+}
+
+
+function containsArabic(text) {
+  return /[\\u0600-\\u06FF]/.test(text || "");
+}
+
+async function translateRelevantRecords(records, errors) {
+  const apiKey = process.env.KIMI_API_KEY?.trim() || process.env.MOONSHOT_API_KEY?.trim();
+  const model = process.env.KIMI_MODEL?.trim() || "kimi-k2.6";
+  const endpoint = (process.env.KIMI_API_BASE_URL?.trim() || "https://api.moonshot.cn/v1").replace(/\\/$/, "");
+  const pending = records.filter(record => containsArabic(record.text) || containsArabic(record.title));
+  if (!pending.length) return records.map(record => ({
+    ...record, titleEn: record.title, translatedText: record.text, translationStatus: "not_needed",
+  }));
+  if (!apiKey) {
+    errors.push(`Translation unavailable: configure GitHub secret KIMI_API_KEY or MOONSHOT_API_KEY; ${pending.length} Arabic record(s) withheld from ingest.`);
+    const pendingIds = new Set(pending.map(record => record.id || record.url));
+    return records.filter(record => !pendingIds.has(record.id || record.url)).map(record => ({
+      ...record, titleEn: record.title, translatedText: record.text, translationStatus: "not_needed",
+    }));
+  }
+
+  const translated = new Map();
+  // Batch small groups to keep API calls bounded while retaining message-to-translation alignment.
+  for (let start = 0; start < pending.length; start += 6) {
+    const batch = pending.slice(start, start + 6);
+    try {
+      const response = await fetch(`${endpoint}/chat/completions`, {
+        method: "POST",
+        headers: { "authorization": `Bearer ${apiKey}`, "content-type": "application/json" },
+        body: JSON.stringify({
+          model,
+          temperature: 0.1,
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: "Translate Arabic Telegram public procurement and project announcements into faithful professional English. Return only JSON object with an items array. Each item must preserve the supplied id and contain title_en and translation_en. Do not invent facts, dates, amounts, entities, or procurement status. Keep names, IDs, phone numbers, links, and currency figures unchanged. If uncertain, translate literally." },
+            { role: "user", content: JSON.stringify({ items: batch.map((record, index) => ({ id: String(index), title: record.title || "", text: record.text || "" })) }) },
+          ],
+        }),
+      });
+      if (!response.ok) throw new Error(`Kimi API returned ${response.status}: ${(await response.text()).slice(0, 300)}`);
+      const data = await response.json();
+      const content = data.choices?.[0]?.message?.content;
+      const parsed = typeof content === "string" ? JSON.parse(content) : content;
+      if (!Array.isArray(parsed?.items)) throw new Error("Kimi response missing items array");
+      for (const item of parsed.items) {
+        const index = Number(item.id);
+        if (!Number.isInteger(index) || index < 0 || index >= batch.length) continue;
+        const record = batch[index];
+        const titleEn = String(item.title_en || "").trim();
+        const translatedText = String(item.translation_en || "").trim();
+        if (titleEn && translatedText && !containsArabic(titleEn) && !containsArabic(translatedText)) {
+          translated.set(record.id || record.url, { ...record, titleEn, translatedText, translationStatus: "translated" });
+        }
+      }
+      for (const record of batch) {
+        if (!translated.has(record.id || record.url)) errors.push(`Translation failed validation for Telegram message ${record.id || record.url || "unknown"}; record withheld.`);
+      }
+    } catch (error) {
+      errors.push(`Translation batch failed: ${error.message}; ${batch.length} record(s) withheld.`);
+    }
+  }
+  const pendingIds = new Set(pending.map(record => record.id || record.url));
+  return records.filter(record => !pendingIds.has(record.id || record.url)).map(record => ({
+    ...record, titleEn: record.title, translatedText: record.text, translationStatus: "not_needed",
+  })).concat(pending.map(record => translated.get(record.id || record.url)).filter(Boolean));
 }
 
 async function postPayload(payload) {
@@ -196,6 +285,7 @@ async function main() {
   }
   const fetched = [...unique.values()];
   const relevant = fetched.filter(looksRelevant).slice(0, maxMessages);
+  const translatedRelevant = await translateRelevantRecords(relevant, errors);
   const payload = {
     runId: `TG-TENDER-${new Date().toISOString().replace(/[-:T.Z]/g, "").slice(0, 12)}`,
     generatedAt: new Date().toISOString(),
@@ -205,20 +295,22 @@ async function main() {
       channels: channels.length + (process.env.TELEGRAM_BOT_TOKEN ? 1 : 0),
       fetchedMessages: fetched.length,
       relevantMessages: relevant.length,
-      promotedCount: relevant.length,
+      translatedMessages: translatedRelevant.filter(record => record.translationStatus === "translated").length,
+      untranslatedMessages: relevant.length - translatedRelevant.length,
+      promotedCount: 0,
     },
-    records: relevant,
+    records: translatedRelevant,
     errors,
   };
 
   await writeFile(path.join(artifactDir, "telegram-tender-payload.json"), JSON.stringify(payload, null, 2));
   if (process.env.TELEGRAM_DRY_RUN === "1") {
-    console.log(JSON.stringify({ ok: true, dryRun: true, fetched: fetched.length, relevant: relevant.length }, null, 2));
+    console.log(JSON.stringify({ ok: true, dryRun: true, fetched: fetched.length, relevant: relevant.length, translated: translatedRelevant.filter(record => record.translationStatus === "translated").length, errors }, null, 2));
     return;
   }
   const result = await postPayload(payload);
   await writeFile(path.join(artifactDir, "telegram-tender-result.json"), JSON.stringify(result, null, 2));
-  console.log(JSON.stringify({ ok: true, fetched: fetched.length, relevant: relevant.length, result }, null, 2));
+  console.log(JSON.stringify({ ok: true, fetched: fetched.length, relevant: relevant.length, translated: translatedRelevant.filter(record => record.translationStatus === "translated").length, errors, result }, null, 2));
 }
 
 main().catch(async error => {
