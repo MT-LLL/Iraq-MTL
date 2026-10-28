@@ -93,10 +93,11 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           RESEND_FROM_EMAIL: ${{ secrets.RESEND_FROM_EMAIL }}
           MOONSHOT_API_KEY: ${{ secrets.MOONSHOT_API_KEY }}
+          KIMI_API_KEY: ${{ secrets.KIMI_API_KEY }}
           ZHIPU_API_KEY: ${{ secrets.ZHIPU_API_KEY }}
         run: |
-          if [ -n "$RESEND_FROM_EMAIL" ] || [ -n "$MOONSHOT_API_KEY" ] || [ -n "$ZHIPU_API_KEY" ]; then
-            node -e 'const fs=require("fs"); const keys=["RESEND_FROM_EMAIL","MOONSHOT_API_KEY","ZHIPU_API_KEY"]; const secrets=Object.fromEntries(keys.map(k=>[k,process.env[k]]).filter(([,v])=>v)); fs.writeFileSync("/tmp/worker-secrets.json", JSON.stringify(secrets), { mode: 0o600 })'
+          if [ -n "$RESEND_FROM_EMAIL" ] || [ -n "$MOONSHOT_API_KEY" ] || [ -n "$KIMI_API_KEY" ] || [ -n "$ZHIPU_API_KEY" ]; then
+            node -e 'const fs=require("fs"); const secrets={}; if(process.env.RESEND_FROM_EMAIL) secrets.RESEND_FROM_EMAIL=process.env.RESEND_FROM_EMAIL; if(process.env.MOONSHOT_API_KEY || process.env.KIMI_API_KEY) secrets.MOONSHOT_API_KEY=process.env.MOONSHOT_API_KEY || process.env.KIMI_API_KEY; if(process.env.ZHIPU_API_KEY) secrets.ZHIPU_API_KEY=process.env.ZHIPU_API_KEY; fs.writeFileSync("/tmp/worker-secrets.json", JSON.stringify(secrets), { mode: 0o600 })'
             npx wrangler deploy --config wrangler.toml --secrets-file /tmp/worker-secrets.json
             rm -f /tmp/worker-secrets.json
             echo "Worker deployed with configured sender and AI provider secrets; unset secrets are left untouched."
