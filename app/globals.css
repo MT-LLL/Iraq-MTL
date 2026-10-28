@@ -738,3 +738,15 @@ body { font-size: 15px; line-height: 1.55; }
   .meed-intel-grid { grid-template-columns: 1fr; }
   .meed-intel-card summary { min-height: 54px; }
 }
+
+/* Score breakdown: give each scoring dimension room to breathe */
+.score-bars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.score-bars>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px 12px;align-items:center;align-content:start;margin:0;padding:15px 16px;background:var(--panel,#fff);border:1px solid var(--line,#e5ebe8);border-radius:12px;min-width:0}
+.score-bars>div>span{font-size:13px;font-weight:650;line-height:1.45;overflow-wrap:anywhere}
+.score-bars>div>strong{font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.score-bars>div>div{grid-column:1/-1;grid-row:2;height:8px;margin:0}
+.score-bars>div>.score-rationale{grid-column:1/-1;display:block;font-size:12px;line-height:1.65;color:var(--muted,#6d7b78);overflow-wrap:anywhere;margin-top:1px}
+.score-explainer{align-items:flex-start;gap:16px;padding:12px 0 8px}
+.score-explainer h3{font-size:16px;line-height:1.4}
+.score-explainer p{font-size:12px;line-height:1.7;max-width:760px}
+@media(max-width:720px){.score-bars{grid-template-columns:minmax(0,1fr);gap:9px}.score-bars>div{padding:13px 14px}.score-bars>div>span,.score-bars>div>strong{font-size:12px}.score-bars>div>.score-rationale{font-size:11px}}
