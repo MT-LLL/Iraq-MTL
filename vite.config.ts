@@ -23,7 +23,28 @@ export default defineConfig(async () => {
   // Wrangler snapshots its log path while the Cloudflare plugin is imported.
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
+  // Keep the React Server Components Flight protocol module out of Vite's
+  // dependency optimizer. Re-optimizing it can create a second module
+  // instance mid-stream and crash Server Action responses with
+  // "chunk.reason.enqueueModel is not a function".
+  const rscFlightOptimizerExclusion = ["react-server-dom-webpack"];
+
   return {
+    optimizeDeps: {
+      exclude: rscFlightOptimizerExclusion,
+    },
+    environments: {
+      rsc: {
+        optimizeDeps: {
+          exclude: rscFlightOptimizerExclusion,
+        },
+      },
+      ssr: {
+        optimizeDeps: {
+          exclude: rscFlightOptimizerExclusion,
+        },
+      },
+    },
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,
