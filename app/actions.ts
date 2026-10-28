@@ -4,7 +4,7 @@ import { env } from "cloudflare:workers";
 import { and, count, desc, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getDb } from "../db";
-import { auditLogs, evidence, leadDistributions, opportunities as storedOpportunities, opportunityContacts, opportunityTracking, pushJobs, savedViews, sourceScanRuns, users } from "../db/schema";
+import { auditLogs, leadDistributions, opportunities as storedOpportunities, opportunityContacts, opportunityTracking, pushJobs, savedViews, sourceScanRuns, users } from "../db/schema";
 import { industryDispatchDirectory, partnerDirectory, sourceConnectorConfig, sourceCoverage, type Country, type Opportunity, type OpportunityContact, type Priority } from "./data";
 import { scoreOpportunity } from "./opportunity-scoring";
 import { meedContactDirectory } from "./meed-contacts";
@@ -205,10 +205,12 @@ async function hasValidAdminLinkCookie(email: string) {
   return verifyAdminLinkCookie(token, email, expected);
 }
 
-function toClientOpportunity(row: StoredOpportunity, ownerName = "Manual Import", contactsCount = 0, aiSolutions?: Array<{ domain: string; name: string; fit: number; rationale: string; evidence: string }>): Opportunity {
+function toClientOpportunity(row: StoredOpportunity, ownerName = "Manual Import", contactsCount = 0): Opportunity {
   const deadline = row.bidDeadline ? row.bidDeadline.toISOString().slice(0, 10) : "待公布";
   const daysLeft = row.bidDeadline ? Math.ceil((row.bidDeadline.getTime() - Date.now()) / 86400000) : null;
   const source = `${row.sourceName}${row.sourceUrl ? ` · ${row.sourceUrl}` : ""}`;
+  const savedAiAnalysis = parseJson<{ solutions?: Array<{ domain: string; name: string; fit: number; rationale: string; evidence: string }> } | null>(row.solutionMatches, null);
+  const aiSolutions = savedAiAnalysis && Array.isArray(savedAiAnalysis.solutions) ? savedAiAnalysis.solutions : undefined;
   const scoring = scoreOpportunity({
     title: row.title, titleEn: row.titleEn, industry: row.industry, stage: row.stage,
     summary: row.summary, projectValue: row.projectValue, fundingStatus: row.fundingStatus,
@@ -320,16 +322,7 @@ async function allAvailableOpportunities(db: ReturnType<typeof getDb>): Promise<
   const availableIds = new Set(rows.map(row => row.id));
 
   try {
-    const [contactRows, aiEvidenceRows] = await Promise.all([
-      db.select().from(opportunityContacts),
-      db.select().from(evidence).where(eq(evidence.kind, "ai_solution_match")),
-    ]);
-    const aiSolutionsByOpportunity = new Map<string, Array<{ domain: string; name: string; fit: number; rationale: string; evidence: string }>>();
-    for (const row of aiEvidenceRows) {
-      if (!availableIds.has(row.opportunityId)) continue;
-      const analysis = parseJson<{ solutions?: Array<{ domain: string; name: string; fit: number; rationale: string; evidence: string }> } | null>(row.excerpt, null);
-      if (analysis && Array.isArray(analysis.solutions)) aiSolutionsByOpportunity.set(row.opportunityId, analysis.solutions);
-    }
+    const contactRows = await db.select().from(opportunityContacts);
     const contactsByOpportunity = new Map<string, OpportunityContact[]>();
     for (const row of contactRows) {
       if (!availableIds.has(row.opportunityId)) continue;
@@ -358,7 +351,7 @@ async function allAvailableOpportunities(db: ReturnType<typeof getDb>): Promise<
 
     return rows.map(row => {
       const contacts = contactsByOpportunity.get(row.id);
-      const item = toClientOpportunity(row, "Manual Import", contacts?.length ?? 0, aiSolutionsByOpportunity.get(row.id));
+      const item = toClientOpportunity(row, "Manual Import", contacts?.length ?? 0);
       return contacts?.length ? { ...item, contacts } : item;
     });
   } catch (error) {
