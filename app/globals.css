@@ -750,3 +750,22 @@ body { font-size: 15px; line-height: 1.55; }
 .score-explainer h3{font-size:16px;line-height:1.4}
 .score-explainer p{font-size:12px;line-height:1.7;max-width:760px}
 @media(max-width:720px){.score-bars{grid-template-columns:minmax(0,1fr);gap:9px}.score-bars>div{padding:13px 14px}.score-bars>div>span,.score-bars>div>strong{font-size:12px}.score-bars>div>.score-rationale{font-size:11px}}
+
+
+/* Project intelligence cards: clear, scannable hierarchy below the action plan */
+.meed-intelligence-section{margin:22px 0 20px;padding-top:18px;border-top:1px solid var(--line,#dfe5e4);min-width:0}
+.meed-intelligence-section>.section-label{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:14px;line-height:1.5;font-weight:750;color:var(--ink,#102a3b)}
+.meed-intelligence-section>.section-label span{flex:0 0 auto;font-size:11px;font-weight:550;color:var(--muted,#6b7b82);background:#f0f5f3;padding:4px 8px;border-radius:999px}
+.meed-intel-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px;align-items:start}
+.meed-intel-card{min-width:0;border:1px solid #dce8e4;border-radius:12px;background:#fff;overflow:hidden;transition:border-color .15s ease,box-shadow .15s ease}
+.meed-intel-card[open]{border-color:#9dcfc5;box-shadow:0 5px 18px rgba(19,91,83,.07)}
+.meed-intel-card summary{min-height:88px;padding:15px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;list-style:none;background:linear-gradient(135deg,#f8fbfa,#f2f8f6)}
+.meed-intel-card summary::-webkit-details-marker{display:none}
+.meed-intel-summary-copy{display:flex;flex-direction:column;gap:8px;min-width:0}
+.meed-intel-summary-copy strong{color:#244950;font-size:13px;line-height:1.45;font-weight:750;overflow-wrap:anywhere}
+.meed-intel-summary-copy small{color:#708288;font-size:11px;line-height:1.5}
+.meed-intel-status{display:grid;place-items:center;flex:0 0 28px;width:28px;height:28px;border-radius:9px;background:#eef2f1;color:#81908e;font-size:15px;font-weight:800}
+.meed-intel-status.available{background:#e0f4ed;color:#177d77}
+.meed-intel-content{max-height:300px;overflow:auto;padding:14px 15px;border-top:1px solid #e8efec;color:#38575d;font-size:12px;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere;-webkit-overflow-scrolling:touch}
+.meed-intel-content.missing{color:#839195;background:#fbfcfb}
+@media(max-width:760px){.meed-intel-grid{grid-template-columns:minmax(0,1fr);gap:9px}.meed-intel-card summary{min-height:70px;padding:13px 14px}.meed-intel-summary-copy strong{font-size:12px}.meed-intel-summary-copy small{font-size:10px}.meed-intel-content{font-size:11px;padding:12px 13px}.meed-intelligence-section>.section-label{align-items:flex-start;font-size:13px}.meed-intelligence-section>.section-label span{font-size:10px}}
