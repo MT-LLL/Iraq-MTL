@@ -9,6 +9,9 @@ type TelegramTenderRecord = {
   publishedAt?: string;
   text?: string;
   title?: string;
+  titleEn?: string;
+  translatedText?: string;
+  translationStatus?: string;
   lang?: string;
 };
 
@@ -42,6 +45,13 @@ const countryMap: Record<string, { zh: string; code: string; fallbackCity: strin
   lebanon: { zh: "黎巴嫩", code: "LB", fallbackCity: "Beirut" },
   "لبنان": { zh: "黎巴嫩", code: "LB", fallbackCity: "Beirut" },
 };
+
+const industryContextTerms = [
+  "data center", "datacentre", "cloud", "fiber", "fibre", "telecom", "network", "ict", "software", "cybersecurity", "cctv", "smart city", "digital",
+  "power", "electric", "substation", "solar", "bess", "energy", "oil", "gas", "petroleum", "pipeline", "refinery",
+  "hospital", "health", "medical", "airport", "rail", "road", "transport", "port", "water", "sewage", "infrastructure",
+  "اتصالات", "شبكة", "ألياف", "كهرباء", "طاقة", "نفط", "غاز", "مستشفى", "صحة", "مطار", "ميناء", "طريق", "سكك", "مياه", "بنية تحتية",
+];
 
 const tenderTerms = [
   "tender", "bid", "rfp", "rfq", "eoi", "prequalification", "pre-qualification", "procurement",
@@ -96,13 +106,17 @@ function normalizeIndustry(textInput: string) {
   return "Government Sector";
 }
 
-function looksRelevant(text: string) {
+function hasTerm(text: string, terms: string[]) {
   const lower = text.toLowerCase();
-  return tenderTerms.some(term => lower.includes(term.toLowerCase()));
+  return terms.some(term => lower.includes(term.toLowerCase()));
+}
+
+function looksRelevant(text: string) {
+  return hasTerm(text, tenderTerms) && hasTerm(text, industryContextTerms);
 }
 
 function titleFrom(record: TelegramTenderRecord) {
-  const explicit = safeText(record.title);
+  const explicit = safeText(record.titleEn || record.title);
   if (explicit) return explicit.slice(0, 180);
   const text = safeText(record.text, "Telegram tender signal");
   const firstSentence = text.split(/[.!؟。؛\n]/).find(Boolean) || text;
@@ -110,14 +124,15 @@ function titleFrom(record: TelegramTenderRecord) {
 }
 
 function scoreTender(text: string) {
-  let score = 42;
-  if (/tender|bid|rfp|rfq|procurement|مناقصة|عطاء|استدراج عروض|طلب عروض/i.test(text)) score += 24;
-  if (/prequalification|pre-qualification|eoi|expression of interest|تأهيل مسبق|إبداء اهتمام/i.test(text)) score += 14;
-  if (/award|awarded|contract award|إحالة|ترسية/i.test(text)) score += 10;
-  if (/deadline|closing date|extension|clarification|تمديد|توضيح/i.test(text)) score += 8;
-  if (/data center|cloud|fiber|network|telecom|power|oil|gas|اتصالات|شبكة|ألياف|كهرباء|نفط|غاز/i.test(text)) score += 12;
-  const capped = Math.min(score, 84);
-  return { score: capped, priority: capped >= 74 ? "P1" : capped >= 62 ? "P2" : "WATCH" };
+  let score = 28;
+  if (/tender|bid|rfp|rfq|procurement|مناقصة|عطاء|استدراج عروض|طلب عروض/i.test(text)) score += 22;
+  if (/prequalification|pre-qualification|eoi|expression of interest|تأهيل مسبق|إبداء اهتمام/i.test(text)) score += 10;
+  if (/award|awarded|contract award|إحالة|ترسية/i.test(text)) score += 8;
+  if (/deadline|closing date|extension|clarification|تمديد|توضيح/i.test(text)) score += 6;
+  if (/data center|datacentre|cloud|fiber|network|telecom|ict|software|cybersecurity|power|oil|gas|اتصالات|شبكة|ألياف|كهرباء|نفط|غاز/i.test(text)) score += 12;
+  if (/iraq|iraqi|jordan|jordanian|lebanon|lebanese|العراق|الأردن|لبنان/i.test(text)) score += 4;
+  const capped = Math.min(score, 78);
+  return { score: capped, priority: capped >= 68 ? "P1" : capped >= 54 ? "P2" : "WATCH" };
 }
 
 function dateToMs(value: string | undefined, fallback: number) {
@@ -139,18 +154,22 @@ function stableRecordId(record: TelegramTenderRecord, countryCode: string) {
 async function upsertTenderSignal(db: D1Database, record: TelegramTenderRecord, now: number) {
   const country = normalizeCountry(record.country);
   const text = safeText(record.text);
-  if (!country || !text || !looksRelevant(text)) return { skipped: true, existing: false };
+  const translatedText = safeText(record.translatedText);
+  const hasArabic = /[\\u0600-\\u06FF]/.test(text);
+  if (!country || !text || !looksRelevant(`${record.titleEn || record.title || ""} ${translatedText} ${text}`)) return { skipped: true, existing: false };
+  if (hasArabic && (!translatedText || /[\\u0600-\\u06FF]/.test(translatedText) || record.translationStatus !== "translated")) return { skipped: true, existing: false };
 
   const id = stableRecordId(record, country.code);
   const existing = await db.prepare("SELECT id FROM opportunities WHERE id = ?").bind(id).first<{ id: string }>();
   const title = titleFrom(record);
-  const industry = normalizeIndustry(`${title} ${text}`);
-  const { score, priority } = scoreTender(`${title} ${text}`);
+  const analysisText = `${title} ${translatedText || text}`;
+  const industry = normalizeIndustry(analysisText);
+  const { score, priority } = scoreTender(analysisText);
   const sourceName = `Telegram Tender · ${safeText(record.channelTitle || record.channel, "Public Channel")}`;
   const sourceUrl = safeText(record.url);
   const publishedAt = dateToMs(record.publishedAt, now);
-  const stage = /award|awarded|إحالة|ترسية/i.test(text) ? "Telegram公告：授标/结果" : /clarification|extension|تمديد|توضيح/i.test(text) ? "Telegram公告：澄清/延期" : "Telegram公告：招投标信息";
-  const summary = `Telegram招投标公告线索：${text.slice(0, 420)}${text.length > 420 ? "…" : ""}。需复核正式采购编号、截标日期、采购单位、联系人、附件和可拆分ICT工作包。`;
+  const stage = /award|awarded|contract award|إحالة|ترسية/i.test(analysisText) ? "Award / result notice" : /clarification|extension|تمديد|توضيح/i.test(analysisText) ? "Clarification / extension notice" : "Tender / procurement notice";
+  const summary = `Telegram procurement lead (machine-translated where applicable): ${(translatedText || text).slice(0, 900)}${(translatedText || text).length > 900 ? "…" : ""} Review the original source to verify tender ID, deadline, procuring entity, contacts, attachments and ICT work packages.`;
 
   await db.prepare(`
     INSERT INTO opportunities (
@@ -204,9 +223,19 @@ async function upsertTenderSignal(db: D1Database, record: TelegramTenderRecord, 
     publishedAt,
   ).run();
 
-  await db.prepare("INSERT INTO evidence (id, opportunity_id, kind, excerpt, source_url, collected_at) VALUES (?, ?, ?, ?, ?, ?)")
-    .bind(crypto.randomUUID(), id, "telegram_tender", text.slice(0, 900), sourceUrl, now)
-    .run();
+  const evidenceExcerpt = translatedText
+    ? `English translation: ${translatedText.slice(0, 1400)}\n\nOriginal source text: ${text.slice(0, 1400)}`
+    : text.slice(0, 900);
+  const existingEvidence = sourceUrl
+    ? await db.prepare("SELECT id FROM evidence WHERE opportunity_id = ? AND kind = ? AND source_url = ? LIMIT 1").bind(id, "telegram_tender", sourceUrl).first<{ id: string }>()
+    : await db.prepare("SELECT id FROM evidence WHERE opportunity_id = ? AND kind = ? AND excerpt = ? LIMIT 1").bind(id, "telegram_tender", evidenceExcerpt).first<{ id: string }>();
+  if (existingEvidence) {
+    await db.prepare("UPDATE evidence SET excerpt = ?, collected_at = ? WHERE id = ?").bind(evidenceExcerpt, now, existingEvidence.id).run();
+  } else {
+    await db.prepare("INSERT INTO evidence (id, opportunity_id, kind, excerpt, source_url, collected_at) VALUES (?, ?, ?, ?, ?, ?)")
+      .bind(crypto.randomUUID(), id, "telegram_tender", evidenceExcerpt, sourceUrl, now)
+      .run();
+  }
 
   return { skipped: false, existing: Boolean(existing), id };
 }
@@ -254,11 +283,11 @@ export async function POST(request: Request) {
     errors: payload.errors ?? [],
   });
   const summary = status === "failed"
-    ? `Telegram招投标雷达采集失败：${(payload.errors ?? ["unknown error"]).join("; ").slice(0, 480)}`
-    : `Telegram招投标雷达采集完成：抓取${stats.fetchedMessages ?? records.length}条，命中${stats.relevantMessages ?? opportunityIds.length}条；新增${inserted}条，更新${updated}条，跳过${skipped}条。`;
+    ? `Telegram Tender Radar failed: ${(payload.errors ?? ["unknown error"]).join("; ").slice(0, 480)}`
+    : `Telegram Tender Radar: fetched ${stats.fetchedMessages ?? records.length}, tender/sector matches ${stats.relevantMessages ?? opportunityIds.length}, translated ${stats.translatedMessages ?? 0}, inserted ${inserted}, updated ${updated}, skipped ${skipped}. Verified promotions: 0; manual review required.`
 
   await db.prepare("INSERT INTO source_scan_runs (id, trigger, status, source_count, new_lead_count, updated_lead_count, promoted_count, summary, metadata, started_at, finished_at, next_run_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-    .bind(runId, "github_actions_telegram", status, stats.channels ?? 0, inserted, updated, opportunityIds.length, summary, metadata, now, finishedAt, nextRunAt)
+    .bind(runId, "github_actions_telegram", status, stats.channels ?? 0, inserted, updated, 0, summary, metadata, now, finishedAt, nextRunAt)
     .run();
   await db.prepare("INSERT INTO audit_logs (id, actor_id, action, entity_type, entity_id, metadata, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
     .bind(crypto.randomUUID(), "github-actions", "telegram.tender_ingested", "source_scan_run", runId, metadata, finishedAt)
