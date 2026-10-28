@@ -735,6 +735,28 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
         {canInternal ? <button className="add-action">＋ {tr(lang,"添加跟进动作","Add follow-up")}</button> : null}
       </div>}
 
+      <section className="meed-intelligence-section">
+        <div className="section-label">{tr(lang,"项目进展与最新动态","Project progress & latest intelligence")} <span>{tr(lang,"MEED 来源字段","MEED source fields")}</span></div>
+        <div className="meed-intel-grid">
+          {([
+            { key: "milestones", title: tr(lang,"关键项目里程碑","Key project milestones"), value: item.keyProjectMilestones },
+            { key: "updates", title: tr(lang,"新闻与进展更新","News and updates"), value: item.newsAndUpdates },
+            { key: "latest", title: tr(lang,"最新新闻","Latest news"), value: item.latestNews },
+          ] as const).map(entry => (
+            <details className="meed-intel-card" key={entry.key}>
+              <summary>
+                <span className="meed-intel-summary-copy"><strong>{entry.title}</strong><small>{entry.value ? tr(lang,"已采集 · 点击查看内容","Collected · click to view") : tr(lang,"暂无来源数据 · 点击查看说明","No source data · click for details")}</small></span>
+                <span className={entry.value ? "meed-intel-status available" : "meed-intel-status"}>{entry.value ? "＋" : "—"}</span>
+              </summary>
+              <div className={entry.value ? "meed-intel-content" : "meed-intel-content missing"}>
+                {entry.value
+                  ? entry.value
+                  : tr(lang,"本次 MEED 导出尚未提供该字段。系统不会根据项目名称编造里程碑或新闻；可在后续采集包含此字段的授权记录后自动补充。","This MEED export did not provide this field. The system will not invent milestones or news from the project title; it can be populated by a later authorized export that includes the field.")}
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
       <div className="detail-footer">
         <div className="owner-block"><span className="avatar">{canInternal ? item.ownerInitials : "ZW"}</span><span><small>{canInternal ? tr(lang,"机会 Owner","Opportunity owner") : tr(lang,"华为伙伴经理","Huawei partner manager")}</small><strong>{canInternal ? item.owner : "赵文君"}</strong></span></div>
         {canInternal ? <div className="detail-actions">
