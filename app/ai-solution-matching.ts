@@ -143,20 +143,30 @@ export async function analyzeOpportunitySolutions(
   const failures: string[] = [];
   const analyzedAt = new Date().toISOString();
 
-  // Keep each prompt bounded and reduce request count for a typical MEED batch.
-  for (let offset = 0; offset < opportunities.length; offset += 4) {
-    const batch = opportunities.slice(offset, offset + 4);
-    try {
-      const matches = await callModel(endpoint, apiKey, model, batch, catalog);
-      for (const opportunity of batch) {
-        const solutions = matches.get(opportunity.meedId) ?? [];
-        output.set(opportunity.meedId, { model, analyzedAt, solutions });
-      }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "unknown error";
-      failures.push(`batch ${Math.floor(offset / 4) + 1}: ${message}`.slice(0, 900));
-      console.error("[MTL] AI solution matching batch failed:", message);
-    }
+  // Keep prompts bounded, but process a few batches concurrently. Sequential
+  // 45-second requests can exceed the caller's ~5-minute fetch window for 100+ projects.
+  const batchSize = 4;
+  const batches: Array<{ index: number; opportunities: AiOpportunityInput[] }> = [];
+  for (let offset = 0; offset < opportunities.length; offset += batchSize) {
+    batches.push({ index: Math.floor(offset / batchSize) + 1, opportunities: opportunities.slice(offset, offset + batchSize) });
   }
+  let nextBatch = 0;
+  const concurrency = Math.min(6, batches.length);
+  await Promise.all(Array.from({ length: concurrency }, async () => {
+    while (nextBatch < batches.length) {
+      const batch = batches[nextBatch++];
+      try {
+        const matches = await callModel(endpoint, apiKey, model, batch.opportunities, catalog);
+        for (const opportunity of batch.opportunities) {
+          const solutions = matches.get(opportunity.meedId) ?? [];
+          output.set(opportunity.meedId, { model, analyzedAt, solutions });
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "unknown error";
+        failures.push(`batch ${batch.index}: ${message}`.slice(0, 900));
+        console.error("[MTL] AI solution matching batch failed:", message);
+      }
+    }
+  }));
   return { analyses: output, model, configured: true, inputCount: opportunities.length, failures };
 }
