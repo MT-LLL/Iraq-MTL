@@ -640,7 +640,13 @@ export async function analyzeOpportunityWithAI(opportunityId: string) {
   });
 
   const analysis = result.analyses.get(externalId);
-  if (!analysis) throw new Error(result.failures[0] || "AI_ANALYSIS_NO_RESULT");
+  if (!analysis) {
+    // Return a serializable failure instead of throwing from a Server Action;
+    // production RSC hides thrown messages and only exposes a generic digest.
+    const detail = result.failures[0] || "AI_ANALYSIS_NO_RESULT";
+    console.error("[MTL] On-demand AI analysis produced no result:", detail);
+    return { ok: false as const, error: detail.slice(0, 500), opportunityId: id };
+  }
   const now = new Date();
   await db.update(storedOpportunities).set({
     solutionMatches: JSON.stringify(analysis),
