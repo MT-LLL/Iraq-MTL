@@ -61,7 +61,7 @@ export function scoreOpportunity(input:OpportunityScoringInput):OpportunityScori
  ];
  const score=parts.reduce((s,p)=>s+p.value,0);
  const priority=score>=80?"P0":score>=70?"P1":score>=58?"P2":"WATCH";
- const evidenceCount=[input.title||input.titleEn,input.summary||input.projectScope,input.stage,fundingKnown?funding:"",amount>0?"amount":"",input.bidDeadline,input.milestones,(input.contactsCount||0)>0?"contact":""].filter(Boolean).length;
+ const evidenceCount=[input.title||input.titleEn,scope?"scope":"",input.stage,fundingKnown?funding:"",amount>0?"amount":"",input.bidDeadline,input.milestones,(input.contactsCount||0)>0?"contact":""].filter(Boolean).length;
  const confidence=Number(Math.min(.92,Math.max(.25,.25+evidenceCount*.075+(scope?.12:0)+(solutions.some(s=>s.rationale.includes("项目关键词"))?.08:0))).toFixed(2));
  return {score,priority,confidence,solutions,scoreParts:parts};
 }
