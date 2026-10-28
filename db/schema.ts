@@ -40,6 +40,7 @@ export const opportunities = sqliteTable("opportunities", {
   keyProjectMilestones: text("key_project_milestones"),
   newsAndUpdates: text("news_and_updates"),
   latestNews: text("latest_news"),
+  solutionMatches: text("solution_matches"),
   ownerId: text("owner_id").references(() => users.id),
   sourceName: text("source_name").notNull(),
   sourceUrl: text("source_url"),
