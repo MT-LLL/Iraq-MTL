@@ -1,4 +1,6 @@
 import { env } from "cloudflare:workers";
+import { huaweiOfficialSolutionCatalog } from "../../data";
+import { analyzeOpportunitySolutions, type AiSolutionAnalysis } from "../../ai-solution-matching";
 
 type MeedRecord = {
   meedId?: string;
@@ -68,6 +70,12 @@ type MeedIngestPayload = {
 type EnvWithSecrets = {
   DB?: D1Database;
   MEED_INGEST_TOKEN?: string;
+  MOONSHOT_API_KEY?: string;
+  MOONSHOT_MODEL?: string;
+  MOONSHOT_API_BASE_URL?: string;
+  ZHIPU_API_KEY?: string;
+  ZHIPU_MODEL?: string;
+  ZHIPU_API_BASE_URL?: string;
 };
 
 const countryMap: Record<string, { zh: string; code: string; fallbackCity: string }> = {
@@ -203,7 +211,7 @@ function mergeParentChildRecords(records: MeedRecord[]) {
   return [...merged.values()];
 }
 
-async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number) {
+async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number, aiAnalysis?: AiSolutionAnalysis) {
   const country = normalizeCountry(record.country);
   const meedId = safeText(record.meedId);
   const title = safeText(record.title);
@@ -237,6 +245,7 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     fundingStatus: "MEED待核实",
     bidDeadline: record.awardDate, contactsCount: 0,
     milestones: keyProjectMilestones,
+    ...(aiAnalysis ? { aiSolutions: aiAnalysis.solutions } : {}),
   });
   const { score, priority, confidence } = scoring;
   const updatedAt = dateToMs(record.updatedOn) ?? now;
@@ -307,6 +316,19 @@ async function upsertOpportunity(db: D1Database, record: MeedRecord, now: number
     updatedAt,
   ).run();
 
+  if (aiAnalysis) {
+    const analysisPayload = JSON.stringify(aiAnalysis);
+    const existingAiEvidence = await db.prepare("SELECT id FROM evidence WHERE opportunity_id = ? AND kind = ? LIMIT 1")
+      .bind(id, "ai_solution_match").first<{ id: string }>();
+    if (existingAiEvidence) {
+      await db.prepare("UPDATE evidence SET excerpt = ?, source_url = ?, collected_at = ? WHERE id = ?")
+        .bind(analysisPayload, "https://e.huawei.com/cn/products-and-solutions", now, existingAiEvidence.id).run();
+    } else {
+      await db.prepare("INSERT INTO evidence (id, opportunity_id, kind, excerpt, source_url, collected_at) VALUES (?, ?, ?, ?, ?, ?)")
+        .bind(crypto.randomUUID(), id, "ai_solution_match", analysisPayload, "https://e.huawei.com/cn/products-and-solutions", now).run();
+    }
+  }
+
   // Persist contact/role-chain records separately from the project row. Existing
   // contacts are upserted by a stable ID, so weekly imports do not create duplicates.
   for (const contact of (record.contacts ?? []).slice(0, 50)) {
@@ -367,9 +389,30 @@ export async function POST(request: Request) {
   const changedOpportunities: Array<{ id: string; title: string; changedFields: string[] }> = [];
   const newlyAdded: Array<{ id: string; title: string; country: string; industry: string; priority: string; score: number; projectValue: number | null }> = [];
   const readbackFailures: Array<{ id: string; expectedProjectValue: number | null; persisted: unknown }> = [];
+  const aiConfig = configuredEnv();
+  const aiAnalyses = await analyzeOpportunitySolutions(
+    records.filter(record => safeText(record.meedId) && safeText(record.title)).map(record => ({
+      meedId: safeText(record.meedId),
+      title: safeText(record.title),
+      industry: [record.industry, record.sector, record.subSector].map(value => safeText(value)).filter(Boolean).join(" / "),
+      stage: safeText(record.stage || record.status),
+      background: [record.projectDescription, record.projectObjectives].map(value => safeText(value)).filter(Boolean).join("\\n\\n").slice(0, 2400),
+      scope: safeText(record.projectScope).slice(0, 2400),
+    })),
+    huaweiOfficialSolutionCatalog,
+    {
+      moonshotApiKey: aiConfig.MOONSHOT_API_KEY,
+      moonshotModel: aiConfig.MOONSHOT_MODEL,
+      moonshotBaseUrl: aiConfig.MOONSHOT_API_BASE_URL,
+      zhipuApiKey: aiConfig.ZHIPU_API_KEY,
+      zhipuModel: aiConfig.ZHIPU_MODEL,
+      zhipuBaseUrl: aiConfig.ZHIPU_API_BASE_URL,
+    },
+  );
 
   for (const record of records) {
-    const result = await upsertOpportunity(db, record, now);
+    const aiAnalysis = aiAnalyses.get(safeText(record.meedId));
+    const result = await upsertOpportunity(db, record, now, aiAnalysis);
     if (result.skipped) {
       skipped += 1;
     } else if (result.existing) {
