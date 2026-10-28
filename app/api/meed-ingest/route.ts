@@ -1,6 +1,7 @@
 import { env } from "cloudflare:workers";
 import { huaweiOfficialSolutionCatalog } from "../../data";
 import { analyzeOpportunitySolutions, type AiSolutionAnalysis } from "../../ai-solution-matching";
+import { scoreOpportunity } from "../../opportunity-scoring";
 
 type MeedRecord = {
   meedId?: string;
