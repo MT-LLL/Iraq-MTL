@@ -91,7 +91,8 @@ async function callModel(
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       model,
-      temperature: 0.1,
+      // Kimi K2.6 only accepts temperature=1; other providers keep the conservative default.
+      temperature: /^kimi-k2/i.test(model) ? 1 : 0.1,
       max_tokens: 8000,
       messages: [
         { role: "system", content: "Return concise, evidence-grounded JSON only. Never invent project scope." },
