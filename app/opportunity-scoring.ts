@@ -29,7 +29,7 @@ function inferIndustry(t:string) {
 export function scoreOpportunity(input:OpportunityScoringInput):OpportunityScoringResult {
  const raw=[input.title,input.titleEn,input.industry,input.stage,input.summary,input.projectScope].filter(Boolean).join(" ");
  const t=norm(raw); const industry=inferIndustry(t)||input.industry||"";
- const solutions = input.aiSolutions?.length
+ const solutions = input.aiSolutions !== undefined
    ? input.aiSolutions.slice().sort((a,b)=>b.fit-a.fit).slice(0,4).map(solution=>({
        domain: solution.domain,
        name: solution.name,
