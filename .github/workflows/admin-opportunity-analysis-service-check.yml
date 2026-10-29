@@ -27,10 +27,10 @@ jobs:
           status="$(curl --silent --show-error --output response.json --write-out '%{http_code}' --max-time 20 \
             -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
             -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET" \
-            "https://iraq-mtl.lihui9329.workers.dev/api/admin-opportunity-analysis?diagnoseIdentity=1")"
+            "https://iraq-mtl.lihui9329.workers.dev/api/admin-opportunity-analysis?priority=P0%2CP1%2CP2&limit=1")"
           echo "Service-token endpoint HTTP status: $status"
           if [[ "$status" == "200" ]]; then
-            node -e 'const fs=require("fs"), crypto=require("crypto"); const d=JSON.parse(fs.readFileSync("response.json","utf8")).diagnostic||{}; const h=crypto.createHash("sha256").update(process.env.CF_ACCESS_CLIENT_ID).digest("hex"); console.log(JSON.stringify({verified:d.verified,reason:d.reason,issuerMatches:d.issuerMatches,audienceMatches:d.audienceMatches,commonNameHashMatchesClientId:d.commonNameSha256===h,commonNameSha256:d.commonNameSha256,tokenType:d.tokenType,hasCommonNameClaim:d.hasCommonNameClaim},null,2));'
+            node -e 'const fs=require("fs"); const x=JSON.parse(fs.readFileSync("response.json","utf8")); console.log(JSON.stringify({ok:x.ok,source:x.source,count:x.count,hasOpportunities:Array.isArray(x.opportunities)},null,2));'
             exit 0
           fi
           # Do not print response bodies that could contain project data.
