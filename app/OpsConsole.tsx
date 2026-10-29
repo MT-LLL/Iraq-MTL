@@ -1462,7 +1462,10 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
     let active = true;
     let busy = false;
     const refreshOpportunityData = async () => {
-      if (busy) return;
+      // The detail panel is a read-heavy view over the currently selected record.
+      // Pause the periodic full-catalog refresh while it is open so a background
+      // D1 scan cannot compete with detail rendering / other Worker requests.
+      if (busy || detailOpen) return;
       busy = true;
       try {
         const [rows, runs, count, refreshedAt] = await Promise.all([getManualOpportunities(), getSourceScanRuns(), getSourceScanRunCount(), getLatestOpportunityRefreshAt()]);
@@ -1477,7 +1480,7 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
     };
     const timer = window.setInterval(() => { void refreshOpportunityData(); }, 30000);
     return () => { active = false; window.clearInterval(timer); };
-  }, [profile?.identityType, profile?.status]);
+  }, [profile?.identityType, profile?.status, detailOpen]);
 
   const showToast = (message: string) => { setToast(message); window.setTimeout(() => setToast(''), 2800); };
   const filtered = useMemo(() => allOpportunities.filter(item => {
