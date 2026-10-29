@@ -21,7 +21,7 @@ jobs:
           CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
         run: |
           set -euo pipefail
-          echo "Checking sanitized Access identity metadata after the latest Worker deployment; no opportunity rows are requested."
+          echo "Checking sanitized Access identity metadata after the verified Worker deployment; response logging remains aggregate-only."
           test -n "$CF_ACCESS_CLIENT_ID" || { echo "Missing CF_ACCESS_CLIENT_ID secret"; exit 1; }
           test -n "$CF_ACCESS_CLIENT_SECRET" || { echo "Missing CF_ACCESS_CLIENT_SECRET secret"; exit 1; }
           status="$(curl --silent --show-error --output response.json --write-out '%{http_code}' --max-time 20 \
