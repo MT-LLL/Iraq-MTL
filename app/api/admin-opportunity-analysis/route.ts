@@ -80,10 +80,6 @@ async function verifyAccessJwt(request: Request): Promise<AccessIdentity | null>
     if (typeof claims.nbf === "number" && claims.nbf > now + 30) return null;
     const email = claims.email?.trim().toLowerCase();
     const isAdmin = Boolean(email && configuredAdmin(email));
-    // Least-privilege exception: the existing MEED ingest service identity may use
-    // this specific analysis endpoint, but is not granted general admin access.
-    const isMeedIngestService = claims.common_name === "MTL GitHub Actions MEED Ingest";
-    if (!isAdmin && !isMeedIngestService) return null;
 
     const keysResponse = await fetch(`${expectedIssuer}/cdn-cgi/access/certs`, {
       headers: { accept: "application/json" },
@@ -111,58 +107,19 @@ async function verifyAccessJwt(request: Request): Promise<AccessIdentity | null>
       signedContent,
     );
     if (!valid) return null;
+    // Least-privilege exception: bind the existing MEED service caller to the SHA-256
+    // fingerprint of its common_name claim (the claim equals the Access client ID).
+    // The fingerprint is not a credential and is scoped only to this analysis endpoint.
+    const commonName = claims.common_name ?? "";
+    const commonNameDigest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(commonName));
+    const commonNameHash = Array.from(new Uint8Array(commonNameDigest)).map(byte => byte.toString(16).padStart(2, "0")).join("");
+    const isMeedIngestService = commonNameHash === "50d18cf3d45c5ba8bb46544975f3811e08ca867d66bc034cfd5e86377e6ab478";
+    if (!isAdmin && !isMeedIngestService) return null;
     if (isAdmin && email) return { actorId: email, kind: "admin" };
     if (isMeedIngestService) return { actorId: "service:MTL GitHub Actions MEED Ingest", kind: "service" };
     return null;
   } catch {
     return null;
-  }
-}
-
-async function inspectAccessJwt(request: Request) {
-  const configuration = runtimeEnv();
-  const teamDomain = (configuration.CF_ACCESS_TEAM_DOMAIN ?? "").trim().replace(/^https?:/i, "").replaceAll("/", "");
-  const expectedAudience = (configuration.CF_ACCESS_AUD ?? "").trim();
-  const token = request.headers.get("cf-access-jwt-assertion");
-  const base = { hasToken: Boolean(token), hasTeamDomain: Boolean(teamDomain), hasExpectedAudience: Boolean(expectedAudience) };
-  if (!teamDomain || !expectedAudience || !token) return { ...base, verified: false, reason: "missing_configuration_or_token" };
-  const parts = token.split(".");
-  if (parts.length !== 3) return { ...base, verified: false, reason: "malformed_token" };
-  try {
-    const claims = decodeJsonPart<AccessClaims>(parts[1]);
-    const header = decodeJsonPart<{ alg?: string; kid?: string }>(parts[0]);
-    const now = Math.floor(Date.now() / 1000);
-    const audiences = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
-    const expectedIssuer = `https://${teamDomain}`;
-    const issuerMatches = claims.iss === expectedIssuer;
-    const audienceMatches = audiences.includes(expectedAudience);
-    const notExpired = typeof claims.exp === "number" && claims.exp > now;
-    const nbfValid = typeof claims.nbf !== "number" || claims.nbf <= now + 30;
-    if (!issuerMatches || !audienceMatches || !notExpired || !nbfValid || header.alg !== "RS256" || !header.kid) {
-      return { ...base, verified: false, reason: "claims_or_header_check_failed", issuerMatches, audienceMatches, notExpired, nbfValid, algorithmIsRs256: header.alg === "RS256", hasKeyId: Boolean(header.kid), claimKeys: Object.keys(claims).sort() };
-    }
-    const keysResponse = await fetch(`${expectedIssuer}/cdn-cgi/access/certs`, { headers: { accept: "application/json" }, signal: AbortSignal.timeout(4000) });
-    if (!keysResponse.ok) return { ...base, verified: false, reason: "jwks_fetch_failed", jwksStatus: keysResponse.status, issuerMatches, audienceMatches, notExpired, nbfValid };
-    const keySet = await keysResponse.json() as { keys?: Array<JsonWebKey & { kid?: string; alg?: string }> };
-    const jwk = keySet.keys?.find(key => key.kid === header.kid && (!key.alg || key.alg === "RS256"));
-    if (!jwk) return { ...base, verified: false, reason: "signing_key_not_found", issuerMatches, audienceMatches, notExpired, nbfValid, keyIdFound: false };
-    const publicKey = await crypto.subtle.importKey("jwk", jwk, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["verify"]);
-    const valid = await crypto.subtle.verify("RSASSA-PKCS1-v1_5", publicKey, decodeBase64Url(parts[2]), new TextEncoder().encode(`${parts[0]}.${parts[1]}`));
-    const email = claims.email?.trim().toLowerCase();
-    return {
-      ...base, verified: valid, reason: valid ? "signature_verified" : "signature_invalid",
-      issuerMatches, audienceMatches, notExpired, nbfValid, algorithmIsRs256: true,
-      claimKeys: Object.keys(claims).sort(), hasEmailClaim: Boolean(email),
-      emailIsConfiguredAdmin: Boolean(email && configuredAdmin(email)),
-      commonNameSha256: typeof claims.common_name === "string" ? Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(claims.common_name)))).map(byte => byte.toString(16).padStart(2, "0")).join("") : null,
-      subjectSha256: typeof (claims as AccessClaims & { sub?: unknown }).sub === "string" ? Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode((claims as AccessClaims & { sub: string }).sub)))).map(byte => byte.toString(16).padStart(2, "0")).join("") : null,
-      tokenType: typeof (claims as AccessClaims & { type?: unknown }).type === "string" ? (claims as AccessClaims & { type?: string }).type : null,
-      commonNameMatchesMeedService: claims.common_name === "MTL GitHub Actions MEED Ingest",
-      hasCommonNameClaim: Boolean(claims.common_name),
-      audienceCount: audiences.filter(Boolean).length
-    };
-  } catch {
-    return { ...base, verified: false, reason: "diagnostic_exception" };
   }
 }
 
@@ -175,10 +132,6 @@ async function authorize(request: Request) {
 }
 
 export async function GET(request: Request) {
-  const url = new URL(request.url);
-  if (url.searchParams.get("diagnoseIdentity") === "1") {
-    return json({ diagnostic: await inspectAccessJwt(request) });
-  }
   const auth = await authorize(request);
   if ("response" in auth) return auth.response;
 
