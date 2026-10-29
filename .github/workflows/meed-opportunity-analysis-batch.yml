@@ -18,6 +18,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Analyze production MEED opportunities and verify D1 readback
         shell: bash
         env:
@@ -33,11 +45,12 @@ jobs:
           test -n "$API_KEY" || { echo "Missing MOONSHOT_API_KEY or KIMI_API_KEY; no records changed."; exit 1; }
           export API_KEY
           node --input-type=module <<'NODE'
-          const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
-          const token = process.env.CLOUDFLARE_API_TOKEN;
+          import fs from 'node:fs';
+          import os from 'node:os';
+          import path from 'node:path';
+          import { execFileSync } from 'node:child_process';
+
           const apiKey = process.env.API_KEY;
-          const databaseId = '8def12cd-f8fd-4578-9e88-5e5e80c92a0c';
-          const d1Url = 'https://api.cloudflare.com/client/v4/accounts/' + accountId + '/d1/database/' + databaseId + '/query';
           const referenceId = 'MEED-IQ-20855';
           const promptVersion = 'meed-scope-fit-v1';
           const actorId = 'service:MTL Batch Opportunity Analysis';
@@ -48,42 +61,66 @@ jobs:
               return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
             } catch { return {}; }
           };
-          async function d1(sql, params = [], label = 'D1 query') {
-            let last;
-            for (let attempt = 1; attempt <= 3; attempt++) {
-              try {
-                const response = await fetch(d1Url, {
-                  method: 'POST',
-                  headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ sql, params }),
-                  signal: AbortSignal.timeout(60000)
-                });
-                const body = await response.json().catch(() => ({}));
-                if (response.ok && body.success && Array.isArray(body.result)) return body.result;
-                last = new Error(label + ' HTTP ' + response.status + ' ' + JSON.stringify(body.errors || []).slice(0, 300));
-                if (response.status < 500 && response.status !== 429) break;
-              } catch (error) { last = error; }
-              await sleep(attempt * 1500);
-            }
-            throw new Error(label + ' failed: ' + String(last?.message || last));
+          function quote(value) {
+            if (value === null || value === undefined) return 'NULL';
+            if (typeof value === 'number' && Number.isFinite(value)) return String(value);
+            return "'" + String(value).replace(/'/g, "''") + "'";
           }
-          const opportunityResults = await d1(
-            "SELECT id, external_id AS externalId, title, title_en AS titleEn, country, city, industry, stage, priority, score, confidence, project_value AS projectValue, addressable_value AS addressableValue, currency, funding_status AS fundingStatus, bid_deadline AS bidDeadline, summary, key_project_milestones AS keyProjectMilestones, news_and_updates AS newsAndUpdates, latest_news AS latestNews, solution_matches AS solutionMatches, source_name AS sourceName, source_url AS sourceUrl, updated_at AS updatedAt FROM opportunities WHERE priority IN ('P0','P1','P2') AND (source_name LIKE '%MEED%' OR id LIKE 'MEED-%') ORDER BY CASE priority WHEN 'P0' THEN 0 WHEN 'P1' THEN 1 ELSE 2 END, score DESC, updated_at DESC LIMIT 200",
-            [], 'Read MEED opportunities'
-          );
-          const rows = opportunityResults[0]?.results || [];
+          function wrangler(sql, label, asFile = false) {
+            const args = ['wrangler', 'd1', 'execute', 'mssd_mtl_prod', '--remote', '--json'];
+            let filePath;
+            if (asFile) {
+              filePath = path.join(os.tmpdir(), 'mtl-analysis-' + crypto.randomUUID() + '.sql');
+              fs.writeFileSync(filePath, sql, { mode: 0o600 });
+              args.push('--file=' + filePath);
+            } else {
+              args.push('--command', sql);
+            }
+            try {
+              const output = execFileSync('npx', args, { encoding: 'utf8', env: process.env, maxBuffer: 50 * 1024 * 1024, timeout: 120000 });
+              const starts = [output.indexOf('['), output.indexOf('{')].filter(index => index >= 0);
+              if (!starts.length) throw new Error('No JSON output');
+              const raw = output.slice(Math.min(...starts));
+              let parsed;
+              try { parsed = JSON.parse(raw); }
+              catch {
+                const lastArray = raw.lastIndexOf(']');
+                const lastObject = raw.lastIndexOf('}');
+                const end = Math.max(lastArray, lastObject);
+                if (end < 0) throw new Error('Invalid JSON output');
+                parsed = JSON.parse(raw.slice(0, end + 1));
+              }
+              if (Array.isArray(parsed)) {
+                const failed = parsed.find(item => item.success === false || item.error);
+                if (failed) throw new Error(JSON.stringify(failed.error || failed));
+              } else if (parsed.success === false || parsed.error) throw new Error(JSON.stringify(parsed.error || parsed));
+              return parsed;
+            } catch (error) {
+              throw new Error(label + ' failed: ' + String(error?.message || error).slice(0, 500));
+            } finally {
+              if (filePath) try { fs.unlinkSync(filePath); } catch {}
+            }
+          }
+          function rowsFrom(result) {
+            if (Array.isArray(result)) {
+              for (const item of result) if (Array.isArray(item?.results)) return item.results;
+              for (const item of result) if (Array.isArray(item?.result?.results)) return item.result.results;
+            }
+            if (Array.isArray(result?.results)) return result.results;
+            if (Array.isArray(result?.result?.results)) return result.result.results;
+            return [];
+          }
+          const query = "SELECT id, external_id AS externalId, title, title_en AS titleEn, country, city, industry, stage, priority, score, confidence, project_value AS projectValue, addressable_value AS addressableValue, currency, funding_status AS fundingStatus, bid_deadline AS bidDeadline, summary, key_project_milestones AS keyProjectMilestones, news_and_updates AS newsAndUpdates, latest_news AS latestNews, solution_matches AS solutionMatches, source_name AS sourceName, source_url AS sourceUrl, updated_at AS updatedAt FROM opportunities WHERE priority IN ('P0','P1','P2') AND (source_name LIKE '%MEED%' OR id LIKE 'MEED-%') ORDER BY CASE priority WHEN 'P0' THEN 0 WHEN 'P1' THEN 1 ELSE 2 END, score DESC, updated_at DESC LIMIT 200";
+          const rows = rowsFrom(wrangler(query, 'Read MEED opportunities'));
           const opportunities = rows.filter(row => String(row.id) !== referenceId);
           console.log(JSON.stringify({ step: 'read', totalReturned: rows.length, referencePreserved: rows.some(row => String(row.id) === referenceId), queuedForAnalysis: opportunities.length }));
           if (!opportunities.length) {
             console.log('No non-reference MEED opportunities returned; no writes required.');
             process.exit(0);
           }
-          const evidenceResults = await d1(
-            "SELECT e.opportunity_id AS opportunityId, e.kind, e.excerpt, e.source_url AS sourceUrl, e.collected_at AS collectedAt FROM evidence e INNER JOIN opportunities o ON o.id = e.opportunity_id WHERE (o.source_name LIKE '%MEED%' OR o.id LIKE 'MEED-%') ORDER BY e.collected_at DESC LIMIT 5000",
-            [], 'Read MEED evidence'
-          );
+          const evidenceRows = rowsFrom(wrangler("SELECT e.opportunity_id AS opportunityId, e.kind, e.excerpt, e.source_url AS sourceUrl, e.collected_at AS collectedAt FROM evidence e INNER JOIN opportunities o ON o.id = e.opportunity_id WHERE (o.source_name LIKE '%MEED%' OR o.id LIKE 'MEED-%') ORDER BY e.collected_at DESC LIMIT 5000", 'Read MEED evidence'));
           const evidenceById = new Map();
-          for (const item of evidenceResults[0]?.results || []) {
+          for (const item of evidenceRows) {
             const id = String(item.opportunityId);
             const list = evidenceById.get(id) || [];
             if (list.length < 8) list.push(item);
@@ -206,52 +243,40 @@ jobs:
           const writeNow = Date.now();
           for (let i = 0; i < updates.length; i += 25) {
             const chunk = updates.slice(i, i + 25);
-            const caseParts = [];
-            const caseParams = [];
+            const statements = [];
             for (const item of chunk) {
-              caseParts.push('WHEN ? THEN ?');
               const original = rows.find(row => String(row.id) === item.opportunityId);
               const previous = parseObject(original?.solutionMatches);
-              const merged = { ...previous, opportunityAnalysis: { ...item.analysis, analyzedBy: actorId, source: 'ChatGPT-assisted manual analysis', scoreMeaning: 'Scope-to-Huawei-solution fit; not win probability or project value' } };
-              caseParams.push(item.opportunityId, JSON.stringify(merged));
-            }
-            const ids = chunk.map(item => item.opportunityId);
-            const placeholders = ids.map(() => '?').join(',');
-            await d1(
-              'UPDATE opportunities SET solution_matches = CASE id ' + caseParts.join(' ') + ' ELSE solution_matches END, updated_at = ? WHERE id IN (' + placeholders + ')',
-              [...caseParams, writeNow, ...ids],
-              'Write analysis chunk ' + (Math.floor(i / 25) + 1)
-            );
-            const valuesSql = chunk.map(() => '(?,?,?,?,?,?,?)').join(',');
-            const auditParams = [];
-            for (const item of chunk) {
-              const original = rows.find(row => String(row.id) === item.opportunityId);
-              auditParams.push(crypto.randomUUID(), actorId, 'opportunity.scope_fit_analysis_saved', 'opportunity', item.opportunityId, JSON.stringify({
+              const merged = {
+                ...previous,
+                opportunityAnalysis: {
+                  ...item.analysis,
+                  analyzedBy: actorId,
+                  source: 'ChatGPT-assisted manual analysis',
+                  scoreMeaning: 'Scope-to-Huawei-solution fit; not win probability or project value'
+                }
+              };
+              statements.push('UPDATE opportunities SET solution_matches = ' + quote(JSON.stringify(merged)) + ', updated_at = ' + writeNow + ' WHERE id = ' + quote(item.opportunityId) + ';');
+              const metadata = JSON.stringify({
                 promptVersion,
                 fitScore: item.analysis.fitScore,
                 analyzedAt: item.analysis.analyzedAt,
                 previousValuePreserved: Boolean(original?.solutionMatches)
-              }), writeNow);
+              });
+              statements.push('INSERT INTO audit_logs (id, actor_id, action, entity_type, entity_id, metadata, created_at) VALUES (' +
+                [crypto.randomUUID(), actorId, 'opportunity.scope_fit_analysis_saved', 'opportunity', item.opportunityId, metadata, writeNow].map(quote).join(', ') + ');');
             }
-            await d1(
-              'INSERT INTO audit_logs (id, actor_id, action, entity_type, entity_id, metadata, created_at) VALUES ' + valuesSql,
-              auditParams,
-              'Write audit chunk ' + (Math.floor(i / 25) + 1)
-            );
+            wrangler(statements.join('\n'), 'Write analysis and audit chunk ' + (Math.floor(i / 25) + 1), true);
             savedCount += chunk.length;
             console.log(JSON.stringify({ step: 'writeback', chunk: Math.floor(i / 25) + 1, saved: chunk.length, totalSaved: savedCount }));
           }
           const ids = updates.map(item => item.opportunityId);
-          const verifyParts = ids.map(() => '?').join(',');
-          const verifyResults = await d1(
-            'SELECT id, solution_matches AS solutionMatches FROM opportunities WHERE id IN (' + verifyParts + ')',
-            ids,
-            'Readback verification'
-          );
-          const verifiedRows = new Map((verifyResults[0]?.results || []).map(row => [String(row.id), row]));
+          const verifySql = 'SELECT id, solution_matches AS solutionMatches FROM opportunities WHERE id IN (' + ids.map(quote).join(',') + ')';
+          const verifiedRows = rowsFrom(wrangler(verifySql, 'Readback verification'));
+          const verified = new Map(verifiedRows.map(row => [String(row.id), row]));
           const mismatches = [];
           for (const [id, expected] of analyzed) {
-            const actual = parseObject(parseObject(verifiedRows.get(id)?.solutionMatches).opportunityAnalysis);
+            const actual = parseObject(parseObject(verified.get(id)?.solutionMatches).opportunityAnalysis);
             if (actual.promptVersion !== promptVersion || actual.fitScore !== expected.fitScore || actual.priority !== expected.priority || !actual.analyzedAt) mismatches.push(id);
           }
           if (mismatches.length) {
