@@ -323,26 +323,6 @@ function OpportunityList({ items, activeId, selectedIds, lang, canInternal, onSe
     <div className="opportunity-list">
       {items.map((item) => {
         const contact = contactStatus(item, lang);
-  // Use the real saved English analysis when English is selected; only fall back
-  // to the legacy top-level fields for records that have not been backfilled yet.
-  const localizedAnalysisText = item.opportunityAnalysis
-    ? (lang === "en"
-        ? item.opportunityAnalysis.bilingualAnalysis?.en
-        : item.opportunityAnalysis.bilingualAnalysis?.zh)
-    : undefined;
-  const displayedAnalysis = item.opportunityAnalysis
-    ? {
-        ...item.opportunityAnalysis,
-        ...localizedAnalysisText,
-        demandSummary: localizedAnalysisText?.demandSummary ?? item.opportunityAnalysis.demandSummary,
-        recommendedHuaweiSolutions: localizedAnalysisText?.recommendedHuaweiSolutions ?? item.opportunityAnalysis.recommendedHuaweiSolutions,
-        scoreRationale: localizedAnalysisText?.scoreRationale ?? item.opportunityAnalysis.scoreRationale,
-        risks: localizedAnalysisText?.risks ?? item.opportunityAnalysis.risks,
-        nextActions: localizedAnalysisText?.nextActions ?? item.opportunityAnalysis.nextActions,
-        evidence: localizedAnalysisText?.evidence ?? item.opportunityAnalysis.evidence,
-        factsVsInference: localizedAnalysisText?.factsVsInference ?? item.opportunityAnalysis.factsVsInference,
-      }
-    : undefined;
         return (
         <div className="opportunity-row-wrap" key={item.id}>
           <label className="op-select" title={tr(lang,"选择此机会用于批量操作","Select this opportunity for bulk actions")}><input type="checkbox" aria-label={tr(lang,`选择机会：${item.title}`,`Select opportunity: ${item.titleEn || item.title}`)} checked={selectedIds.has(item.id)} onChange={event => { event.stopPropagation(); onToggle(item); }}/><span aria-hidden="true"></span></label>
@@ -368,6 +348,27 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisError, setAnalysisError] = useState("");
   const contact = contactStatus(item, lang);
+    // Use the real saved English analysis when English is selected; only fall back
+    // to the legacy top-level fields for records that have not been backfilled yet.
+    const localizedAnalysisText = item.opportunityAnalysis
+      ? (lang === "en"
+          ? item.opportunityAnalysis.bilingualAnalysis?.en
+          : item.opportunityAnalysis.bilingualAnalysis?.zh)
+      : undefined;
+    const displayedAnalysis = item.opportunityAnalysis
+      ? {
+          ...item.opportunityAnalysis,
+          ...localizedAnalysisText,
+          demandSummary: localizedAnalysisText?.demandSummary ?? item.opportunityAnalysis.demandSummary,
+          recommendedHuaweiSolutions: localizedAnalysisText?.recommendedHuaweiSolutions ?? item.opportunityAnalysis.recommendedHuaweiSolutions,
+          scoreRationale: localizedAnalysisText?.scoreRationale ?? item.opportunityAnalysis.scoreRationale,
+          risks: localizedAnalysisText?.risks ?? item.opportunityAnalysis.risks,
+          nextActions: localizedAnalysisText?.nextActions ?? item.opportunityAnalysis.nextActions,
+          evidence: localizedAnalysisText?.evidence ?? item.opportunityAnalysis.evidence,
+          factsVsInference: localizedAnalysisText?.factsVsInference ?? item.opportunityAnalysis.factsVsInference,
+        }
+      : undefined;
+  
   const availableTabs = canInternal
     ? ([['insight',tr(lang,'AI 洞察','AI Insight')],['score',tr(lang,'评分拆解','Score Breakdown')],['contacts',tr(lang,'联系人','Contacts')],['evidence',tr(lang,'来源证据','Evidence')],['actions',tr(lang,'行动计划','Action Plan')],['milestones',tr(lang,'关键项目里程碑','Key project milestones')],['updates',tr(lang,'新闻与进展更新','News and updates')],['latest',tr(lang,'最新新闻','Latest news')]] as const)
     : ([['insight',tr(lang,'线索全貌','Lead Overview')],['contacts',tr(lang,'联系人','Contacts')],['evidence',tr(lang,'公开来源','Public Sources')],['actions',tr(lang,'伙伴动作','Partner Actions')],['milestones',tr(lang,'关键项目里程碑','Key project milestones')],['updates',tr(lang,'新闻与进展更新','News and updates')],['latest',tr(lang,'最新新闻','Latest news')]] as const);
