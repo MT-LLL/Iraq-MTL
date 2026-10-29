@@ -1,4 +1,318 @@
 {
-  "mode": "fetch",
-  "analyses": []
+  "mode": "writeback",
+  "analyses": [
+    {
+      "opportunityId": "MEED-IQ-491924",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "Iraq's Ministry of Transport is advancing an approximately 1,200 km Development Road corridor combining highway, electrified railway, stations, logistics facilities and industrial zones. The record says road design is about 95% and railway design about 90% complete, but completion dates across phases are duplicated and inconsistent. Huawei's plausible entry points are corridor communications, fiber/IP networking, station digitization and operational data platforms—not assuming direct responsibility for railway signaling or train control.",
+        "recommendedHuaweiSolutions": [
+          "Fiber backbone and IP/MPLS transport connecting the port, stations, logistics nodes and corridor facilities, subject to tender scope",
+          "Data-center/cloud infrastructure for logistics, asset, ticketing or operations applications, subject to owner confirmation",
+          "Video surveillance, cybersecurity and unified operations for stations and logistics parks, subject to package boundaries"
+        ],
+        "scoreRationale": "The large corridor explicitly includes railway-related communications work and logistics facilities, creating potential demand for networks, data centers and security infrastructure. However, no standalone ICT package is confirmed, and total project value is not Huawei-addressable value; fit is medium-high rather than top-tier.",
+        "risks": [
+          "Milestones for different phases are duplicated or inconsistent and need verification",
+          "Railway signaling, train control and other safety-critical systems require qualified specialist vendors and cannot be replaced by general communications capability",
+          "The reported USD 17 billion is the whole corridor value, not ICT budget or Huawei-addressable revenue",
+          "The source URL is a MEED project-list/export query rather than a verifiable project-detail page"
+        ],
+        "nextActions": [
+          "Confirm with the Ministry of Transport and design/planning consultants whether ICT, fiber, operations-center and station-digitization packages will be tendered separately",
+          "Obtain the master plan, communications architecture and phased implementation schedule",
+          "Map the port–stations–logistics parks–operations-center network and define interfaces with signaling systems",
+          "Verify prequalification and main-contract tender dates"
+        ],
+        "evidence": [
+          "MEED summary: approximately 1,200 km of six-lane highway and 1,200 km of railway linking Al-Faw Port to the Turkish border",
+          "Scope includes railway electrification, stations, logistics facilities, industrial zones and operational support facilities",
+          "Latest News says road design is about 95% and railway design about 90% complete; update date needs verification",
+          "Source is MEED Projects GitHub Actions; source URL is a MEED listing query"
+        ],
+        "factsVsInference": "Facts: The summary lists road, railway, stations, logistics facilities and railway electrification; Latest News reports design progress of about 95% for the road and 90% for the railway. Inference: corridor backbone communications, station networking and operations-center IT may be needed. Unverified: ICT budget, Huawei eligibility, standalone ICT package scope and current tender dates."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-11226",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "The opportunity describes a crude-oil export pipeline from Haditha toward Syria, with pumping stations, storage tanks and supporting facilities, while also mixing in historical Kirkuk–Baniyas pipeline background. The record says technical and financial feasibility studies are complete. Potential Huawei scope is enterprise communications, site transport, data-center infrastructure and cybersecurity; oil-process control and safety-instrumented systems should not be assumed to be Huawei scope.",
+        "recommendedHuaweiSolutions": [
+          "IP/MPLS or optical transport connecting pumping stations, storage facilities and operations centers, only if included in the communications package",
+          "Oil-and-gas enterprise data-center and disaster-recovery infrastructure, subject to the owner's IT architecture",
+          "Cybersecurity and industrial-network segmentation with the OT/process-control vendor, without taking over safety-critical control"
+        ],
+        "scoreRationale": "A large cross-border pipeline with pumping stations and storage may require site communications and operational IT, but the description mixes historical background with current scope and does not clearly list SCADA/fiber/ICT procurement packages. Evidence is insufficient for a high fit score.",
+        "risks": [
+          "The summary mixes current scope with historical pipeline information from 1952, 2007 and 2010; clarify the actual project scope",
+          "The route toward Syria introduces geopolitical, financing, sanctions and cross-border delivery risks",
+          "The reported USD 9 billion is not Huawei-addressable ICT value",
+          "No clear recent news or independently verifiable project-detail link is available"
+        ],
+        "nextActions": [
+          "Confirm the approved route, cross-border endpoint, capacity and current approval status with the owner",
+          "Identify vendors responsible for communications, SCADA, pumping-station control and cybersecurity",
+          "Pursue only if a separate communications/IT package exists; otherwise keep on watchlist",
+          "Conduct cross-border compliance, financing and implementation-risk reviews"
+        ],
+        "evidence": [
+          "MEED summary lists pipeline, pumping stations, gas processing, storage tanks and related facilities",
+          "Latest News says technical and financial feasibility studies have been completed",
+          "The summary also contains historical Kirkuk–Baniyas pipeline context that must be separated from current scope"
+        ],
+        "factsVsInference": "Facts: The record lists pumping stations, storage and gas-processing facilities and says feasibility studies are complete. Inference: remote sites may require transport and operational IT. Unverified: current cross-border scope, SCADA/communications procurement boundaries, financing, sanctions status and Huawei eligibility."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-48010",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "The Basra–Haditha strategic crude-oil pipeline record describes an approximately 685 km, 56-inch pipeline designed for about 2.25 million barrels per day. Scope explicitly includes automated SCADA, a fiber communications backbone, control rooms, metering/flow control and automatic leak detection. This creates a clearer digital-infrastructure angle than a generic pipeline project. Huawei should focus on transport networking, enterprise IT, data centers and cybersecurity, with clear boundaries against pipeline SCADA/process-control vendors.",
+        "recommendedHuaweiSolutions": [
+          "Fiber transport and IP/MPLS networking linking control rooms, pumping stations, metering stations and operations facilities",
+          "Control-center data-center, backup and storage infrastructure for operational and historical data, subject to design confirmation",
+          "Industrial cybersecurity and secure access, including segmentation, logging and maintenance security, coordinated with the SCADA integrator",
+          "Site communications and unified network management without replacing process-control or safety-instrumented systems"
+        ],
+        "scoreRationale": "SCADA, fiber backbone, control rooms and automatic leak detection are explicitly named, creating concrete communications and IT entry points. However, pipeline control and safety automation will likely be led by specialist oil-and-gas automation vendors; Huawei's opportunity depends on separate communications/IT packages and specifications.",
+        "risks": [
+          "The recorded Main Contract PQ stage and timeline may be stale and need verification",
+          "Leak detection, valve interlocks and process safety are high-risk OT functions and should not be assumed to be Huawei deliverables",
+          "The record may overlap thematically or in scope with MEED-IQ-11226 and other pipeline records",
+          "The reported USD 5 billion is not an ICT budget"
+        ],
+        "nextActions": [
+          "Obtain the owner's communications design, fiber route, pump-station count and control-center architecture",
+          "Identify the EPC and SCADA vendor and confirm whether communications networking is separately procured",
+          "Prepare reference architecture for fiber/IP networking, control-center IT and cybersecurity",
+          "Verify PQ shortlist, tender dates and potential duplication with other pipeline records"
+        ],
+        "evidence": [
+          "Scope: 56-inch Basra–Haditha pipeline of about 685 km, designed capacity about 2.25 million bpd",
+          "Scope explicitly lists SCADA, fiber communications backbone, control rooms and automatic leak detection",
+          "Latest News says technical and financial feasibility studies are complete",
+          "Source is MEED Projects GitHub Actions; source URL is a MEED listing query"
+        ],
+        "factsVsInference": "Facts: Scope explicitly lists SCADA, fiber communications backbone, control rooms and automatic leak detection. Inference: Huawei may fit transport networking, control-center IT and cybersecurity packages. Unverified: final EPC, SCADA vendor, ICT budget, bid eligibility and relationships with other pipeline records."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-511620",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "The Aqaba green-hydrogen/green-ammonia record describes an integrated industrial facility with about 550 MW of solar PV, electrolysis, desalination, nitrogen production and ammonia synthesis, targeting operation around 2030 and financial close around 2027. Huawei's potential scope is limited to plant communications, data-center infrastructure, cybersecurity and energy digitization; no explicit ICT procurement package is currently evidenced.",
+        "recommendedHuaweiSolutions": [
+          "Industrial-campus IP networking and secure access for offices and auxiliary facilities, with OT isolation defined by the owner/process vendor",
+          "Operations-center data-center and disaster recovery for production management and enterprise applications, subject to data-residency and cloud policy",
+          "Solar-plant digitization and communications, subject to confirmation of the PV EPC and equipment tender boundaries"
+        ],
+        "scoreRationale": "The project is large and technically complex and includes renewable energy, but the available scope focuses on process and energy equipment rather than explicit communications, data-center or cybersecurity packages. Potential ICT demand exists but remains weakly evidenced, so this remains a watchlist-level fit.",
+        "risks": [
+          "The project is early-stage; financial close and financing conditions are unconfirmed",
+          "Electrolyzers, ammonia synthesis and process control are normally handled by specialist technology vendors; Huawei should not be positioned as the primary process-control supplier",
+          "The title refers to green hydrogen while the summary also refers to green ammonia; final product and project boundaries need confirmation",
+          "The reported USD 1 billion is not Huawei-addressable value"
+        ],
+        "nextActions": [
+          "Identify the owner, developer, technology licensors and EPC adviser",
+          "Confirm communications/IT scope across the 550 MW PV plant, storage, desalination and process facilities",
+          "Build developer relationships before financial close and FEED/EPC tender milestones",
+          "Only count digital-energy or ICT opportunities when a defined package exists"
+        ],
+        "evidence": [
+          "MEED summary: about 550 MW solar PV, electrolysis, nitrogen production, ammonia synthesis and desalination",
+          "Latest News says the project is early-stage and financial close is expected around September 2027",
+          "Milestones list tendering, construction and commissioning in 2027–2030; dates require verification"
+        ],
+        "factsVsInference": "Facts: The record describes a 550 MW PV and green-hydrogen/green-ammonia integrated facility, with financial close expected in 2027. Inference: communications, enterprise IT and cybersecurity infrastructure may be required. Unverified: final product scope, ICT budget, equipment vendors, Huawei eligibility and specific tender packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-574294",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "The Lebanon electricity-generation record combines 350 MW of solar PV, a battery-storage component reported as 1,000 MW/MWh, and distributed dual-fuel power plants, with grid connections, transmission lines, substations and commissioning/integration. Latest News says the EOI deadline was extended to 30 September 2026; that date has passed and the shortlist/tender status must be checked immediately. Huawei's potential scope includes PV digitization, communications, storage-monitoring interfaces and cybersecurity.",
+        "recommendedHuaweiSolutions": [
+          "Utility-scale PV digitization and monitoring, subject to technical specifications and EPC package scope",
+          "Power-plant/substation communications and operations-center connectivity using reliable IP transport and unified management",
+          "Energy operations data platform and cybersecurity, with clear boundaries from grid dispatch and protection systems"
+        ],
+        "scoreRationale": "The PV and storage scale is explicit and suggests potential digital-energy and communications needs. However, the record also includes dual-fuel generation and does not prove that inverters, BESS or communications equipment will be separately procured. The EOI milestone has passed, so current validity must be verified first.",
+        "risks": [
+          "EOI deadline was 30 September 2026 and has passed; confirm any extension, shortlist or cancellation",
+          "Storage capacity is inconsistent: one field says 1,000 MW while the summary says 1,000 MWh; verify power and energy ratings",
+          "Grid protection, dispatch and safety control must comply with utility rules and be separated from ordinary IT networking",
+          "The reported USD 1.2 billion is not Huawei-addressable value"
+        ],
+        "nextActions": [
+          "Verify EOI results, shortlisted developers and the next RFP timetable",
+          "Identify EPCs and equipment suppliers for PV, BESS, thermal generation and grid connection",
+          "Resolve the storage power-versus-energy unit discrepancy",
+          "Check whether Huawei digital-energy, site communications and cybersecurity solutions can be specified by the owner/developer"
+        ],
+        "evidence": [
+          "Scope: five grid-connected PV projects totaling 350 MW, storage reported as 1,000 MW/MWh, and dual-fuel generation",
+          "Scope includes grid connection, transmission lines, substations and integration",
+          "Latest News says the EOI deadline was extended from 31 August to 30 September 2026"
+        ],
+        "factsVsInference": "Facts: The project includes 350 MW PV, storage and dual-fuel generation; the recorded EOI deadline has passed. Inference: digital-energy, communications and cybersecurity may be relevant. Unverified: current procurement status, correct storage capacity, equipment specifications, shortlist and Huawei eligibility."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-19800",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "This project covers about 101 km of double-track railway from Al-Faw to Basra, designed for 140 km/h passenger and 100 km/h freight services. Scope explicitly includes stations, bridges, signaling/communications, overhead electrification and track. Huawei's potential fit is railway transport networking, fiber/IP, station networks and operations-center IT; signaling, train control and other safety-critical railway systems must remain with qualified railway signaling suppliers.",
+        "recommendedHuaweiSolutions": [
+          "Railway fiber transport and IP/MPLS networking connecting stations, operations centers and trackside communications nodes",
+          "Station and operations-center data-center/network infrastructure for operations applications, subject to owner requirements",
+          "Cybersecurity and unified management for railway communications, without replacing signaling/train-control systems"
+        ],
+        "scoreRationale": "Signaling and communications are explicitly listed, and route/station/speed details are specific, indicating real communications needs. However, signaling may include safety-critical train-control scope, so Huawei's role must be defined by tender specifications and the specialist railway integrator.",
+        "risks": [
+          "The Main Contract PQ/tender timeline may be stale",
+          "Signaling may include safety-critical functions; separate these strictly from transport networking",
+          "The reported USD 900 million is not the communications budget",
+          "This may be a child package under MEED-IQ-491924 Development Road; avoid double counting"
+        ],
+        "nextActions": [
+          "Confirm whether this 101 km railway section is a separate contract package under the wider Development Road",
+          "Obtain communications specifications, trackside fiber design and station-network architecture",
+          "Identify the railway systems integrator, signaling vendor and Huawei-eligible subcontract scope",
+          "Verify PQ shortlist, tender dates and package boundaries"
+        ],
+        "evidence": [
+          "Scope: 101 km double-track Al-Faw–Basra railway, passenger design speed 140 km/h and freight 100 km/h",
+          "Scope explicitly includes signaling/communications, stations, bridges and overhead electrification",
+          "Latest News says railway design work is progressing"
+        ],
+        "factsVsInference": "Facts: Scope lists signaling and communications for a railway section of about 101 km. Inference: railway transport networking, station networks and operations-center IT may fit Huawei. Unverified: signaling/train-control design, procurement packaging, systems integrator and contractual relationship to the wider Development Road."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-39570",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "The Haditha refinery project plans about 70,000 bpd capacity, with crude distillation, hydrotreating, storage tanks, utilities, wastewater treatment, DCS, fire-and-gas detection and environmental controls. Huawei could consider refinery enterprise IT, data-center, campus communications and cybersecurity infrastructure; DCS, fire-and-gas detection and process-safety controls should remain with specialist process-automation vendors.",
+        "recommendedHuaweiSolutions": [
+          "Refinery enterprise data-center, backup and disaster recovery for ERP, asset management and operations support, subject to the owner's IT plan",
+          "Campus backbone, wireless coverage and network segmentation for offices, warehouses and non-safety-critical facilities",
+          "Cybersecurity and operations visibility coordinated with OT vendors and the owner's security architecture, without replacing DCS/fire-and-gas systems"
+        ],
+        "scoreRationale": "The refinery scope clearly includes DCS and safety detection, showing a complex digital environment, but those core control systems are specialist automation scope and no separate ICT/data-center package is identified. Huawei fit is moderate-to-low pending confirmation of enterprise IT and communications scope.",
+        "risks": [
+          "The project still shows Study stage; tender, financing and final approval status need confirmation",
+          "DCS, fire-and-gas detection and safety-instrumented systems are safety-critical and should not be promised as replacements for specialist suppliers",
+          "MEED says no further updates were obtained; milestones may be estimates or rolling updates",
+          "The reported USD 350 million is not Huawei-addressable value"
+        ],
+        "nextActions": [
+          "Identify the FEED consultant, EPC strategy and main process-automation vendor",
+          "Ask whether enterprise IT, data-center, campus network and cybersecurity are separately procured",
+          "Confirm owner requirements for data residency, industrial segmentation and cybersecurity",
+          "Keep low priority if no distinct ICT package exists"
+        ],
+        "evidence": [
+          "Scope: approximately 70,000 bpd refinery with distillation, hydrotreating, storage and utilities",
+          "Scope explicitly lists DCS, fire-and-gas detection and environmental controls",
+          "Latest News says MEED has no further update and adjusted dates"
+        ],
+        "factsVsInference": "Facts: Scope lists refinery process units, DCS, fire-and-gas detection and environmental controls. Inference: enterprise IT, networking and security infrastructure may be needed. Unverified: FEED/EPC arrangements, ICT tender package, automation vendor, project approval and financing."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-400385",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "The record describes an approximately 400 MW off-grid solar PV plant near Al-Zubair to supply oilfields and gas-processing facilities. Scope includes substations, PV modules, transformers, feeders and transmission lines. SCADA, communications and storage are not explicitly specified, so Huawei's potential scope is mainly digital energy, site communications and plant monitoring, subject to EPC requirements.",
+        "recommendedHuaweiSolutions": [
+          "Assess Huawei PV inverters and related monitoring against the plant design and EPC specifications",
+          "Communications between PV equipment/sites, substations and the operations center, subject to protocol and interface confirmation",
+          "Operations data and cybersecurity for performance monitoring, alarms and remote maintenance if included in procurement"
+        ],
+        "scoreRationale": "The 400 MW scale and defined PV/electrical facilities suggest a potential digital-energy opportunity, but the scope does not explicitly identify storage, SCADA, control-center or communications packages and the record has no recent update. Keep it at watchlist level; not all electrical equipment is Huawei scope.",
+        "risks": [
+          "The project is listed as Study with no confirmed procurement or financing progress",
+          "The scope mentions PV modules, turbines and generators, which may mix different generation configurations or indicate data-quality issues",
+          "Storage, SCADA, communications and monitoring packages are not specified",
+          "The reported USD 400 million is not Huawei-addressable value"
+        ],
+        "nextActions": [
+          "Confirm whether this is pure PV, hybrid generation or a combined package with existing oil-and-gas power facilities",
+          "Obtain the single-line diagram, grid/off-grid architecture, inverter specification and monitoring requirements",
+          "Check whether Basra Gas Company and the EPC accept Huawei digital-energy solutions",
+          "Keep on watchlist until procurement timing and owner specifications are clear"
+        ],
+        "evidence": [
+          "MEED summary: approximately 400 MW off-grid solar PV near Al-Zubair for oilfields and gas-processing facilities",
+          "Scope lists substations, PV modules, transformers, feeders and transmission lines",
+          "Latest News says MEED has not obtained further updates"
+        ],
+        "factsVsInference": "Facts: The record describes an approximately 400 MW off-grid PV project and lists electrical infrastructure. Inference: PV monitoring, communications and operations platforms may be needed. Unverified: whether the configuration is pure PV, storage/SCADA scope, equipment suppliers, tender schedule and Huawei eligibility."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-384010",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "The JPMC/Transpet Aqaba phosphoric-acid plant record describes capacity of about 300,000 tonnes per year, with acid production, feedstock handling, acid storage, utilities, water treatment and site infrastructure. Communications, data-center and cybersecurity procurement are not explicitly listed, so Huawei's potential entry is limited to general industrial-campus IT and networking pending confirmation of a separate ICT package.",
+        "recommendedHuaweiSolutions": [
+          "Enterprise networking and wireless coverage for offices, warehouses and non-safety-critical areas, subject to owner confirmation",
+          "Enterprise IT data-center and backup for business applications and operations data, subject to IT strategy",
+          "Cybersecurity and segmentation coordinated with the process-control vendor, without replacing DCS or process controls"
+        ],
+        "scoreRationale": "The chemical production scope and supporting facilities are clear, but there is no evidence of a separate ICT tender or Huawei-specific package. Potential fit is lower than projects explicitly listing fiber, SCADA or communications.",
+        "risks": [
+          "The summary says the PMC-services tender deadline was extended to 30 September 2026, which has passed; verify subsequent status",
+          "Process automation, chemical safety and process control are usually handled by specialist engineering/automation vendors",
+          "Project description and current tender stage need confirmation from JPMC/Transpet",
+          "The reported USD 400 million is not an ICT budget"
+        ],
+        "nextActions": [
+          "Verify the PMC tender result, owner organization and FEED/EPC arrangements",
+          "Confirm whether site IT, communications, data-center and cybersecurity are separately procured",
+          "Obtain technical specifications and package lists from JPMC/Transpet or the project consultant",
+          "Reduce tracking frequency if no separate ICT scope exists"
+        ],
+        "evidence": [
+          "MEED summary: phosphoric-acid production capacity of about 300,000 tonnes/year",
+          "Scope includes production units, feedstock handling, acid storage, utilities, water supply and wastewater treatment",
+          "Latest News says the PMC-services tender deadline was extended to 30 September 2026"
+        ],
+        "factsVsInference": "Facts: Scope includes phosphoric-acid production, utilities and water treatment; Latest News refers to the PMC-services tender deadline. Inference: campus networking, enterprise IT and cybersecurity may be needed. Unverified: separate ICT procurement, EPC strategy, owner IT architecture and Huawei eligibility."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-564482",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "The Jordan Advanced Company record describes an integrated phosphoric-acid and specialty-fertilizer complex across Eshidiyah and Aqaba, with sulphuric acid, merchant/high-purity phosphoric acid, MAP, MKP and NPK lines, plus utilities, water recycling, wastewater treatment, storage/logistics and laboratories. ICT systems are not explicitly listed; Huawei's potential scope is enterprise networking, data-center infrastructure and cybersecurity, subject to package confirmation.",
+        "recommendedHuaweiSolutions": [
+          "Industrial-campus enterprise networking and wireless access for administration, labs, warehouses and non-safety-critical areas",
+          "Enterprise data-center and backup for production management, quality and business applications, subject to deployment strategy",
+          "Cybersecurity and IT/OT segmentation with the process-automation integrator, with clear boundaries"
+        ],
+        "scoreRationale": "The complex spans multiple production lines, labs and supporting facilities, so enterprise IT and networking may be needed. However, no communications, data-center, SCADA or cybersecurity tender package is evidenced, limiting fit.",
+        "risks": [
+          "The record remains at Study stage; approval, financing and EPC packaging require verification",
+          "Process control and safety systems for multiple chemical lines should be handled by specialist automation vendors",
+          "Latest News lists an engineering-consultancy tender deadline of 26 October 2026, which has passed; verify extension or award",
+          "The reported USD 600 million is not Huawei-addressable value"
+        ],
+        "nextActions": [
+          "Verify engineering-consultancy tender outcome, FEED progress and final investment decision",
+          "Confirm whether Eshidiyah and Aqaba scopes and procurement packages are separate",
+          "Obtain requirements for site IT, networks, laboratory systems and cybersecurity",
+          "Engage JPMC/APC and project consultants, but progress only when ICT scope is defined"
+        ],
+        "evidence": [
+          "MEED summary: integrated sulphuric acid, phosphoric acid, MAP, MKP and NPK fertilizer production",
+          "Scope includes water supply/recycling, wastewater treatment, storage/logistics, administration, laboratories and safety monitoring",
+          "Latest News lists engineering-consultancy tender deadline as 26 October 2026"
+        ],
+        "factsVsInference": "Facts: The record describes multiple chemical production lines with water treatment, laboratories and logistics; the engineering-consultancy deadline is recorded as 26 October 2026. Inference: enterprise networking, data-center and cybersecurity may be relevant. Unverified: final approval, financing, EPC packages, ICT budget and Huawei supplier eligibility."
+      }
+    }
+  ]
 }
