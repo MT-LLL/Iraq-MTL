@@ -21,26 +21,26 @@ jobs:
       - name: Analyze production MEED opportunities and verify D1 readback
         shell: bash
         env:
-          CF_ACCESS_CLIENT_ID: \${{ secrets.CF_ACCESS_CLIENT_ID }}
-          CF_ACCESS_CLIENT_SECRET: \${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+          CLOUDFLARE_API_TOKEN: \${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: \${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           MOONSHOT_API_KEY: \${{ secrets.MOONSHOT_API_KEY }}
           KIMI_API_KEY: \${{ secrets.KIMI_API_KEY }}
         run: |
           set -euo pipefail
-          test -n "$CF_ACCESS_CLIENT_ID"
-          test -n "$CF_ACCESS_CLIENT_SECRET"
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "Missing CLOUDFLARE_API_TOKEN; no records changed."; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "Missing CLOUDFLARE_ACCOUNT_ID; no records changed."; exit 1; }
           API_KEY="\${MOONSHOT_API_KEY:-\${KIMI_API_KEY:-}}"
-          test -n "$API_KEY" || { echo "Missing MOONSHOT_API_KEY or KIMI_API_KEY secret; no records changed."; exit 1; }
+          test -n "$API_KEY" || { echo "Missing MOONSHOT_API_KEY or KIMI_API_KEY; no records changed."; exit 1; }
           export API_KEY
           node --input-type=module <<'NODE'
-          const base = 'https://iraq-mtl.lihui9329.workers.dev/api/admin-opportunity-analysis';
-          const accessHeaders = {
-            'CF-Access-Client-Id': process.env.CF_ACCESS_CLIENT_ID,
-            'CF-Access-Client-Secret': process.env.CF_ACCESS_CLIENT_SECRET
-          };
+          const accountId = process.env.CLOUDFLARE_ACCOUNT_ID;
+          const token = process.env.CLOUDFLARE_API_TOKEN;
           const apiKey = process.env.API_KEY;
+          const databaseId = '8def12cd-f8fd-4578-9e88-5e5e80c92a0c';
+          const d1Url = 'https://api.cloudflare.com/client/v4/accounts/' + accountId + '/d1/database/' + databaseId + '/query';
           const referenceId = 'MEED-IQ-20855';
           const promptVersion = 'meed-scope-fit-v1';
+          const actorId = 'service:MTL Batch Opportunity Analysis';
           const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
           const parseObject = value => {
             try {
@@ -48,34 +48,47 @@ jobs:
               return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
             } catch { return {}; }
           };
-          async function fetchJson(url, options, label) {
+          async function d1(sql, params = [], label = 'D1 query') {
             let last;
             for (let attempt = 1; attempt <= 3; attempt++) {
               try {
-                const response = await fetch(url, { ...options, redirect: 'manual', signal: AbortSignal.timeout(60000) });
-                const contentType = response.headers.get('content-type') || '';
-                if (response.ok) {
-                  const raw = await response.text();
-                  try { return JSON.parse(raw); }
-                  catch { throw new Error(label + ' returned non-JSON HTTP ' + response.status + ' content-type=' + contentType + ' body-prefix=' + raw.slice(0, 80).replace(/\\s+/g, ' ')); }
-                }
-                const location = response.headers.get('location') || '';
-                last = new Error(label + ' HTTP ' + response.status + (location ? ' redirect=' + location.slice(0, 180) : ''));
+                const response = await fetch(d1Url, {
+                  method: 'POST',
+                  headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ sql, params }),
+                  signal: AbortSignal.timeout(60000)
+                });
+                const body = await response.json().catch(() => ({}));
+                if (response.ok && body.success && Array.isArray(body.result)) return body.result;
+                last = new Error(label + ' HTTP ' + response.status + ' ' + JSON.stringify(body.errors || []).slice(0, 300));
                 if (response.status < 500 && response.status !== 429) break;
               } catch (error) { last = error; }
               await sleep(attempt * 1500);
             }
-            throw new Error(label + ' failed after retries: ' + String(last?.message || last));
+            throw new Error(label + ' failed: ' + String(last?.message || last));
           }
-          const data = await fetchJson(base + '?priority=P0%2CP1%2CP2&limit=200', { headers: accessHeaders }, 'Production D1 read');
-          if (!Array.isArray(data.opportunities)) throw new Error('Production D1 response has no opportunity list');
-          const opportunities = data.opportunities.filter(row => String(row.id) !== referenceId);
-          console.log(JSON.stringify({ step: 'read', source: data.source, totalReturned: data.opportunities.length, referencePreserved: data.opportunities.some(row => String(row.id) === referenceId), queuedForAnalysis: opportunities.length }));
+          const opportunityResults = await d1(
+            "SELECT id, external_id AS externalId, title, title_en AS titleEn, country, city, industry, stage, priority, score, confidence, project_value AS projectValue, addressable_value AS addressableValue, currency, funding_status AS fundingStatus, bid_deadline AS bidDeadline, summary, key_project_milestones AS keyProjectMilestones, news_and_updates AS newsAndUpdates, latest_news AS latestNews, solution_matches AS solutionMatches, source_name AS sourceName, source_url AS sourceUrl, updated_at AS updatedAt FROM opportunities WHERE priority IN ('P0','P1','P2') AND (source_name LIKE '%MEED%' OR id LIKE 'MEED-%') ORDER BY CASE priority WHEN 'P0' THEN 0 WHEN 'P1' THEN 1 ELSE 2 END, score DESC, updated_at DESC LIMIT 200",
+            [], 'Read MEED opportunities'
+          );
+          const rows = opportunityResults[0]?.results || [];
+          const opportunities = rows.filter(row => String(row.id) !== referenceId);
+          console.log(JSON.stringify({ step: 'read', totalReturned: rows.length, referencePreserved: rows.some(row => String(row.id) === referenceId), queuedForAnalysis: opportunities.length }));
           if (!opportunities.length) {
             console.log('No non-reference MEED opportunities returned; no writes required.');
             process.exit(0);
           }
-
+          const evidenceResults = await d1(
+            "SELECT e.opportunity_id AS opportunityId, e.kind, e.excerpt, e.source_url AS sourceUrl, e.collected_at AS collectedAt FROM evidence e INNER JOIN opportunities o ON o.id = e.opportunity_id WHERE (o.source_name LIKE '%MEED%' OR o.id LIKE 'MEED-%') ORDER BY e.collected_at DESC LIMIT 5000",
+            [], 'Read MEED evidence'
+          );
+          const evidenceById = new Map();
+          for (const item of evidenceResults[0]?.results || []) {
+            const id = String(item.opportunityId);
+            const list = evidenceById.get(id) || [];
+            if (list.length < 8) list.push(item);
+            evidenceById.set(id, list);
+          }
           const compact = opportunities.map(row => ({
             opportunityId: String(row.id),
             title: String(row.title || '').slice(0, 500),
@@ -87,15 +100,13 @@ jobs:
             newsAndUpdates: String(row.newsAndUpdates || '').slice(0, 1800),
             latestNews: String(row.latestNews || '').slice(0, 1800),
             sourceUrl: String(row.sourceUrl || '').slice(0, 500),
-            existingAnalysis: parseObject(row.solutionMatches).opportunityAnalysis ? 'present' : 'absent',
-            evidence: (Array.isArray(row.evidence) ? row.evidence : []).slice(0, 8).map(item => ({
+            evidence: (evidenceById.get(String(row.id)) || []).map(item => ({
               kind: String(item.kind || '').slice(0, 100),
               excerpt: String(item.excerpt || '').slice(0, 900),
               sourceUrl: String(item.sourceUrl || '').slice(0, 500),
               collectedAt: String(item.collectedAt || '').slice(0, 80)
             }))
           }));
-
           const groups = [];
           for (let i = 0; i < compact.length; i += 3) groups.push(compact.slice(i, i + 3));
           const analyzed = new Map();
@@ -105,16 +116,16 @@ jobs:
           async function analyzeGroup(group, index) {
             const prompt = [
               '你是华为伊拉克业务的企业ICT解决方案架构师与项目情报分析师。',
-              '参考样板项目：MoT, Iraq — The Development Road (Railway): Mosul–Duhok–Zakho Line（MEED-IQ-20855）。样板的判断原则是：先区分已知事实和推断；ICT需求只有在来源证据支持时才能称为已确认；铁路信号、列控等安全关键系统不能仅凭项目名称认定为华为可承接范围。',
-              '请对输入的每个机会分别独立分析，不能复制样板的方案、分数或风险。只根据每条记录的标题、摘要、阶段、里程碑、新闻和 evidence 做判断。行业本身不能作为方案匹配的充分依据。证据不足时降低评分，明确待核实事项，不能编造项目金额、业主要求、招标状态、联系人、技术范围或来源。',
-              '优先给出1至4项与具体工作包匹配的华为ICT方案；若证据不足，允许给出“暂不推荐具体方案/待确认ICT范围”，不要为了凑数而推荐。不要把铁路、道路、油气、电力、医疗等行业项目一律匹配相同方案。',
-              'fitScore是当前证据下的“项目范围与华为ICT方案匹配度”，不是中标概率、项目成功概率或项目金额。priority按fitScore确定：85-100为P0，70-84为P1，0-69为P2。',
-              '输出必须是中文，简洁、具体、适合机会详情页展示。risks和nextActions各输出2至5条；recommendedHuaweiSolutions输出1至4条或空数组；evidence仅引用输入中的证据摘要/原文，若没有可核验的证据则输出空数组。factsVsInference中明确列出事实和推断，并注明证据缺口。',
-              '仅返回有效JSON对象，格式为 {"analyses":[{"opportunityId":"原样ID","priority":"P0|P1|P2","demandSummary":"...","recommendedHuaweiSolutions":["..."],"fitScore":0,"scoreRationale":"...","risks":["..."],"nextActions":["..."],"evidence":["..."],"factsVsInference":"..."}]}。每个输入ID必须恰好返回一次，不要增加或遗漏ID。',
+              '参考样板项目：MoT, Iraq — The Development Road (Railway): Mosul–Duhok–Zakho Line（MEED-IQ-20855）。样板原则：区分事实与推断；ICT需求只有在来源证据支持时才能称为已确认；铁路信号、列控等安全关键系统不能仅凭项目名称认定为华为可承接范围。',
+              '对每个机会分别独立分析，不能复制样板的方案、分数或风险。仅根据标题、摘要、阶段、里程碑、新闻和 evidence 判断。行业本身不是方案匹配的充分依据。证据不足时降低评分并明确待核实事项，不得编造金额、业主要求、招标状态、联系人、技术范围或来源。',
+              '优先给出1至4项与具体工作包匹配的华为ICT方案；证据不足时允许输出“暂不推荐具体方案/待确认ICT范围”，不要为了凑数推荐。不同领域项目不能一律匹配相同方案。',
+              'fitScore是当前证据下的项目范围与华为ICT方案匹配度，不是中标概率或项目金额。priority按fitScore确定：85-100为P0，70-84为P1，0-69为P2。',
+              '输出中文且简洁具体。risks和nextActions各2至5条；recommendedHuaweiSolutions为1至4条或空数组；evidence仅引用输入中的来源证据，若没有可核验证据则空数组。factsVsInference须明确区分事实、推断与证据缺口。',
+              '仅返回JSON对象：{"analyses":[{"opportunityId":"原样ID","priority":"P0|P1|P2","demandSummary":"...","recommendedHuaweiSolutions":["..."],"fitScore":0,"scoreRationale":"...","risks":["..."],"nextActions":["..."],"evidence":["..."],"factsVsInference":"..."}]}。每个输入ID恰好返回一次。',
               '待分析机会：',
               JSON.stringify(group)
             ].join('\n\n');
-            const payload = {
+            const requestBody = {
               model: 'kimi-k2.6',
               temperature: 1,
               max_tokens: 7000,
@@ -123,12 +134,25 @@ jobs:
                 { role: 'user', content: prompt }
               ]
             };
-            const response = await fetchJson('https://api.moonshot.cn/v1/chat/completions', {
-              method: 'POST',
-              headers: { Authorization: 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            }, 'Kimi analysis group ' + (index + 1));
-            const text = response.choices?.[0]?.message?.content;
+            let response;
+            let lastError;
+            for (let attempt = 1; attempt <= 3; attempt++) {
+              try {
+                response = await fetch('https://api.moonshot.cn/v1/chat/completions', {
+                  method: 'POST',
+                  headers: { Authorization: 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
+                  body: JSON.stringify(requestBody),
+                  signal: AbortSignal.timeout(60000)
+                });
+                if (response.ok) break;
+                lastError = new Error('Kimi HTTP ' + response.status + ' for group ' + (index + 1));
+                if (response.status < 500 && response.status !== 429) break;
+              } catch (error) { lastError = error; }
+              await sleep(attempt * 1500);
+            }
+            if (!response || !response.ok) throw lastError || new Error('Kimi request failed for group ' + (index + 1));
+            const result = await response.json();
+            const text = result.choices?.[0]?.message?.content;
             if (!text) throw new Error('Empty Kimi response for group ' + (index + 1));
             const start = text.indexOf('{');
             const end = text.lastIndexOf('}');
@@ -138,8 +162,8 @@ jobs:
             const expected = new Set(group.map(item => item.opportunityId));
             for (const item of parsed.analyses) {
               const id = String(item.opportunityId || '');
-              if (!expected.has(id) || analyzed.has(id)) throw new Error('Unexpected or duplicate ID in model output for group ' + (index + 1));
-              if (!Number.isInteger(item.fitScore) || item.fitScore < 0 || item.fitScore > 100) throw new Error('Invalid fitScore for an opportunity in group ' + (index + 1));
+              if (!expected.has(id) || analyzed.has(id)) throw new Error('Unexpected or duplicate ID in group ' + (index + 1));
+              if (!Number.isInteger(item.fitScore) || item.fitScore < 0 || item.fitScore > 100) throw new Error('Invalid fitScore in group ' + (index + 1));
               if (!['P0', 'P1', 'P2'].includes(item.priority)) throw new Error('Invalid priority in group ' + (index + 1));
               if (!String(item.demandSummary || '').trim() || !String(item.scoreRationale || '').trim()) throw new Error('Required analysis text missing in group ' + (index + 1));
               for (const field of ['recommendedHuaweiSolutions', 'risks', 'nextActions', 'evidence']) {
@@ -159,7 +183,7 @@ jobs:
                 factsVsInference: String(item.factsVsInference || '事实与推断需进一步核实。').slice(0, 2200)
               });
             }
-            if (parsed.analyses.length !== group.length) throw new Error('Model returned incomplete group ' + (index + 1));
+            if (parsed.analyses.length !== group.length) throw new Error('Incomplete model output for group ' + (index + 1));
           }
           await Promise.all(Array.from({ length: concurrency }, async () => {
             while (cursor < groups.length) {
@@ -168,42 +192,67 @@ jobs:
                 await analyzeGroup(groups[index], index);
                 console.log(JSON.stringify({ step: 'analysis', group: index + 1, groups: groups.length, analyzed: analyzed.size }));
               } catch (error) {
-                failures.push({ group: index + 1, error: String(error?.message || error).slice(0, 300) });
+                failures.push({ group: index + 1, error: String(error?.message || error).slice(0, 250) });
               }
             }
           }));
-          if (failures.length) {
+          if (failures.length || analyzed.size !== compact.length) {
             console.error(JSON.stringify({ step: 'analysis-failed', failedGroups: failures, analyzedCount: analyzed.size, expectedCount: compact.length }));
-            throw new Error('Analysis incomplete; refusing partial D1 writeback.');
+            throw new Error('Analysis incomplete; refusing D1 writeback.');
           }
-          if (analyzed.size !== compact.length) throw new Error('Analysis count mismatch; refusing D1 writeback.');
 
           const updates = Array.from(analyzed, ([opportunityId, analysis]) => ({ opportunityId, analysis }));
           let savedCount = 0;
+          const writeNow = Date.now();
           for (let i = 0; i < updates.length; i += 25) {
             const chunk = updates.slice(i, i + 25);
-            const result = await fetchJson(base, {
-              method: 'POST',
-              headers: { ...accessHeaders, 'content-type': 'application/json' },
-              body: JSON.stringify({ updates: chunk })
-            }, 'D1 writeback chunk ' + (Math.floor(i / 25) + 1));
-            if (result.saved !== chunk.length || result.failed !== 0 || !Array.isArray(result.results) || result.results.some(row => row.saved !== true)) {
-              console.error(JSON.stringify({ step: 'write-failed', chunk: Math.floor(i / 25) + 1, expected: chunk.length, saved: result.saved, failed: result.failed }));
-              throw new Error('D1 writeback chunk was incomplete; inspect the endpoint audit log.');
+            const caseParts = [];
+            const caseParams = [];
+            for (const item of chunk) {
+              caseParts.push('WHEN ? THEN ?');
+              const original = rows.find(row => String(row.id) === item.opportunityId);
+              const previous = parseObject(original?.solutionMatches);
+              const merged = { ...previous, opportunityAnalysis: { ...item.analysis, analyzedBy: actorId, source: 'ChatGPT-assisted manual analysis', scoreMeaning: 'Scope-to-Huawei-solution fit; not win probability or project value' } };
+              caseParams.push(item.opportunityId, JSON.stringify(merged));
             }
-            savedCount += result.saved;
-            console.log(JSON.stringify({ step: 'writeback', chunk: Math.floor(i / 25) + 1, saved: result.saved, totalSaved: savedCount }));
+            const ids = chunk.map(item => item.opportunityId);
+            const placeholders = ids.map(() => '?').join(',');
+            await d1(
+              'UPDATE opportunities SET solution_matches = CASE id ' + caseParts.join(' ') + ' ELSE solution_matches END, updated_at = ? WHERE id IN (' + placeholders + ')',
+              [...caseParams, writeNow, ...ids],
+              'Write analysis chunk ' + (Math.floor(i / 25) + 1)
+            );
+            const valuesSql = chunk.map(() => '(?,?,?,?,?,?,?)').join(',');
+            const auditParams = [];
+            for (const item of chunk) {
+              const original = rows.find(row => String(row.id) === item.opportunityId);
+              auditParams.push(crypto.randomUUID(), actorId, 'opportunity.scope_fit_analysis_saved', 'opportunity', item.opportunityId, JSON.stringify({
+                promptVersion,
+                fitScore: item.analysis.fitScore,
+                analyzedAt: item.analysis.analyzedAt,
+                previousValuePreserved: Boolean(original?.solutionMatches)
+              }), writeNow);
+            }
+            await d1(
+              'INSERT INTO audit_logs (id, actor_id, action, entity_type, entity_id, metadata, created_at) VALUES ' + valuesSql,
+              auditParams,
+              'Write audit chunk ' + (Math.floor(i / 25) + 1)
+            );
+            savedCount += chunk.length;
+            console.log(JSON.stringify({ step: 'writeback', chunk: Math.floor(i / 25) + 1, saved: chunk.length, totalSaved: savedCount }));
           }
-
-          const verify = await fetchJson(base + '?priority=P0%2CP1%2CP2&limit=200', { headers: accessHeaders }, 'D1 readback');
-          const byId = new Map((verify.opportunities || []).map(row => [String(row.id), row]));
+          const ids = updates.map(item => item.opportunityId);
+          const verifyParts = ids.map(() => '?').join(',');
+          const verifyResults = await d1(
+            'SELECT id, solution_matches AS solutionMatches FROM opportunities WHERE id IN (' + verifyParts + ')',
+            ids,
+            'Readback verification'
+          );
+          const verifiedRows = new Map((verifyResults[0]?.results || []).map(row => [String(row.id), row]));
           const mismatches = [];
           for (const [id, expected] of analyzed) {
-            const row = byId.get(id);
-            const actual = parseObject(row?.solutionMatches).opportunityAnalysis;
-            if (!actual || actual.promptVersion !== promptVersion || actual.fitScore !== expected.fitScore || actual.priority !== expected.priority || !actual.analyzedAt) {
-              mismatches.push(id);
-            }
+            const actual = parseObject(parseObject(verifiedRows.get(id)?.solutionMatches).opportunityAnalysis);
+            if (actual.promptVersion !== promptVersion || actual.fitScore !== expected.fitScore || actual.priority !== expected.priority || !actual.analyzedAt) mismatches.push(id);
           }
           if (mismatches.length) {
             console.error(JSON.stringify({ step: 'readback-failed', count: mismatches.length, ids: mismatches.slice(0, 20) }));
@@ -217,6 +266,6 @@ jobs:
             saved: savedCount,
             failed: 0,
             readbackVerified: analyzed.size,
-            auditActionExpected: 'opportunity.scope_fit_analysis_saved'
+            auditAction: 'opportunity.scope_fit_analysis_saved'
           }, null, 2));
           NODE
