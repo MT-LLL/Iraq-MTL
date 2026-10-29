@@ -392,13 +392,29 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
           <div className="saved-analysis-subsection"><strong>{tr(lang,"华为推荐方案","Recommended Huawei solutions")}</strong>
             {item.opportunityAnalysis.recommendedHuaweiSolutions.length ? <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:8,marginTop:8}}>{item.opportunityAnalysis.recommendedHuaweiSolutions.map((solution,index)=><div key={index} style={{padding:10,border:"1px solid var(--line, #d9dee7)",borderRadius:9,display:"flex",gap:8,alignItems:"flex-start"}}><span style={{fontSize:13,fontWeight:750,color:"var(--accent, #2563eb)"}}>{String(index+1).padStart(2,"0")}</span><span>{exportText(lang,solution)}</span></div>)}</div> : <p>{tr(lang,"现有证据不足以确认具体方案，需先核实项目范围。","Evidence is insufficient to confirm a solution; validate the project scope first.")}</p>}
           </div>
-          <details style={{marginTop:10}}><summary style={{cursor:"pointer",fontWeight:650}}>{tr(lang,"评分依据、风险与下一步","Rationale, risks & next steps")}</summary>
-            <div className="saved-analysis-subsection"><strong>{tr(lang,"匹配依据","Fit rationale")}</strong><p>{exportText(lang,item.opportunityAnalysis.scoreRationale)}</p></div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:12}}>
-              <div className="saved-analysis-subsection"><strong>{tr(lang,"风险与待确认","Risks to verify")}</strong><ul>{item.opportunityAnalysis.risks.slice(0,3).map((risk,index)=><li key={index}>{exportText(lang,risk)}</li>)}</ul></div>
-              <div className="saved-analysis-subsection"><strong>{tr(lang,"下一步动作","Next steps")}</strong><ol>{item.opportunityAnalysis.nextActions.slice(0,3).map((action,index)=><li key={index}>{exportText(lang,action)}</li>)}</ol></div>
+          <details style={{marginTop:12,border:"1px solid var(--line, #d9dee7)",borderRadius:12,overflow:"hidden",background:"var(--surface, #f8fafc)"}}>
+            <summary style={{cursor:"pointer",fontWeight:700,listStyle:"none",display:"flex",alignItems:"center",gap:10,padding:"13px 14px",background:"var(--panel, #fff)"}}>
+              <span aria-hidden="true" style={{display:"inline-flex",alignItems:"center",justifyContent:"center",width:30,height:30,borderRadius:9,background:"var(--surface, #eef2ff)",fontSize:16}}>✦</span>
+              <span style={{flex:1}}>{tr(lang,"评分依据、风险与下一步","Rationale, risks & next steps")}</span>
+              <span style={{fontSize:11,fontWeight:600,opacity:.65}}>{tr(lang,"展开查看","Expand details")}　⌄</span>
+            </summary>
+            <div style={{padding:12,display:"grid",gap:10}}>
+              <div style={{border:"1px solid #bfdbfe",borderLeft:"4px solid #3b82f6",borderRadius:10,padding:"12px 14px",background:"var(--panel, #fff)"}}>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}><span aria-hidden="true" style={{fontSize:17}}>🎯</span><strong>{tr(lang,"为什么这样评分","Why this score")}</strong><span style={{marginLeft:"auto",fontSize:10,fontWeight:700,color:"#2563eb",background:"#dbeafe",borderRadius:999,padding:"3px 7px"}}>{tr(lang,"匹配依据","RATIONALE")}</span></div>
+                <p style={{margin:0,lineHeight:1.65,fontSize:13}}>{exportText(lang,item.opportunityAnalysis.scoreRationale)}</p>
+              </div>
+              <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:10}}>
+                <div style={{border:"1px solid #fed7aa",borderRadius:10,padding:"12px 14px",background:"var(--panel, #fff)"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}><span aria-hidden="true" style={{fontSize:18}}>⚠️</span><strong>{tr(lang,"风险与待确认","Risks to verify")}</strong><span style={{marginLeft:"auto",fontSize:11,opacity:.65}}>{item.opportunityAnalysis.risks.slice(0,3).length}</span></div>
+                  {item.opportunityAnalysis.risks.slice(0,3).length ? <ul style={{margin:0,paddingLeft:20,display:"grid",gap:7,fontSize:13,lineHeight:1.55}}>{item.opportunityAnalysis.risks.slice(0,3).map((risk,index)=><li key={index}>{exportText(lang,risk)}</li>)}</ul> : <p style={{margin:0,fontSize:13,opacity:.7}}>{tr(lang,"暂无明确风险记录，仍需结合项目证据核实。","No explicit risks recorded; validate against project evidence.")}</p>}
+                </div>
+                <div style={{border:"1px solid #bbf7d0",borderRadius:10,padding:"12px 14px",background:"var(--panel, #fff)"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}><span aria-hidden="true" style={{fontSize:18}}>🧭</span><strong>{tr(lang,"建议下一步","Recommended next steps")}</strong><span style={{marginLeft:"auto",fontSize:11,opacity:.65}}>{item.opportunityAnalysis.nextActions.slice(0,3).length}</span></div>
+                  {item.opportunityAnalysis.nextActions.slice(0,3).length ? <ol style={{margin:0,paddingLeft:20,display:"grid",gap:7,fontSize:13,lineHeight:1.55}}>{item.opportunityAnalysis.nextActions.slice(0,3).map((action,index)=><li key={index}>{exportText(lang,action)}</li>)}</ol> : <p style={{margin:0,fontSize:13,opacity:.7}}>{tr(lang,"建议先确认业主、预算和ICT范围。","First validate the owner, budget and ICT scope.")}</p>}
+                </div>
+              </div>
+              {item.opportunityAnalysis.factsVsInference ? <div style={{border:"1px solid var(--line, #d9dee7)",borderRadius:10,padding:"12px 14px",background:"var(--panel, #fff)"}}><div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}><span aria-hidden="true" style={{fontSize:17}}>🔎</span><strong>{tr(lang,"事实与推断","Facts vs. inference")}</strong></div><p style={{margin:0,fontSize:13,lineHeight:1.65}}>{exportText(lang,item.opportunityAnalysis.factsVsInference)}</p></div> : null}
             </div>
-            {item.opportunityAnalysis.factsVsInference ? <div className="saved-analysis-subsection"><strong>{tr(lang,"事实与推断","Facts vs. inference")}</strong><p>{exportText(lang,item.opportunityAnalysis.factsVsInference)}</p></div> : null}
           </details>
         </section> : null}
         <div className="metric-grid">
