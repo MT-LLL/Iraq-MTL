@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/admin-opportunity-analysis-service-check.yml"
+      - "app/api/admin-opportunity-analysis/route.ts"
   workflow_dispatch:
 
 permissions:
