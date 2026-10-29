@@ -48,7 +48,7 @@ function decodeJsonPart<T>(part: string): T {
 
 function configuredAdmin(email: string): boolean {
   const admins = (runtimeEnv().MSSD_ADMIN_EMAILS ?? "")
-    .split(/[,;\\s]+/)
+    .split(/[,;\s]+/)
     .map(value => value.trim().toLowerCase())
     .filter(Boolean);
   return admins.includes(email.trim().toLowerCase());
