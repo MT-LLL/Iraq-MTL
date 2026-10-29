@@ -5,7 +5,7 @@ import { and, count, desc, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getDb } from "../db";
 import { auditLogs, leadDistributions, opportunities as storedOpportunities, opportunityContacts, opportunityTracking, pushJobs, savedViews, sourceScanRuns, users } from "../db/schema";
-import { huaweiOfficialSolutionCatalog, industryDispatchDirectory, partnerDirectory, sourceConnectorConfig, sourceCoverage, type Country, type Opportunity, type OpportunityContact, type Priority } from "./data";
+import { huaweiOfficialSolutionCatalog, industryDispatchDirectory, partnerDirectory, sourceConnectorConfig, sourceCoverage, type Country, type Opportunity, type OpportunityContact, type Priority, type SavedOpportunityAnalysis } from "./data";
 import { analyzeOpportunitySolutions } from "./ai-solution-matching";
 import { scoreOpportunity } from "./opportunity-scoring";
 import { meedContactDirectory } from "./meed-contacts";
@@ -210,8 +210,12 @@ function toClientOpportunity(row: StoredOpportunity, ownerName = "Manual Import"
   const deadline = row.bidDeadline ? row.bidDeadline.toISOString().slice(0, 10) : "待公布";
   const daysLeft = row.bidDeadline ? Math.ceil((row.bidDeadline.getTime() - Date.now()) / 86400000) : null;
   const source = `${row.sourceName}${row.sourceUrl ? ` · ${row.sourceUrl}` : ""}`;
-  const savedAiAnalysis = parseJson<{ solutions?: Array<{ domain: string; name: string; fit: number; rationale: string; evidence: string }> } | null>(row.solutionMatches, null);
+  const savedAiAnalysis = parseJson<{
+    solutions?: Array<{ domain: string; name: string; fit: number; rationale: string; evidence: string }>;
+    opportunityAnalysis?: SavedOpportunityAnalysis;
+  } | null>(row.solutionMatches, null);
   const aiSolutions = savedAiAnalysis && Array.isArray(savedAiAnalysis.solutions) ? savedAiAnalysis.solutions : undefined;
+  const opportunityAnalysis = savedAiAnalysis?.opportunityAnalysis;
   const scoring = scoreOpportunity({
     title: row.title, titleEn: row.titleEn, industry: row.industry, stage: row.stage,
     summary: row.summary, projectValue: row.projectValue, fundingStatus: row.fundingStatus,
@@ -242,6 +246,7 @@ function toClientOpportunity(row: StoredOpportunity, ownerName = "Manual Import"
     participation: (row.participationSpace || "中") as Opportunity["participation"],
     win: (row.winBand || "中") as Opportunity["win"],
     summary: row.summary || "手工录入机会，等待补充资金、采购窗口、技术规格和客户关系证据。",
+    opportunityAnalysis,
     keyProjectMilestones: row.keyProjectMilestones || undefined,
     newsAndUpdates: row.newsAndUpdates || undefined,
     latestNews: row.latestNews || undefined,
