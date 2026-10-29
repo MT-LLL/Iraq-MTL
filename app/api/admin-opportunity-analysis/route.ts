@@ -151,6 +151,7 @@ export async function GET(request: Request) {
     return [String(opportunity.id), result.results ?? []] as const;
   }));
 
+  const evidenceByOpportunity = new Map(evidenceRows);
   return json({
     ok: true,
     source: "production-d1",
@@ -159,7 +160,7 @@ export async function GET(request: Request) {
     count: opportunities.length,
     opportunities: opportunities.map(opportunity => ({
       ...opportunity,
-      evidence: Object.fromEntries(evidenceRows).get(String(opportunity.id)) ?? [],
+      evidence: evidenceByOpportunity.get(String(opportunity.id)) ?? [],
     })),
   });
 }
