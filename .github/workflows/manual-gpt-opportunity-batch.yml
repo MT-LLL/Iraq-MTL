@@ -126,8 +126,11 @@ jobs:
           if (new Set(ids).size !== ids.length || ids.some(x => !x)) throw new Error('Missing or duplicate opportunity IDs; no records changed.');
           for (const a of input.analyses) {
             if (!['P0','P1','P2'].includes(a.priority) || !Number.isInteger(a.fitScore) || a.fitScore < 0 || a.fitScore > 100) throw new Error('Invalid priority or fitScore for ' + a.opportunityId);
-            for (const f of ['demandSummary','scoreRationale','factsVsInference']) if (typeof a[f] !== 'string' || !a[f].trim()) throw new Error('Missing ' + f + ' for ' + a.opportunityId);
-            for (const f of ['recommendedHuaweiSolutions','risks','nextActions','evidence']) if (!Array.isArray(a[f])) throw new Error('Invalid ' + f + ' for ' + a.opportunityId);
+            for (const f of ['demandSummary','scoreRationale','factsVsInference']) if (typeof a[f] !== 'string' || !a[f].trim()) throw new Error('Missing Chinese ' + f + ' for ' + a.opportunityId);
+            for (const f of ['recommendedHuaweiSolutions','risks','nextActions','evidence']) if (!Array.isArray(a[f])) throw new Error('Invalid Chinese ' + f + ' for ' + a.opportunityId);
+            if (!a.english || typeof a.english !== 'object') throw new Error('Missing English analysis for ' + a.opportunityId);
+            for (const f of ['demandSummary','scoreRationale','factsVsInference']) if (typeof a.english[f] !== 'string' || !a.english[f].trim()) throw new Error('Missing English ' + f + ' for ' + a.opportunityId);
+            for (const f of ['recommendedHuaweiSolutions','risks','nextActions','evidence']) if (!Array.isArray(a.english[f])) throw new Error('Invalid English ' + f + ' for ' + a.opportunityId);
           }
           const existingRows = rowsOf(wrangler("SELECT id, solution_matches AS solutionMatches FROM opportunities WHERE id IN (" + ids.map(quote).join(',') + ")", 'Verify target IDs'));
           const existing = new Map(existingRows.map(r => [String(r.id), r]));
@@ -137,7 +140,7 @@ jobs:
           for (const a of input.analyses) {
             const previous = parseObject(existing.get(String(a.opportunityId)).solutionMatches);
             const analysis = {
-              promptVersion: 'manual-chatgpt-scope-fit-v1',
+              promptVersion: 'manual-chatgpt-scope-fit-bilingual-v2',
               analyzedAt: new Date().toISOString(),
               analyzedBy: 'ChatGPT in current conversation',
               source: 'Direct ChatGPT analysis; no model API',
@@ -150,7 +153,11 @@ jobs:
               nextActions: a.nextActions,
               evidence: a.evidence,
               factsVsInference: a.factsVsInference,
-              scoreMeaning: 'Scope-to-Huawei-solution fit; not win probability or project value'
+              scoreMeaning: 'Scope-to-Huawei-solution fit; not win probability or project value',
+              bilingualAnalysis: {
+                zh: { demandSummary: a.demandSummary, recommendedHuaweiSolutions: a.recommendedHuaweiSolutions, scoreRationale: a.scoreRationale, risks: a.risks, nextActions: a.nextActions, evidence: a.evidence, factsVsInference: a.factsVsInference },
+                en: { demandSummary: a.english.demandSummary, recommendedHuaweiSolutions: a.english.recommendedHuaweiSolutions, scoreRationale: a.english.scoreRationale, risks: a.english.risks, nextActions: a.english.nextActions, evidence: a.english.evidence, factsVsInference: a.english.factsVsInference }
+              }
             };
             statements.push("UPDATE opportunities SET solution_matches = " + quote(JSON.stringify({...previous, opportunityAnalysis:analysis})) + ", updated_at = " + now + " WHERE id = " + quote(a.opportunityId) + ";");
             const metadata = JSON.stringify({promptVersion:analysis.promptVersion,fitScore:a.fitScore,priority:a.priority,analyzedAt:analysis.analyzedAt,source:analysis.source});
@@ -161,7 +168,7 @@ jobs:
           const check = new Map(verify.map(r => [String(r.id), parseObject(parseObject(r.solutionMatches).opportunityAnalysis)]));
           const failed = input.analyses.filter(a => {
             const x = check.get(String(a.opportunityId));
-            return !x || x.promptVersion !== 'manual-chatgpt-scope-fit-v1' || x.fitScore !== a.fitScore || x.priority !== a.priority;
+            return !x || x.promptVersion !== 'manual-chatgpt-scope-fit-bilingual-v2' || x.fitScore !== a.fitScore || x.priority !== a.priority || !x.bilingualAnalysis?.zh || !x.bilingualAnalysis?.en || !x.bilingualAnalysis.en.demandSummary || !Array.isArray(x.bilingualAnalysis.en.recommendedHuaweiSolutions);
           }).map(a => a.opportunityId);
           if (failed.length) throw new Error('D1 readback verification failed for IDs: ' + failed.join(', '));
           console.log(JSON.stringify({result:'saved-and-readback-verified',saved:input.analyses.length,readbackVerified:verify.length,ids}, null, 2));
