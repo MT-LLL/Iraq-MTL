@@ -125,9 +125,11 @@ jobs:
           const ids = input.analyses.map(x => String(x.opportunityId || ''));
           if (new Set(ids).size !== ids.length || ids.some(x => !x)) throw new Error('Missing or duplicate opportunity IDs; no records changed.');
           for (const a of input.analyses) {
-            if (!['P0','P1','P2'].includes(a.priority) || !Number.isInteger(a.fitScore) || a.fitScore < 0 || a.fitScore > 100) throw new Error('Invalid priority or fitScore for ' + a.opportunityId);
-            for (const f of ['demandSummary','scoreRationale','factsVsInference']) if (typeof a[f] !== 'string' || !a[f].trim()) throw new Error('Missing Chinese ' + f + ' for ' + a.opportunityId);
-            for (const f of ['recommendedHuaweiSolutions','risks','nextActions','evidence']) if (!Array.isArray(a[f])) throw new Error('Invalid Chinese ' + f + ' for ' + a.opportunityId);
+            if (!a.preserveExistingChinese) {
+              if (!['P0','P1','P2'].includes(a.priority) || !Number.isInteger(a.fitScore) || a.fitScore < 0 || a.fitScore > 100) throw new Error('Invalid priority or fitScore for ' + a.opportunityId);
+              for (const f of ['demandSummary','scoreRationale','factsVsInference']) if (typeof a[f] !== 'string' || !a[f].trim()) throw new Error('Missing Chinese ' + f + ' for ' + a.opportunityId);
+              for (const f of ['recommendedHuaweiSolutions','risks','nextActions','evidence']) if (!Array.isArray(a[f])) throw new Error('Invalid Chinese ' + f + ' for ' + a.opportunityId);
+            }
             if (!a.english || typeof a.english !== 'object') throw new Error('Missing English analysis for ' + a.opportunityId);
             for (const f of ['demandSummary','scoreRationale','factsVsInference']) if (typeof a.english[f] !== 'string' || !a.english[f].trim()) throw new Error('Missing English ' + f + ' for ' + a.opportunityId);
             for (const f of ['recommendedHuaweiSolutions','risks','nextActions','evidence']) if (!Array.isArray(a.english[f])) throw new Error('Invalid English ' + f + ' for ' + a.opportunityId);
@@ -139,28 +141,34 @@ jobs:
           const statements = [];
           for (const a of input.analyses) {
             const previous = parseObject(existing.get(String(a.opportunityId)).solutionMatches);
+            const priorAnalysis = parseObject(previous.opportunityAnalysis);
+            if (a.preserveExistingChinese && !priorAnalysis.demandSummary) throw new Error('Cannot preserve missing Chinese analysis for ' + a.opportunityId);
+            const zh = a.preserveExistingChinese
+              ? (priorAnalysis.bilingualAnalysis?.zh || { demandSummary: priorAnalysis.demandSummary, recommendedHuaweiSolutions: priorAnalysis.recommendedHuaweiSolutions, scoreRationale: priorAnalysis.scoreRationale, risks: priorAnalysis.risks, nextActions: priorAnalysis.nextActions, evidence: priorAnalysis.evidence, factsVsInference: priorAnalysis.factsVsInference })
+              : { demandSummary: a.demandSummary, recommendedHuaweiSolutions: a.recommendedHuaweiSolutions, scoreRationale: a.scoreRationale, risks: a.risks, nextActions: a.nextActions, evidence: a.evidence, factsVsInference: a.factsVsInference };
             const analysis = {
+              ...priorAnalysis,
               promptVersion: 'manual-chatgpt-scope-fit-bilingual-v2',
               analyzedAt: new Date().toISOString(),
               analyzedBy: 'ChatGPT in current conversation',
               source: 'Direct ChatGPT analysis; no model API',
-              priority: a.priority,
-              demandSummary: a.demandSummary,
-              recommendedHuaweiSolutions: a.recommendedHuaweiSolutions,
-              fitScore: a.fitScore,
-              scoreRationale: a.scoreRationale,
-              risks: a.risks,
-              nextActions: a.nextActions,
-              evidence: a.evidence,
-              factsVsInference: a.factsVsInference,
+              priority: a.preserveExistingChinese ? priorAnalysis.priority : a.priority,
+              demandSummary: zh.demandSummary,
+              recommendedHuaweiSolutions: zh.recommendedHuaweiSolutions,
+              fitScore: a.preserveExistingChinese ? priorAnalysis.fitScore : a.fitScore,
+              scoreRationale: zh.scoreRationale,
+              risks: zh.risks,
+              nextActions: zh.nextActions,
+              evidence: zh.evidence,
+              factsVsInference: zh.factsVsInference,
               scoreMeaning: 'Scope-to-Huawei-solution fit; not win probability or project value',
               bilingualAnalysis: {
-                zh: { demandSummary: a.demandSummary, recommendedHuaweiSolutions: a.recommendedHuaweiSolutions, scoreRationale: a.scoreRationale, risks: a.risks, nextActions: a.nextActions, evidence: a.evidence, factsVsInference: a.factsVsInference },
+                zh,
                 en: { demandSummary: a.english.demandSummary, recommendedHuaweiSolutions: a.english.recommendedHuaweiSolutions, scoreRationale: a.english.scoreRationale, risks: a.english.risks, nextActions: a.english.nextActions, evidence: a.english.evidence, factsVsInference: a.english.factsVsInference }
               }
             };
             statements.push("UPDATE opportunities SET solution_matches = " + quote(JSON.stringify({...previous, opportunityAnalysis:analysis})) + ", updated_at = " + now + " WHERE id = " + quote(a.opportunityId) + ";");
-            const metadata = JSON.stringify({promptVersion:analysis.promptVersion,fitScore:a.fitScore,priority:a.priority,analyzedAt:analysis.analyzedAt,source:analysis.source});
+            const metadata = JSON.stringify({promptVersion:analysis.promptVersion,fitScore:analysis.fitScore,priority:analysis.priority,analyzedAt:analysis.analyzedAt,source:analysis.source});
             statements.push("INSERT INTO audit_logs (id, actor_id, action, entity_type, entity_id, metadata, created_at) VALUES (" + [crypto.randomUUID(),'service:Manual ChatGPT Opportunity Analysis','opportunity.scope_fit_analysis_saved','opportunity',a.opportunityId,metadata,now].map(quote).join(', ') + ");");
           }
           wrangler(statements.join('\n'), 'Write analysis batch', true);
@@ -168,7 +176,7 @@ jobs:
           const check = new Map(verify.map(r => [String(r.id), parseObject(parseObject(r.solutionMatches).opportunityAnalysis)]));
           const failed = input.analyses.filter(a => {
             const x = check.get(String(a.opportunityId));
-            return !x || x.promptVersion !== 'manual-chatgpt-scope-fit-bilingual-v2' || x.fitScore !== a.fitScore || x.priority !== a.priority || !x.bilingualAnalysis?.zh || !x.bilingualAnalysis?.en || !x.bilingualAnalysis.en.demandSummary || !Array.isArray(x.bilingualAnalysis.en.recommendedHuaweiSolutions);
+            return !x || x.promptVersion !== 'manual-chatgpt-scope-fit-bilingual-v2' || x.fitScore !== (a.preserveExistingChinese ? parseObject(parseObject(existing.get(String(a.opportunityId)).solutionMatches).opportunityAnalysis).fitScore : a.fitScore) || x.priority !== (a.preserveExistingChinese ? parseObject(parseObject(existing.get(String(a.opportunityId)).solutionMatches).opportunityAnalysis).priority : a.priority) || !x.bilingualAnalysis?.zh || !x.bilingualAnalysis?.en || !x.bilingualAnalysis.en.demandSummary || !Array.isArray(x.bilingualAnalysis.en.recommendedHuaweiSolutions);
           }).map(a => a.opportunityId);
           if (failed.length) throw new Error('D1 readback verification failed for IDs: ' + failed.join(', '));
           console.log(JSON.stringify({result:'saved-and-readback-verified',saved:input.analyses.length,readbackVerified:verify.length,ids}, null, 2));
