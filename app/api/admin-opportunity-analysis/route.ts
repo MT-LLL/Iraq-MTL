@@ -144,29 +144,38 @@ export async function GET(request: Request) {
   const rawLimit = Number(url.searchParams.get("limit") ?? 100);
   const limit = Number.isFinite(rawLimit) ? Math.max(1, Math.min(200, Math.floor(rawLimit))) : 100;
   const placeholders = requested.map(() => "?").join(",");
-  const rows = await auth.db.prepare(`
-    SELECT id, external_id AS externalId, title, title_en AS titleEn, country, city,
-      industry, stage, priority, score, confidence, project_value AS projectValue,
-      addressable_value AS addressableValue, currency, funding_status AS fundingStatus,
-      bid_deadline AS bidDeadline, summary, key_project_milestones AS keyProjectMilestones,
-      news_and_updates AS newsAndUpdates, latest_news AS latestNews,
-      solution_matches AS solutionMatches, source_name AS sourceName, source_url AS sourceUrl,
-      updated_at AS updatedAt
-    FROM opportunities
-    WHERE priority IN (${placeholders})
-      AND (source_name LIKE '%MEED%' OR id LIKE 'MEED-%')
-    ORDER BY CASE priority WHEN 'P0' THEN 0 WHEN 'P1' THEN 1 ELSE 2 END, score DESC, updated_at DESC
-    LIMIT ?
-  `).bind(...requested, limit).all<Record<string, unknown>>();
-
-  const opportunities = rows.results ?? [];
-  const evidenceRows = await Promise.all(opportunities.map(async opportunity => {
-    const result = await auth.db.prepare(`
-      SELECT kind, excerpt, source_url AS sourceUrl, collected_at AS collectedAt
-      FROM evidence WHERE opportunity_id = ? ORDER BY collected_at DESC LIMIT 8
-    `).bind(String(opportunity.id)).all<Record<string, unknown>>();
-    return [String(opportunity.id), result.results ?? []] as const;
-  }));
+  let opportunities: Record<string, unknown>[];
+  try {
+    const rows = await auth.db.prepare(`
+      SELECT id, external_id AS externalId, title, title_en AS titleEn, country, city,
+        industry, stage, priority, score, confidence, project_value AS projectValue,
+        addressable_value AS addressableValue, currency, funding_status AS fundingStatus,
+        bid_deadline AS bidDeadline, summary, key_project_milestones AS keyProjectMilestones,
+        news_and_updates AS newsAndUpdates, latest_news AS latestNews,
+        solution_matches AS solutionMatches, source_name AS sourceName, source_url AS sourceUrl,
+        updated_at AS updatedAt
+      FROM opportunities
+      WHERE priority IN (${placeholders})
+        AND (source_name LIKE '%MEED%' OR id LIKE 'MEED-%')
+      ORDER BY CASE priority WHEN 'P0' THEN 0 WHEN 'P1' THEN 1 ELSE 2 END, score DESC, updated_at DESC
+      LIMIT ?
+    `).bind(...requested, limit).all<Record<string, unknown>>();
+    opportunities = rows.results ?? [];
+  } catch {
+    return json({ ok: false, error: "OPPORTUNITY_QUERY_FAILED" }, 500);
+  }
+  let evidenceRows: readonly (readonly [string, Record<string, unknown>[]])[];
+  try {
+    evidenceRows = await Promise.all(opportunities.map(async opportunity => {
+      const result = await auth.db.prepare(`
+        SELECT kind, excerpt, source_url AS sourceUrl, collected_at AS collectedAt
+        FROM evidence WHERE opportunity_id = ? ORDER BY collected_at DESC LIMIT 8
+      `).bind(String(opportunity.id)).all<Record<string, unknown>>();
+      return [String(opportunity.id), result.results ?? []] as const;
+    }));
+  } catch {
+    return json({ ok: false, error: "EVIDENCE_QUERY_FAILED" }, 500);
+  }
 
   const evidenceByOpportunity = new Map(evidenceRows);
   return json({
