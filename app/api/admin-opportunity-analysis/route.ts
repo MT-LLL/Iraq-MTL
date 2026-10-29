@@ -154,6 +154,8 @@ async function inspectAccessJwt(request: Request) {
       issuerMatches, audienceMatches, notExpired, nbfValid, algorithmIsRs256: true,
       claimKeys: Object.keys(claims).sort(), hasEmailClaim: Boolean(email),
       emailIsConfiguredAdmin: Boolean(email && configuredAdmin(email)),
+      commonName: typeof claims.common_name === "string" ? claims.common_name.slice(0, 80) : null,
+      tokenType: typeof (claims as AccessClaims & { type?: unknown }).type === "string" ? (claims as AccessClaims & { type?: string }).type : null,
       commonNameMatchesMeedService: claims.common_name === "MTL GitHub Actions MEED Ingest",
       hasCommonNameClaim: Boolean(claims.common_name),
       audienceCount: audiences.filter(Boolean).length
