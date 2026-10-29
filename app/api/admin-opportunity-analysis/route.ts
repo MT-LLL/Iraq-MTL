@@ -135,6 +135,7 @@ export async function GET(request: Request) {
   const auth = await authorize(request);
   if ("response" in auth) return auth.response;
 
+  const url = new URL(request.url);
   const requested = (url.searchParams.get("priority") ?? "P0,P1,P2")
     .split(",")
     .map(value => value.trim().toUpperCase())
