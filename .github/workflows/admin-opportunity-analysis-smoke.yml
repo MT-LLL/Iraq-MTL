@@ -1,0 +1,34 @@
+name: Verify Admin Opportunity Analysis Access
+on:
+  push:
+    branches: [main]
+    paths:
+      - "app/api/admin-opportunity-analysis/route.ts"
+      - ".github/workflows/admin-opportunity-analysis-smoke.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  anonymous-access-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify production admin endpoint denies anonymous requests
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://iraq-mtl.lihui9329.workers.dev/api/admin-opportunity-analysis?priority=P0%2CP1%2CP2&limit=1"
+          status="$(curl --silent --show-error --output response.txt --write-out '%{http_code}' --max-time 20 "$url")"
+          echo "Anonymous endpoint HTTP status: $status"
+          if [[ "$status" == "200" ]]; then
+            echo "ERROR: admin endpoint responded successfully without credentials."
+            cat response.txt
+            exit 1
+          fi
+          if [[ "$status" != "401" && "$status" != "403" && "$status" != "302" && "$status" != "307" ]]; then
+            echo "ERROR: unexpected status; inspect endpoint/network behavior."
+            cat response.txt
+            exit 1
+          fi
+          echo "PASS: anonymous request was denied (HTTP $status)."
