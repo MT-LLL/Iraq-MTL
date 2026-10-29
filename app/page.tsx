@@ -78,12 +78,15 @@ export default async function Home() {
     return <PartnerPortal profile={accountState.profile} items={partnerCatalog} latestOpportunityRefreshAt={latestOpportunityRefreshAt}/>;
   }
 
-  const [manualOpportunities, leadDistributions, sourceScanRuns, sourceScanRunCount, pushJobs, collaborationActivity] = await Promise.all([
-    safeDashboardLoad("manual-opportunities", () => getManualOpportunities(), []),
-    safeDashboardLoad("lead-distributions", () => getLeadDistributions(), []),
+  // Load and hydrate the D1 opportunity catalog once per dashboard request.
+  // Lead distributions and push jobs reuse it instead of re-reading every
+  // opportunity row and reparsing solution_matches multiple times.
+  const manualOpportunities = await safeDashboardLoad("manual-opportunities", () => getManualOpportunities(), []);
+  const [leadDistributions, sourceScanRuns, sourceScanRunCount, pushJobs, collaborationActivity] = await Promise.all([
+    safeDashboardLoad("lead-distributions", () => getLeadDistributions(manualOpportunities), []),
     safeDashboardLoad("source-scan-runs", () => getSourceScanRuns(), []),
     safeDashboardLoad("source-scan-run-count", () => getSourceScanRunCount(), 0),
-    safeDashboardLoad("push-jobs", () => getPushJobs(), []),
+    safeDashboardLoad("push-jobs", () => getPushJobs(manualOpportunities), []),
     safeDashboardLoad("collaboration-activity", () => getCollaborationActivity(), []),
   ]);
   return <OpsConsole authUser={accountState.authUser} initialProfile={accountState.profile} initialPending={accountState.pending} initialManualOpportunities={manualOpportunities} initialLeadDistributions={leadDistributions} initialSourceScanRuns={sourceScanRuns} initialSourceScanRunCount={sourceScanRunCount} initialPushJobs={pushJobs} initialCollaborationActivity={collaborationActivity} initialOpportunityTracking={opportunityTracking} latestOpportunityRefreshAt={latestOpportunityRefreshAt} deliveryStatus={getNotificationConfiguration()}/>;
