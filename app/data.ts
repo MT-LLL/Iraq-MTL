@@ -281,6 +281,23 @@ export const industryDispatchDirectory: IndustryDispatchOwner[] = [
   { id: "DISP-WATER-TRANSPORT-MIN", industry: "Water Transport", role: "system_minister", roleLabel: "水运系统部长", name: "Maya Khoury", email: "water-transport.system@huawei.example", phone: "+961 70 120 1102", coverage: "水运行业重点项目复核", slaHours: 48 },
 ];
 
+export type SavedOpportunityAnalysis = {
+  promptVersion: string;
+  analyzedAt: string;
+  priority: "P0" | "P1" | "P2";
+  demandSummary: string;
+  recommendedHuaweiSolutions: string[];
+  fitScore: number;
+  scoreRationale: string;
+  risks: string[];
+  nextActions: string[];
+  evidence: string[];
+  factsVsInference?: string;
+  analyzedBy?: string;
+  source?: string;
+  scoreMeaning?: string;
+};
+
 export type Opportunity = {
   id: string;
   title: string;
@@ -305,6 +322,7 @@ export type Opportunity = {
   participation: "极高" | "高" | "中" | "低";
   win: "高" | "中高" | "中" | "低";
   summary: string;
+  opportunityAnalysis?: SavedOpportunityAnalysis;
   keyProjectMilestones?: string;
   newsAndUpdates?: string;
   latestNews?: string;
