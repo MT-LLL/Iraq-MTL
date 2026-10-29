@@ -1,0 +1,39 @@
+name: Export MEED opportunity candidates for current GPT analysis
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/meed-opportunity-export.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read candidate records from production D1 API
+        env:
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          set -euo pipefail
+          test -n "$CF_ACCESS_CLIENT_ID"
+          test -n "$CF_ACCESS_CLIENT_SECRET"
+          status="$(curl --silent --show-error --output opportunities.json --write-out '%{http_code}' --max-time 30 \
+            -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET" \
+            "https://iraq-mtl.lihui9329.workers.dev/api/admin-opportunity-analysis?priority=P0%2CP1%2CP2&limit=25")"
+          echo "Production D1 read HTTP status: $status"
+          [[ "$status" == "200" ]] || { echo "Read failed; response suppressed."; exit 1; }
+          node -e 'const x=require("./opportunities.json");if(!x.ok||!Array.isArray(x.opportunities))process.exit(1);console.log("Export candidate count:",x.count)'
+      - name: Upload short-lived private workflow artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: meed-candidates-current-gpt-analysis
+          path: opportunities.json
+          if-no-files-found: error
+          retention-days: 1
