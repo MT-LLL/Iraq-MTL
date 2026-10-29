@@ -805,13 +805,16 @@ export async function getCollaborationActivity(): Promise<CollaborationActivityV
   }
 }
 
-export async function getLeadDistributions() {
+export async function getLeadDistributions(catalogOverride?: Opportunity[]) {
   const { profile, db } = await currentIdentity();
   if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) return [];
-  const [rows, catalog] = await Promise.all([db.select().from(leadDistributions), allAvailableOpportunities(db)]);
-  return rows
-    .sort((a, b) => b.requestedAt.getTime() - a.requestedAt.getTime())
-    .map(row => toDistributionView(row, catalog, profile.name));
+  // The dashboard already loads the D1 opportunity catalog for its radar. Reuse
+  // that server-side result rather than scanning and parsing every opportunity again.
+  const [rows, catalog] = await Promise.all([
+    db.select().from(leadDistributions).orderBy(desc(leadDistributions.requestedAt)),
+    catalogOverride ? Promise.resolve(catalogOverride) : allAvailableOpportunities(db),
+  ]);
+  return rows.map(row => toDistributionView(row, catalog, profile.name));
 }
 
 export async function getSourceScanRunCount(): Promise<number> {
@@ -944,19 +947,16 @@ export async function recordPush(input: {
   }
 }
 
-export async function getPushJobs() {
+export async function getPushJobs(catalogOverride?: Opportunity[]) {
   const { profile, db } = await currentIdentity();
   if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) return [];
   const [rows, catalog, userRows] = await Promise.all([
-    db.select().from(pushJobs),
-    allAvailableOpportunities(db),
+    db.select().from(pushJobs).orderBy(desc(pushJobs.createdAt)).limit(80),
+    catalogOverride ? Promise.resolve(catalogOverride) : allAvailableOpportunities(db),
     db.select().from(users),
   ]);
   const nameById = new Map(userRows.map(user => [user.id, user.name]));
-  return rows
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-    .slice(0, 80)
-    .map(row => toPushJobView(row, catalog, nameById.get(row.actorId) ?? profile.name));
+  return rows.map(row => toPushJobView(row, catalog, nameById.get(row.actorId) ?? profile.name));
 }
 
 export async function getPartnerPushConfirmation(input: { id: string; token: string }): Promise<PartnerPushConfirmationView> {
