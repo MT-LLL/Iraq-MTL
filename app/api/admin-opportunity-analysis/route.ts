@@ -56,7 +56,7 @@ function configuredAdmin(email: string): boolean {
 
 async function verifyAccessJwt(request: Request): Promise<{ email: string } | null> {
   const configuration = runtimeEnv();
-  const teamDomain = (configuration.CF_ACCESS_TEAM_DOMAIN ?? "").trim().replace(/^https?:\\/\\//, "").replace(/\\/$/, "");
+  const teamDomain = (configuration.CF_ACCESS_TEAM_DOMAIN ?? "").trim().replace(/^https?:/i, "").replaceAll("/", "");
   const expectedAudience = (configuration.CF_ACCESS_AUD ?? "").trim();
   const token = request.headers.get("cf-access-jwt-assertion");
   if (!teamDomain || !expectedAudience || !token) return null;
