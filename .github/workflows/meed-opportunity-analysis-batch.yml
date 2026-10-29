@@ -31,30 +31,27 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          MOONSHOT_API_KEY: ${{ secrets.MOONSHOT_API_KEY }}
-          KIMI_API_KEY: ${{ secrets.KIMI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           set -euo pipefail
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "Missing CLOUDFLARE_API_TOKEN; no records changed."; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "Missing CLOUDFLARE_ACCOUNT_ID; no records changed."; exit 1; }
-          API_KEY="\${MOONSHOT_API_KEY:-\${KIMI_API_KEY:-}}"
-          test -n "$API_KEY" || { echo "Missing MOONSHOT_API_KEY or KIMI_API_KEY; no records changed."; exit 1; }
-          export API_KEY
+          test -n "$OPENAI_API_KEY" || { echo "Missing OPENAI_API_KEY GitHub Actions secret; no records changed."; exit 1; }
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import os from 'node:os';
           import path from 'node:path';
           import { execFileSync } from 'node:child_process';
 
-          const apiKey = process.env.API_KEY;
+          const apiKey = process.env.OPENAI_API_KEY;
           const referenceId = 'MEED-IQ-20855';
           // Validate the provider credential once before reading or analyzing production records.
-          const credentialCheck = await fetch('https://api.moonshot.cn/v1/models', {
+          const credentialCheck = await fetch('https://api.openai.com/v1/models', {
             headers: { Authorization: 'Bearer ' + apiKey },
             signal: AbortSignal.timeout(15000)
           });
           if (!credentialCheck.ok) {
-            throw new Error('Moonshot API credential preflight failed with HTTP ' + credentialCheck.status + '. Update the GitHub Actions secret MOONSHOT_API_KEY with a valid key from the Moonshot API console. No D1 records were changed.');
+            throw new Error('OpenAI API credential preflight failed with HTTP ' + credentialCheck.status + '. Update the GitHub Actions secret OPENAI_API_KEY with a valid OpenAI API key. No D1 records were changed.');
           }
           const promptVersion = 'meed-scope-fit-v1';
           const actorId = 'service:MTL Batch Opportunity Analysis';
@@ -167,8 +164,8 @@ jobs:
               JSON.stringify(group)
             ].join('\n\n');
             const requestBody = {
-              model: 'kimi-k2.6',
-              temperature: 1,
+              model: 'gpt-4.1',
+              temperature: 0.2,
               max_tokens: 7000,
               messages: [
                 { role: 'system', content: '严格遵守输入证据，不得虚构事实。只返回JSON。' },
@@ -179,14 +176,14 @@ jobs:
             let lastError;
             for (let attempt = 1; attempt <= 3; attempt++) {
               try {
-                response = await fetch('https://api.moonshot.cn/v1/chat/completions', {
+                response = await fetch('https://api.openai.com/v1/chat/completions', {
                   method: 'POST',
                   headers: { Authorization: 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
                   body: JSON.stringify(requestBody),
                   signal: AbortSignal.timeout(60000)
                 });
                 if (response.ok) break;
-                lastError = new Error('Kimi HTTP ' + response.status + ' for group ' + (index + 1));
+                lastError = new Error('OpenAI GPT HTTP ' + response.status + ' for group ' + (index + 1));
                 if (response.status < 500 && response.status !== 429) break;
               } catch (error) { lastError = error; }
               await sleep(attempt * 1500);
@@ -194,7 +191,7 @@ jobs:
             if (!response || !response.ok) throw lastError || new Error('Kimi request failed for group ' + (index + 1));
             const result = await response.json();
             const text = result.choices?.[0]?.message?.content;
-            if (!text) throw new Error('Empty Kimi response for group ' + (index + 1));
+            if (!text) throw new Error('Empty GPT response for group ' + (index + 1));
             const start = text.indexOf('{');
             const end = text.lastIndexOf('}');
             if (start < 0 || end <= start) throw new Error('Invalid JSON response for group ' + (index + 1));
@@ -256,7 +253,7 @@ jobs:
                 opportunityAnalysis: {
                   ...item.analysis,
                   analyzedBy: actorId,
-                  source: 'ChatGPT-assisted manual analysis',
+                  source: 'OpenAI GPT API analysis',
                   scoreMeaning: 'Scope-to-Huawei-solution fit; not win probability or project value'
                 }
               };
