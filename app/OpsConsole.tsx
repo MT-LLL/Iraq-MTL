@@ -325,12 +325,22 @@ function OpportunityList({ items, activeId, selectedIds, lang, canInternal, onSe
         const contact = contactStatus(item, lang);
   // Use the real saved English analysis when English is selected; only fall back
   // to the legacy top-level fields for records that have not been backfilled yet.
+  const localizedAnalysisText = item.opportunityAnalysis
+    ? (lang === "en"
+        ? item.opportunityAnalysis.bilingualAnalysis?.en
+        : item.opportunityAnalysis.bilingualAnalysis?.zh)
+    : undefined;
   const displayedAnalysis = item.opportunityAnalysis
     ? {
         ...item.opportunityAnalysis,
-        ...(lang === "en"
-          ? displayedAnalysis!.bilingualAnalysis?.en
-          : displayedAnalysis!.bilingualAnalysis?.zh),
+        ...localizedAnalysisText,
+        demandSummary: localizedAnalysisText?.demandSummary ?? item.opportunityAnalysis.demandSummary,
+        recommendedHuaweiSolutions: localizedAnalysisText?.recommendedHuaweiSolutions ?? item.opportunityAnalysis.recommendedHuaweiSolutions,
+        scoreRationale: localizedAnalysisText?.scoreRationale ?? item.opportunityAnalysis.scoreRationale,
+        risks: localizedAnalysisText?.risks ?? item.opportunityAnalysis.risks,
+        nextActions: localizedAnalysisText?.nextActions ?? item.opportunityAnalysis.nextActions,
+        evidence: localizedAnalysisText?.evidence ?? item.opportunityAnalysis.evidence,
+        factsVsInference: localizedAnalysisText?.factsVsInference ?? item.opportunityAnalysis.factsVsInference,
       }
     : undefined;
         return (
