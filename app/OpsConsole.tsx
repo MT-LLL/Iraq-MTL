@@ -372,16 +372,33 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
       </div>
 
       {tab === "insight" && <div className="tab-content insight-view">
-        <div className="ai-summary">
-          <div className="ai-mark">AI</div>
-          <div><div className="section-label">{canInternal ? tr(lang,"机会判断","Opportunity assessment") : tr(lang,"公开线索摘要","Public lead summary")} {canInternal ? <span>{tr(lang,"置信度","Confidence")} {Math.round(item.confidence * 100)}%</span> : <span>{tr(lang,"伙伴安全版","Partner-safe")}</span>}</div><p>{canInternal ? opportunityInsight(item, lang) : partnerSafeOpportunityInsight(item, lang)}</p></div>
-        </div>
         <section className="project-background">
           <div className="section-label">{tr(lang,"项目背景与介绍","Project background & overview")} <span>{tr(lang,"来源记录","Source record")}</span></div>
           {item.summary && !/^(?:GitHub Actions从MEED自动采集|MEED自动采集|手工录入机会，等待补充)/i.test(item.summary.trim())
             ? <p>{exportText(lang,item.summary)}</p>
             : <p className="background-missing">{tr(lang,"当前记录尚未包含可核验的项目背景介绍。请在下一次采集时读取信源原文，或由管理员补充；不以项目名称推测项目内容。","This record does not yet contain a verifiable project description. Fetch the source text on the next ingestion run or have an administrator add it; do not infer project details from the title.")}</p>}
         </section>
+        {canInternal && item.opportunityAnalysis ? <section className="saved-opportunity-analysis" style={{margin:"18px 0",padding:20,border:"1px solid var(--line, #d9dee7)",borderRadius:14,background:"var(--panel, #fff)"}}>
+          <div style={{display:"flex",flexWrap:"wrap",justifyContent:"space-between",alignItems:"center",gap:12}}>
+            <div><div className="section-label">{tr(lang,"GPT 机会分析 · 华为方案匹配","GPT Opportunity Analysis · Huawei Solution Fit")}</div><small>{tr(lang,"基于当前机会记录及已保存的项目范围分析","Based on the current opportunity record and saved scope analysis")}</small></div>
+            <small>{tr(lang,"分析时间","Analyzed")}: {new Date(item.opportunityAnalysis.analyzedAt).toLocaleString(lang === "zh" ? "zh-CN" : "en-GB")}</small>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(135px,1fr))",gap:12,margin:"16px 0"}}>
+            <div style={{padding:14,borderRadius:10,background:"var(--surface, #f5f7fa)"}}><small>{tr(lang,"方案匹配度","Solution fit")}</small><div style={{fontSize:30,fontWeight:750,lineHeight:1.25}}>{item.opportunityAnalysis.fitScore}<span style={{fontSize:14,fontWeight:500}}>/100</span></div></div>
+            <div style={{padding:14,borderRadius:10,background:"var(--surface, #f5f7fa)"}}><small>{tr(lang,"建议经营优先级","Suggested priority")}</small><div style={{fontSize:24,fontWeight:750,marginTop:4}}>{item.opportunityAnalysis.priority}</div></div>
+            <div style={{padding:14,borderRadius:10,background:"var(--surface, #f5f7fa)"}}><small>{tr(lang,"推荐方案数","Huawei solution directions")}</small><div style={{fontSize:24,fontWeight:750,marginTop:4}}>{item.opportunityAnalysis.recommendedHuaweiSolutions.length}</div></div>
+          </div>
+          <div className="saved-analysis-subsection"><strong>{tr(lang,"1. 机会需求判断","1. Opportunity demand assessment")}</strong><p>{exportText(lang,item.opportunityAnalysis.demandSummary)}</p></div>
+          <div className="saved-analysis-subsection"><strong>{tr(lang,"2. 匹配结论与评分依据","2. Fit conclusion and rationale")}</strong><p>{exportText(lang,item.opportunityAnalysis.scoreRationale)}</p></div>
+          <div className="saved-analysis-subsection"><strong>{tr(lang,"3. 建议评估的华为方案","3. Huawei solutions to assess")}</strong>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(220px,1fr))",gap:10,marginTop:10}}>{item.opportunityAnalysis.recommendedHuaweiSolutions.map((solution,index)=><div key={index} style={{padding:12,border:"1px solid var(--line, #d9dee7)",borderRadius:10,display:"flex",gap:10,alignItems:"flex-start"}}><span style={{fontSize:18,fontWeight:750,color:"var(--accent, #2563eb)"}}>{String(index+1).padStart(2,"0")}</span><span>{exportText(lang,solution)}</span></div>)}</div>
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:16,marginTop:16}}>
+            <div className="saved-analysis-subsection"><strong>{tr(lang,"4. 风险与待确认事项","4. Risks and open questions")}</strong><ul>{item.opportunityAnalysis.risks.map((risk,index)=><li key={index}>{exportText(lang,risk)}</li>)}</ul></div>
+            <div className="saved-analysis-subsection"><strong>{tr(lang,"5. 建议下一步动作","5. Recommended next actions")}</strong><ol>{item.opportunityAnalysis.nextActions.map((action,index)=><li key={index}>{exportText(lang,action)}</li>)}</ol></div>
+          </div>
+          {item.opportunityAnalysis.factsVsInference ? <div className="saved-analysis-subsection" style={{marginTop:14}}><strong>{tr(lang,"事实与推断边界","Facts vs. inference")}</strong><p>{exportText(lang,item.opportunityAnalysis.factsVsInference)}</p></div> : null}
+        </section> : null}
         <div className="metric-grid">
           <div><small>{tr(lang,"项目总额","Project value")}</small><strong>{exportText(lang,item.value)}</strong></div>
           {canInternal ? <div><small>{tr(lang,"华为可服务空间","Huawei addressable")}</small><strong>{exportText(lang,item.addressable)}</strong></div> : null}
@@ -392,21 +409,6 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
           <div><small>{tr(lang,"联系人状态","Contact status")}</small><strong className="smaller">{contact.label}</strong><em>{contact.note}</em></div>
         </div>
         <div className="two-column">
-          <div className="subsection">
-            <div className="section-label">{tr(lang,"方案匹配窗口","Solution matching window")} <span>{item.solutions.length} {tr(lang,"个工作包","work packages")}</span></div>
-            {canInternal ? <div className="ai-analysis-controls"><button type="button" className="secondary" disabled={analyzing} onClick={async () => { setAnalyzing(true); setAnalysisError(""); try { await onAnalyze(); } catch (error) { setAnalysisError(error instanceof Error ? error.message : String(error)); } finally { setAnalyzing(false); } }}>{analyzing ? tr(lang,"Kimi 分析中…","AI analysis running…") : tr(lang,"✦ AI 分析","✦ AI analysis")}</button><small>{tr(lang,"按需调用 Kimi 等大模型，结果保存到此机会的匹配窗口。","Runs Kimi or another configured model on demand and saves results to this opportunity.")}</small>{analysisError ? <p className="analysis-error">{tr(lang,"分析失败：","Analysis failed: ")}{analysisError}</p> : null}</div> : null}
-            <div className="solution-list">{item.solutions.length ? item.solutions.map((solution) => <div key={solution.name}><span className="solution-icon">{solution.domain.slice(0,1)}</span><span><strong>{exportText(lang,solution.name)}</strong><small>{exportText(lang,solution.domain)}</small>{solution.rationale ? <small className="solution-rationale">{exportText(lang,solution.rationale)}</small> : null}</span><span className="fit">{solution.fit}%</span></div>) : <p>{tr(lang,"当前项目资料不足，暂未匹配到有证据支持的具体方案。请补充项目 Scope 后重新分析。","Insufficient project evidence to recommend a specific solution. Add project scope and re-run the analysis.")}</p>}</div>
-             {canInternal && item.opportunityAnalysis ? <section className="saved-opportunity-analysis" style={{marginTop:16,padding:16,border:"1px solid var(--line, #d9dee7)",borderRadius:12}}>
-               <div className="section-label">{tr(lang,"GPT 方案匹配分析","GPT Solution-Fit Analysis")} <span>{new Date(item.opportunityAnalysis.analyzedAt).toLocaleString(lang === "zh" ? "zh-CN" : "en-GB")}</span></div>
-               <div style={{display:"flex",alignItems:"baseline",gap:12,margin:"10px 0"}}><strong style={{fontSize:24}}>{item.opportunityAnalysis.fitScore}/100</strong><span>{tr(lang,"方案范围匹配度","Scope-to-solution fit")} · {item.opportunityAnalysis.priority}</span></div>
-               <p>{exportText(lang,item.opportunityAnalysis.demandSummary)}</p>
-               <p className="solution-rationale">{exportText(lang,item.opportunityAnalysis.scoreRationale)}</p>
-               <div className="saved-analysis-subsection"><strong>{tr(lang,"建议评估的华为方案","Huawei solutions to assess")}</strong><ul>{item.opportunityAnalysis.recommendedHuaweiSolutions.map((solution,index)=><li key={index}>{exportText(lang,solution)}</li>)}</ul></div>
-               <div className="saved-analysis-subsection"><strong>{tr(lang,"风险与待确认事项","Risks and open questions")}</strong><ul>{item.opportunityAnalysis.risks.map((risk,index)=><li key={index}>{exportText(lang,risk)}</li>)}</ul></div>
-               <div className="saved-analysis-subsection"><strong>{tr(lang,"下一步动作","Next actions")}</strong><ol>{item.opportunityAnalysis.nextActions.map((action,index)=><li key={index}>{exportText(lang,action)}</li>)}</ol></div>
-               {item.opportunityAnalysis.factsVsInference ? <div className="saved-analysis-subsection"><strong>{tr(lang,"事实与推断边界","Facts vs. inference")}</strong><p>{exportText(lang,item.opportunityAnalysis.factsVsInference)}</p></div> : null}
-             </section> : null}
-          </div>
           {canInternal ? <div className="subsection">
             <div className="section-label">{tr(lang,"竞争态势","Competition")} <span>{tr(lang,"证据约束","Evidence-bound")}</span></div>
             <div className="competitor-list">{item.competitors.map((competitor) => <div key={competitor.name}><span className="type-chip">{localTerm(lang,competitor.type)}</span><strong>{competitor.name}</strong><small>{exportText(lang,competitor.note)}</small></div>)}</div>
