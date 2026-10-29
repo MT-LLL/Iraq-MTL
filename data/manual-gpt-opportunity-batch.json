@@ -1,4 +1,313 @@
 {
-  "mode": "fetch",
-  "analyses": []
+  "mode": "writeback",
+  "analyses": [
+    {
+      "opportunityId": "MEED-LB-43256",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "The Khaldeh–Nahr Ibrahim expressway proposal includes a 38 km dual-lane expressway, a 12 km tunnel, interchanges, service roads, bridges, signals and safety systems north of Beirut. The record is marked On Hold, so current viability is uncertain. Potential Huawei scope is limited to roadside communications, traffic monitoring and network/storage for a traffic-management center if separately procured.",
+        "recommendedHuaweiSolutions": [
+          "Roadside fiber/IP connectivity and communications for selected highway facilities, subject to package scope",
+          "Video monitoring and network/storage for a traffic-management center if included in the tender",
+          "Cybersecurity and enterprise IT for the project operator, not traffic-safety control itself"
+        ],
+        "scoreRationale": "Signals and safety systems are mentioned, but the core is road and tunnel construction, and the project is explicitly On Hold. No dedicated ICT or intelligent-transport package is evidenced, so fit is low until status and procurement are confirmed.",
+        "risks": [
+          "On Hold status may indicate funding, political or implementation barriers",
+          "No current milestones, news or detailed procurement evidence supplied",
+          "Road signals and safety-critical traffic systems may be the responsibility of specialist ITS suppliers",
+          "The USD 1.6 billion total is not an ICT budget"
+        ],
+        "nextActions": [
+          "Confirm with CDR/MPWT whether the project has been reactivated and financing remains available",
+          "Check whether any ITS, roadside communications, tunnel systems or traffic-center packages are planned",
+          "Keep on hold/watchlist until a funded tender and responsible integrator are identified"
+        ],
+        "evidence": [
+          "Summary lists a 12 km tunnel, 38 km expressway, interchanges, service roads, bridges, signals and safety systems",
+          "Stage is recorded as On Hold",
+          "No project-specific milestones or latest-news records were supplied"
+        ],
+        "factsVsInference": "Fact: The proposed route runs from Khaldeh north to Nahr Ibrahim and includes road, tunnel, signal and safety works; the record is On Hold. Inference: roadside networking and traffic monitoring could be adjacent needs. Unverified: reactivation, financing, ICT packages and Huawei eligibility."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-42114",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "Jordan's Aqaba–Amman Water Desalination and Conveyance Project combines a 300 MCM/year reverse-osmosis desalination plant, marine intake/outfall, a 438 km conveyance pipeline, booster stations, reservoirs, a 281 MW solar PV plant and explicit control, communications, operations and maintenance facilities. This gives the project a clear digital-infrastructure angle, but water-process controls and utility dispatch must remain with qualified specialist vendors.",
+        "recommendedHuaweiSolutions": [
+          "Fiber/IP transport and secure communications connecting the desalination plant, pump stations, reservoirs, PV plant and operations center",
+          "Data-center, storage, backup and operations applications for asset and maintenance management, subject to owner architecture",
+          "Cybersecurity and IT/OT segmentation coordinated with the water-process and SCADA integrators"
+        ],
+        "scoreRationale": "The scope explicitly names common control and communications facilities and spans many geographically distributed assets. That supports a stronger communications/IT fit than a generic civil project, although no separate Huawei-eligible package or current tender is confirmed.",
+        "risks": [
+          "The record says Contract Awarded; verify the awarded scope, contractor and any remaining subcontract packages",
+          "Water-treatment process control, pumping protection and utility grid controls are safety/availability critical",
+          "The USD 5.3 billion total project value is not Huawei-addressable revenue",
+          "No latest milestones or news were supplied in this record"
+        ],
+        "nextActions": [
+          "Identify the awarded consortium, EPCs and SCADA/telecom vendors",
+          "Confirm whether fiber, WAN, operations-center IT, cybersecurity or PV communications packages remain open",
+          "Obtain architecture and interface requirements for the 438 km pipeline and remote pump stations",
+          "Check project schedule, procurement boundaries and data/security requirements"
+        ],
+        "evidence": [
+          "Scope includes 300 MCM/year reverse-osmosis desalination, a 438 km pipeline, booster stations and reservoirs",
+          "Scope includes a 281 MW PV plant and common control, communication, operations and maintenance facilities",
+          "Stage is recorded as Contract Awarded"
+        ],
+        "factsVsInference": "Fact: The project scope explicitly includes communications and O&M/control facilities across a desalination plant, 438 km pipeline and 281 MW PV plant. Inference: backbone networking, operations-center IT and cybersecurity may be relevant. Unverified: remaining package availability, incumbent suppliers, technical specifications and Huawei eligibility."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-396047",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "Ain Al-Iraq Residential City near Mosul is described as a phased development of approximately 150,000 housing units, with schools, mosques, health centers, markets, parking, roads, water, electricity, sewage and communal utilities. This scale suggests potential for fiber access, community connectivity, public-facility networks, video security and smart-city platforms, but the record provides no dedicated ICT procurement package.",
+        "recommendedHuaweiSolutions": [
+          "Fiber access and campus networking for residential phases and public facilities, aligned with local operators and developer architecture",
+          "Video surveillance and network/storage for public areas where lawfully specified",
+          "Data-center/cloud and digital municipal/community services only after confirming the platform owner and data governance"
+        ],
+        "scoreRationale": "The integrated city and its large housing volume could generate meaningful digital-infrastructure needs, but the summary does not explicitly specify telecom, data-center or smart-city systems. Fit is moderate and contingent on phased tender packages.",
+        "risks": [
+          "Stage is Under Construction, but the record has no current milestones or news",
+          "The summary states USD 2.0 billion while the structured project value is USD 1.885 billion; reconcile values and phases",
+          "The 150,000-unit scale and related infrastructure may be split across phases or overlapping packages",
+          "Resident data and public-security systems require privacy and cybersecurity controls"
+        ],
+        "nextActions": [
+          "Confirm current phase, developer/owner and procurement schedule with Ninawa Investment Commission",
+          "Ask whether telecom/fiber, public Wi-Fi, security, data-center or smart-city packages are separately tendered",
+          "Map operator, local authority, developer and EPC responsibilities",
+          "Reconcile the project value and phase boundaries before pipeline reporting"
+        ],
+        "evidence": [
+          "Summary lists approximately 150,000 housing units and schools, health centers, markets and recreation areas",
+          "Infrastructure includes roads, water, electricity, sewage, green spaces and communal utilities",
+          "Structured value is USD 1.885 billion while the summary refers to USD 2.0 billion"
+        ],
+        "factsVsInference": "Fact: The Mosul development is a phased residential city with large housing and public-facility scope. Inference: fiber, community networks and public-facility digital systems may be relevant. Unverified: dedicated ICT packages, operator selection, phasing and reconciled project value."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-11022",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "This Basra Refinery Upgrade: FCC Unit record contains only an automated placeholder summary and does not describe the FCC package, technical scope, procurement status or current milestones in sufficient detail. The structured record lists USD 3.78 billion and Under Construction, but those fields alone do not establish any Huawei ICT opportunity.",
+        "recommendedHuaweiSolutions": [
+          "Do not propose a solution package until the record is validated",
+          "If a distinct package is confirmed, assess enterprise networking, data-center infrastructure or cybersecurity separately from process-control scope"
+        ],
+        "scoreRationale": "Evidence quality is poor: the description is a placeholder, and no communications, IT, data-center or cybersecurity scope is specified. A low score is appropriate until the record and procurement package are verified.",
+        "risks": [
+          "Placeholder summary means the actual scope may be missing or misassociated",
+          "May duplicate or represent a child package of MEED-IQ-43171 Basra Refinery Upgrade",
+          "The USD 3.78 billion value and Under Construction stage require independent confirmation",
+          "FCC process control, DCS and safety systems are specialist refinery-automation scope"
+        ],
+        "nextActions": [
+          "Retrieve the original MEED profile, project background, Scope, milestones and latest news",
+          "Confirm whether this is a separate FCC contract or a duplicate/child record under the wider refinery upgrade",
+          "Verify EPC, award status, tender dates and whether any ICT package exists",
+          "Do not count the amount separately until parent-child scope and values are reconciled"
+        ],
+        "evidence": [
+          "Title identifies Basra Refinery Upgrade: FCC Unit",
+          "Summary is a generic ingestion placeholder rather than a project-specific scope",
+          "Structured fields show Under Construction and USD 3.78 billion"
+        ],
+        "factsVsInference": "Fact: The record is titled Basra Refinery Upgrade: FCC Unit and carries a placeholder summary, USD 3.78 billion structured value and Under Construction status. Inference: there may be refinery-related ICT needs, but no such package is evidenced. Unverified: scope, amount, contractor, schedule and relationship to the parent refinery record."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-43171",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "South Refineries Company is modernizing and expanding the Basra refinery, described as a 210,000 bpd facility, with an FCC unit, vacuum distillation, desulfurization, hydrogen production, storage, utilities, pumping and pipelines. The scope includes multiple safety systems but does not clearly identify a separate enterprise ICT package. Huawei's plausible adjacent areas are enterprise IT, campus communications, data-center and cybersecurity infrastructure, not DCS/SIS or refinery process control.",
+        "recommendedHuaweiSolutions": [
+          "Enterprise data-center, backup and business-application infrastructure if specified by the refinery owner",
+          "Campus fiber/IP networking and wireless coverage for offices, warehouses and non-safety-critical facilities",
+          "IT/OT cybersecurity and secure remote access in coordination with the EPC and control-system integrator"
+        ],
+        "scoreRationale": "The refinery is large and technically complex, but the documented scope is predominantly process units and utilities, with no explicit separate ICT procurement. The record's USD 6.48 billion structured value conflicts with the USD 12 billion stated in its summary.",
+        "risks": [
+          "Project value conflict: structured field USD 6.48 billion versus summary USD 12 billion",
+          "Stage is Under Construction; confirm remaining work and unawarded packages",
+          "DCS, SIS, fire protection and process-safety systems require specialist vendors and clear responsibility boundaries",
+          "May overlap with MEED-IQ-11022 FCC Unit and other Basra refinery records"
+        ],
+        "nextActions": [
+          "Reconcile value, capacity and package boundaries with South Refineries Company",
+          "Identify EPC and existing process-automation/telecom suppliers",
+          "Check for remaining enterprise IT, data-center, communications and cybersecurity tenders",
+          "Avoid double counting the FCC child package and parent refinery project"
+        ],
+        "evidence": [
+          "Summary describes a 210,000 bpd refinery and extensive FCC, distillation, desulfurization, hydrogen and utility units",
+          "Scope includes safety systems, pumping stations and pipelines",
+          "Structured value is USD 6.48 billion versus USD 12 billion in summary"
+        ],
+        "factsVsInference": "Fact: The record covers a major Basra refinery modernization with FCC, distillation, utilities and safety systems. Inference: enterprise IT and secure communications may be needed. Unverified: corrected project value, remaining packages, ICT budget and relationship to the FCC child record."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-448685",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "The Al Faw refinery proposal at Basra's Al Faw port is described as a 300,000 bpd refinery with FCC, continuous catalytic reforming, isomerization, hydrogenation, compression, power generation and Euro-5 product capability. The record mentions safety/security systems and associated facilities but no distinct ICT package. Huawei's plausible fit is enterprise IT, communications, data-center and cybersecurity infrastructure if these are separately procured.",
+        "recommendedHuaweiSolutions": [
+          "Refinery enterprise networking and fiber backbone for administration and non-safety-critical facilities",
+          "Data-center, storage and backup for business applications and operational reporting, subject to owner architecture",
+          "Cybersecurity and IT/OT segmentation with the refinery EPC and process-control vendor"
+        ],
+        "scoreRationale": "The project scale is substantial, but the available description is mainly process and production equipment. Without a dedicated communications, data-center or cybersecurity package, Huawei fit is moderate-to-low and dependent on tender scope.",
+        "risks": [
+          "Stage is Contract Awarded; confirm whether any ICT package remains open",
+          "Refinery process control, safety instrumented systems and hazardous-area systems require qualified specialist suppliers",
+          "This may overlap with MEED-IQ-35505 Al Faw Investment Refinery; compare scope, owner, capacity and phases",
+          "The USD 8 billion structured value and summary value appear aligned here, but do not imply Huawei revenue"
+        ],
+        "nextActions": [
+          "Confirm the awarded EPC and current project phase with South Refineries Company",
+          "Establish whether this record is distinct from the Al Faw Investment Refinery complex or a related profile",
+          "Identify unawarded ICT, communications, data-center and cybersecurity packages",
+          "Keep process-control and safety-critical responsibilities with approved specialists"
+        ],
+        "evidence": [
+          "Summary describes a 300,000 bpd refinery at Al Faw port",
+          "Scope includes FCC, CCR, isomerization, hydrogenation, power generation and safety/security systems",
+          "Stage is recorded as Contract Awarded"
+        ],
+        "factsVsInference": "Fact: The record describes a 300,000 bpd Al Faw refinery with multiple process units and safety/security systems. Inference: enterprise IT and communications could be ancillary needs. Unverified: remaining procurement, EPC scope, dedicated ICT packages and relationship to the Al Faw Investment Refinery record."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-35505",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "The Al Faw Investment Refinery record describes a refinery and petrochemical complex targeting 300,000 bpd of refining capacity, about 3 million tonnes/year of petrochemicals and a 2,000 MW power plant. It explicitly mentions control and communications systems, alongside process units, LPG, water treatment and utilities. This offers a plausible communications and enterprise-IT angle, but process control and safety systems must remain with specialist suppliers.",
+        "recommendedHuaweiSolutions": [
+          "Communications backbone and secure networking for refinery, petrochemical, utilities and power-generation facilities, subject to package design",
+          "Enterprise data-center, storage, backup and operations-support IT aligned with the owner's architecture",
+          "IT/OT segmentation and cybersecurity with the EPC and control-system integrator; do not assume DCS/SIS delivery"
+        ],
+        "scoreRationale": "Communications systems are explicitly listed and the complex spans refinery, petrochemical and power assets, providing stronger potential than a generic refinery record. However, stage, package boundaries and overlap with MEED-IQ-448685 remain unresolved.",
+        "risks": [
+          "Structured project value is USD 0 while the summary states USD 14 billion",
+          "Stage is Contract Awarded; current scope, contractor and remaining packages require verification",
+          "Likely overlap or parent-child relationship with MEED-IQ-448685 Al Faw Refinery; avoid double counting",
+          "Control systems in process and power facilities include safety-critical functions"
+        ],
+        "nextActions": [
+          "Reconcile value, capacity and scope with South Refineries Company and the awarded EPC",
+          "Confirm whether this is a broader parent project or a distinct contract from MEED-IQ-448685",
+          "Ask whether communications, enterprise IT, data-center and cybersecurity packages remain open",
+          "Define interfaces with the process-automation and power-control suppliers"
+        ],
+        "evidence": [
+          "Summary describes 300,000 bpd refinery capacity, about 3 million tonnes/year petrochemicals and a 2,000 MW power plant",
+          "Scope explicitly includes control systems and communications systems",
+          "Structured value is 0 while the summary says USD 14 billion"
+        ],
+        "factsVsInference": "Fact: The summary describes a refinery/petrochemical complex and 2,000 MW power plant, and scope mentions control and communications. Inference: communications and enterprise IT could be relevant. Unverified: value, project status, open packages and relationship to the other Al Faw record."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-344460",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "This GGIP Artawi Central Gas Complex record is a placeholder summary for a major gas-processing facility within the Gas Growth Integrated Project involving Basra Oil Company, QatarEnergy and TotalEnergies. The structured record lists USD 1.61 billion and Under Construction, but does not provide actual scope, milestones, news or ICT requirements. No reliable solution recommendation can be made without retrieving the original project profile.",
+        "recommendedHuaweiSolutions": [
+          "Do not nominate a specific package until the original scope is obtained",
+          "If confirmed, assess site communications, fiber/IP transport, enterprise IT and cybersecurity as separate packages",
+          "Keep gas processing controls, emergency shutdown and safety systems with specialist oil-and-gas vendors"
+        ],
+        "scoreRationale": "The project name and partners indicate a potentially significant gas-processing facility, but the record contains no project-specific description. The fit score should remain conservative until the original scope, package boundaries and procurement status are verified.",
+        "risks": [
+          "Placeholder summary lacks technical scope and current milestones",
+          "Potential parent-child relationship with the wider GGIP/Artawi development; avoid double counting",
+          "Gas processing, ESD and process-safety systems are specialist and safety-critical",
+          "USD 1.61 billion may represent a project/package value and needs validation"
+        ],
+        "nextActions": [
+          "Retrieve the original MEED profile, Scope, milestones and latest news",
+          "Confirm whether this is a standalone central gas complex package within GGIP/Artawi",
+          "Identify EPC, gas-processing technology provider and control-system vendor",
+          "Only develop an ICT opportunity after a separate communications/IT package is evidenced"
+        ],
+        "evidence": [
+          "Title identifies GGIP Artawi Oil Field Development: Central Gas Complex and partners Basra Oil Company, QatarEnergy and TotalEnergies",
+          "Summary is a generic ingestion placeholder",
+          "Structured stage is Under Construction and value is USD 1.61 billion"
+        ],
+        "factsVsInference": "Fact: The record is titled as the GGIP Artawi Central Gas Complex, lists major project partners, USD 1.61 billion and Under Construction. Inference: communications and enterprise IT may be needed in a gas facility. Unverified: technical scope, package boundaries, actual schedule, value and ICT procurement."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-580780",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "Jordan's Aqaba–Al-Shidiyeh–Ma'an freight railway is described as a 403 km heavy-haul line connecting Aqaba port with phosphate and potash production and logistics zones. Scope includes 55 bridges, six tunnels, cargo terminals, automated mineral loading, dispatch systems, digital safety barriers and signaling. Railway communications and station/terminal networking may be relevant, but signaling and train-control safety functions must remain with qualified railway systems suppliers.",
+        "recommendedHuaweiSolutions": [
+          "Fiber/IP transport and station/terminal networks connecting Aqaba, mines, logistics zones and operations centers",
+          "Operations-center and terminal data-center/network infrastructure for cargo, asset and maintenance applications",
+          "Cybersecurity and secure communications for railway IT and operations, with explicit exclusion of safety-critical signaling control"
+        ],
+        "scoreRationale": "The scope explicitly mentions dispatch systems, digital safety barriers and signaling, plus geographically distributed terminals and logistics facilities. This suggests meaningful network/IT needs, but procurement status and package separation are not established.",
+        "risks": [
+          "Stage is Under Construction; verify actual schedule, award status and remaining work packages",
+          "Signaling, interlocking and train control are safety-critical and require specialist railway vendors",
+          "The record may overlap with the wider Aqaba–Syria Link railway record MEED-JO-10310",
+          "The USD 2.5 billion value is not Huawei-addressable revenue"
+        ],
+        "nextActions": [
+          "Confirm whether this 403 km section is a distinct contract under the broader Aqaba–Syria Link programme",
+          "Identify railway systems integrator, signaling vendor and communications subcontract opportunities",
+          "Obtain specifications for fiber, dispatch, terminal networking and cybersecurity",
+          "Verify current project status and procurement milestones"
+        ],
+        "evidence": [
+          "Scope describes a 403 km freight line, 55 bridges, six tunnels and cargo terminals",
+          "Scope includes automated mineral loading, dispatch systems, digital safety barriers and signaling arrays",
+          "Summary forecasts about 16 million tonnes of phosphate/potash freight per year"
+        ],
+        "factsVsInference": "Fact: The record lists a 403 km freight railway with dispatch systems, digital safety barriers and signaling. Inference: fiber transport, terminal networks and operations-center IT may fit Huawei. Unverified: tender packaging, supplier eligibility and relationship to the wider Aqaba–Syria Link record."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-10310",
+      "preserveExistingChinese": true,
+      "english": {
+        "demandSummary": "Jordan's Aqaba–Syria Link/National Cargo Railway Network is a broad rail programme linking Aqaba, Amman, Zarqa and northern/border connections. The record describes over 890 km of network context and a 509 km component, with stations, freight yards, control centers, signaling and access-control systems. Huawei's plausible scope is rail communications transport, station networks, control-center IT and cybersecurity, not safety-critical signaling or train control.",
+        "recommendedHuaweiSolutions": [
+          "Fiber backbone and IP/MPLS transport connecting stations, freight yards, border nodes and operations centers",
+          "Control-center and station IT infrastructure, including data-center, storage and backup where specified",
+          "Secure access, enterprise networking and cybersecurity coordinated with the railway systems integrator"
+        ],
+        "scoreRationale": "The scope explicitly lists control centers, signaling and access-control systems and connects multiple logistics nodes, indicating a potential communications/IT footprint. However, the record is broad and may overlap with the 403 km Aqaba–Al-Shidiyeh–Ma'an railway project, so package boundaries must be clarified.",
+        "risks": [
+          "Stage is Under Construction, but current milestones and contract packages are not supplied",
+          "The description mixes a national network exceeding 890 km with a 509 km component; reconcile geographic and contract scope",
+          "Possible overlap with MEED-JO-580780 and other railway records may cause double counting",
+          "Signaling, interlocking and train-control systems are safety-critical"
+        ],
+        "nextActions": [
+          "Map the master programme into distinct corridors and awarded contract packages",
+          "Confirm relationship and scope boundary with MEED-JO-580780 Aqaba–Al-Shidiyeh–Ma'an",
+          "Identify owner, railway operator, EPC and signaling/communications integrator",
+          "Seek separate fiber, control-center IT, station network and cybersecurity packages"
+        ],
+        "evidence": [
+          "Summary describes a national railway network connecting Aqaba, Amman, Zarqa and the Syrian border",
+          "Scope lists stations, freight yards, control centers, signaling and access-control systems",
+          "Summary references a 509 km section within broader network context"
+        ],
+        "factsVsInference": "Fact: The record covers Jordan's Aqaba–Syria Link/National Cargo Railway Network and includes control centers, signaling and access-control systems. Inference: railway backbone communications and operations-center IT may be relevant. Unverified: precise route/package scope, current schedule, ICT procurement and relationship to the Aqaba–Al-Shidiyeh–Ma'an record."
+      }
+    }
+  ]
 }
