@@ -1,9 +1,5 @@
 name: MEED Batch Opportunity Analysis Writeback
 on:
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/meed-opportunity-analysis-batch.yml"
   workflow_dispatch:
 
 permissions:
@@ -52,6 +48,14 @@ jobs:
 
           const apiKey = process.env.API_KEY;
           const referenceId = 'MEED-IQ-20855';
+          // Validate the provider credential once before reading or analyzing production records.
+          const credentialCheck = await fetch('https://api.moonshot.cn/v1/models', {
+            headers: { Authorization: 'Bearer ' + apiKey },
+            signal: AbortSignal.timeout(15000)
+          });
+          if (!credentialCheck.ok) {
+            throw new Error('Moonshot API credential preflight failed with HTTP ' + credentialCheck.status + '. Update the GitHub Actions secret MOONSHOT_API_KEY with a valid key from the Moonshot API console. No D1 records were changed.');
+          }
           const promptVersion = 'meed-scope-fit-v1';
           const actorId = 'service:MTL Batch Opportunity Analysis';
           const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
