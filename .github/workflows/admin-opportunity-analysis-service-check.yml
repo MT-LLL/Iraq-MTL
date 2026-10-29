@@ -1,0 +1,41 @@
+name: Verify Admin Analysis Service Caller
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/admin-opportunity-analysis-service-check.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  service-token-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call admin analysis endpoint without exposing opportunity records
+        shell: bash
+        env:
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          set -euo pipefail
+          test -n "$CF_ACCESS_CLIENT_ID" || { echo "Missing CF_ACCESS_CLIENT_ID secret"; exit 1; }
+          test -n "$CF_ACCESS_CLIENT_SECRET" || { echo "Missing CF_ACCESS_CLIENT_SECRET secret"; exit 1; }
+          status="$(curl --silent --show-error --output response.json --write-out '%{http_code}' --max-time 20 \
+            -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
+            -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET" \
+            "https://iraq-mtl.lihui9329.workers.dev/api/admin-opportunity-analysis?priority=P0%2CP1%2CP2&limit=1")"
+          echo "Service-token endpoint HTTP status: $status"
+          if [[ "$status" == "200" ]]; then
+            node -e 'const fs=require("fs"); const x=JSON.parse(fs.readFileSync("response.json","utf8")); console.log(JSON.stringify({ok:x.ok,source:x.source,count:x.count,hasOpportunities:Array.isArray(x.opportunities)},null,2));'
+            exit 0
+          fi
+          # Do not print response bodies that could contain project data.
+          node -e 'const fs=require("fs"); try { const x=JSON.parse(fs.readFileSync("response.json","utf8")); console.log("Error code:", x.error || "not-json"); } catch { console.log("Response was not JSON; body suppressed."); }'
+          if [[ "$status" == "401" || "$status" == "403" || "$status" == "302" || "$status" == "307" ]]; then
+            echo "Service token reached an authorization boundary; inspect status/error before enabling this caller."
+            exit 0
+          fi
+          echo "Unexpected status; investigate without exposing response body."
+          exit 1
