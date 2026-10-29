@@ -1633,3 +1633,5 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
     {toast&&<div className="toast"><span>✓</span>{toast}</div>}
   </div>;
 }
+
+// Deployment trigger: ensure the GPT analysis detail-panel fix is built and deployed.
