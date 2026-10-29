@@ -1,4 +1,519 @@
 {
-  "mode": "fetch",
-  "analyses": []
+  "mode": "writeback",
+  "analyses": [
+    {
+      "opportunityId": "MEED-IQ-506475",
+      "priority": "P2",
+      "fitScore": 54,
+      "demandSummary": "项目涉及苏克舒尤赫地区污水、雨洪、供水处理、泵站及管网建设，存在市政通信、站点联网、视频安防和运维数字化的潜在需求；现有资料未明确ICT预算或招标包。",
+      "recommendedHuaweiSolutions": [
+        "市政设施专用通信与光纤接入（需确认范围）",
+        "泵站/水处理设施视频监控与网络安全",
+        "云平台、数据存储及运维可视化（按业主要求）"
+      ],
+      "scoreRationale": "基础设施范围较明确，但项目核心是土建、水务工艺与管网，华为可寻址范围属配套性需求，尚无明确ICT采购证据。",
+      "risks": [
+        "项目阶段显示施工中，原招标截止日期已过，需核实剩余标段和采购状态",
+        "行业分类为机械与电子，可能不准确；项目实际为水务基础设施",
+        "不得将386百万美元项目总额等同于华为可获取金额"
+      ],
+      "nextActions": [
+        "向业主/总包确认是否存在独立ICT、通信、安防或数据中心标段",
+        "核验剩余工程包、系统集成商及采购计划",
+        "确认现有SCADA/控制系统责任边界，避免替代水务工艺控制"
+      ],
+      "evidence": [
+        "MEED摘要列出污水网、雨洪系统、水处理设施、泵站及地下管线",
+        "未提供项目专属里程碑、新闻或证据条目"
+      ],
+      "factsVsInference": "事实：项目为Dhi Qar省Suq Al-Shoyokh水务基础设施，披露项目金额386百万美元，阶段为施工中。推断：通信、安防、联网及运维数字化可能形成配套机会；需采购文件验证。",
+      "english": {
+        "demandSummary": "The project covers sewerage, stormwater, water-treatment facilities, pumping stations and pipeline networks in Suq Al-Shoyokh. Potential adjacent needs include municipal communications, site connectivity, video security and digital operations, but no ICT budget or tender package is evidenced.",
+        "recommendedHuaweiSolutions": [
+          "Dedicated communications and fiber access for municipal facilities, subject to scope confirmation",
+          "Video surveillance, networking and cybersecurity for pumping and water-treatment sites",
+          "Cloud, storage and operations visualization if requested by the owner"
+        ],
+        "scoreRationale": "The infrastructure scope is reasonably clear, but the core works are civil engineering, water-process facilities and pipelines. Huawei's addressable scope is ancillary, with no confirmed ICT procurement evidence.",
+        "risks": [
+          "The record says under construction and its listed bid deadline has passed; verify remaining packages and procurement status",
+          "The Machinery & Electronic industry label may be inaccurate for a water-infrastructure project",
+          "The USD 386 million project value must not be treated as Huawei-addressable revenue"
+        ],
+        "nextActions": [
+          "Ask the owner/main contractor whether separate ICT, communications, security or data-center packages exist",
+          "Verify remaining work packages, system integrators and procurement schedule",
+          "Clarify SCADA and process-control responsibility boundaries; do not assume replacement of water-process controls"
+        ],
+        "evidence": [
+          "MEED summary lists sewerage networks, stormwater systems, water-treatment facilities, pumping stations and groundwater/sewage pipelines",
+          "No project-specific milestones, news items or evidence records were supplied"
+        ],
+        "factsVsInference": "Fact: This is a water-infrastructure project in Suq Al-Shoyokh, Dhi Qar; the record lists USD 386 million and under-construction status. Inference: communications, security, connectivity and digital O&M may be adjacent opportunities; tender documents must confirm them."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-24401",
+      "priority": "P2",
+      "fitScore": 48,
+      "demandSummary": "贝鲁特美国使馆园区包含办公、住宅、安保、停车、机电及配套基础设施，可能涉及园区网络、通信、数据存储、视频安防与建筑数字化；但安保采购限制和承包商既有方案是主要门槛。",
+      "recommendedHuaweiSolutions": [
+        "园区企业网络与光纤骨干（须经安全审查）",
+        "视频监控及存储（仅在招标和合规允许时）",
+        "数据中心/服务器与楼宇运维数字化（需确认招标范围）"
+      ],
+      "scoreRationale": "建筑规模与功能多样，但未发现明确ICT标段；美国政府海外设施项目通常有严格供应商、网络安全和采购限制，因此适配性中低。",
+      "risks": [
+        "项目在建且原招标截止日期很早，状态数据可能陈旧",
+        "美国政府项目可能存在供应商资格、制裁、网络安全及采购限制",
+        "使馆安保与敏感系统不应在没有正式许可时作为目标范围"
+      ],
+      "nextActions": [
+        "核实当前建设和采购状态、总包及已授标ICT供应商",
+        "先审查采购资格、合规限制及业主技术规范",
+        "仅针对公开且获准的非敏感楼宇系统识别机会"
+      ],
+      "evidence": [
+        "MEED摘要：约180,000平方米用地、约130,000平方米建筑面积、19栋建筑",
+        "Scope提及MEP、安保系统、停车及园区基础设施；未提供独立ICT采购证据"
+      ],
+      "factsVsInference": "事实：美国国务院OBO相关的贝鲁特Awkar使馆园区项目，包含多栋建筑、MEP和安全系统。推断：网络、存储、安防和楼宇数字化可能存在配套需求，但供应商限制及敏感性需先核实。",
+      "english": {
+        "demandSummary": "The Beirut embassy compound includes offices, residences, security buildings, parking, MEP and supporting infrastructure. Potential adjacent needs include campus networking, communications, storage, video security and building digitization, subject to strict security and contractor constraints.",
+        "recommendedHuaweiSolutions": [
+          "Enterprise campus networking and fiber backbone, subject to security review",
+          "Video surveillance and storage only where procurement and compliance rules permit",
+          "Data-center/server infrastructure and digital building operations if included in tender scope"
+        ],
+        "scoreRationale": "The compound is large and functionally diverse, but no distinct ICT package is evidenced. US government overseas-facility projects may impose stringent vendor, cybersecurity and procurement restrictions, making fit moderate-to-low.",
+        "risks": [
+          "The project is listed as under construction and the recorded bid deadline is old, so status may be stale",
+          "US government procurement may impose vendor-eligibility, sanctions, cybersecurity and sourcing restrictions",
+          "Sensitive embassy security systems must not be targeted without formal authorization"
+        ],
+        "nextActions": [
+          "Verify current construction/procurement status, main contractor and awarded ICT vendors",
+          "Review eligibility, compliance constraints and owner technical specifications first",
+          "Identify opportunities only in public, authorized, non-sensitive building systems"
+        ],
+        "evidence": [
+          "MEED summary lists a site of about 180,000 m², about 130,000 m² built-up area and 19 buildings",
+          "Scope includes MEP, security systems, parking and compound infrastructure; no separate ICT procurement evidence supplied"
+        ],
+        "factsVsInference": "Fact: This is the US Department of State/OBO Awkar embassy compound in Beirut, with multiple buildings, MEP and security systems. Inference: networking, storage, security and building digitization could be adjacent needs, but vendor restrictions and sensitivity must be verified."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-39569",
+      "priority": "P2",
+      "fitScore": 42,
+      "demandSummary": "迪瓦尼耶炼厂扩建涉及70,000桶/日常压蒸馏及加氢裂化、汽油升级、石脑油处理、公用工程和环保设施。可能有企业网络、数据中心、视频安防和IT/OT分区需求，但DCS、SIS及工艺控制应由合格的专业控制系统供应商负责。",
+      "recommendedHuaweiSolutions": [
+        "办公及非安全关键业务网络",
+        "数据中心、存储和备份（若业主已有架构规划）",
+        "IT/OT边界安全、工业网络可视化的配套能力（与主控制系统集成商协同）"
+      ],
+      "scoreRationale": "炼厂项目包含大量控制与自动化系统，但现有记录没有独立ICT采购范围；安全关键控制系统不是直接可推定的华为交付范围。",
+      "risks": [
+        "项目施工状态和时间线需重新确认",
+        "DCS/SIS、联锁、过程控制及功能安全不可未经认证和责任界定承接",
+        "项目金额与潜在ICT份额差异很大，不能按总额估算可寻址收入"
+      ],
+      "nextActions": [
+        "核验业主、EPC、控制系统主供应商及采购包划分",
+        "寻找独立通信、数据中心、企业IT或网络安全标段",
+        "明确工艺控制和功能安全责任边界，并遵守业主及当地标准"
+      ],
+      "evidence": [
+        "MEED摘要披露70,000桶/日新增常压蒸馏装置及多类炼化单元",
+        "范围包含电力、氮气、液化气、废水处理和储运设施",
+        "未提供最新新闻或专属里程碑证据"
+      ],
+      "factsVsInference": "事实：项目计划扩建迪瓦尼耶炼厂，新增70,000桶/日常压蒸馏能力并扩展炼化单元。推断：企业IT、通信、存储和网络安全可能存在配套需求；DCS/SIS等控制范围需单独确认。",
+      "english": {
+        "demandSummary": "The Al Diwaniyah refinery expansion includes a 70,000 bpd atmospheric distillation unit, hydrocracking, gasoline upgrading, naphtha processing, utilities and environmental facilities. Enterprise networking, data-center, video-security and IT/OT segmentation needs may exist, but DCS, SIS and process control should remain with qualified specialist vendors.",
+        "recommendedHuaweiSolutions": [
+          "Office and non-safety-critical enterprise networking",
+          "Data-center, storage and backup infrastructure if aligned with the owner's architecture",
+          "Supporting IT/OT boundary security and industrial-network visibility in coordination with the main control-system integrator"
+        ],
+        "scoreRationale": "Refinery projects involve extensive control and automation, but the record does not establish a separate ICT procurement scope. Safety-critical controls cannot be presumed to be Huawei-deliverable scope.",
+        "risks": [
+          "Reconfirm construction status and timeline",
+          "Do not assume DCS/SIS, interlocks, process control or functional-safety scope without certification and clear responsibility",
+          "The overall project value is not a proxy for addressable ICT revenue"
+        ],
+        "nextActions": [
+          "Verify the owner, EPC, main control-system vendor and package boundaries",
+          "Look for separate communications, data-center, enterprise IT or cybersecurity packages",
+          "Define process-control and functional-safety boundaries and comply with owner/local standards"
+        ],
+        "evidence": [
+          "MEED summary describes a new 70,000 bpd atmospheric distillation unit and multiple refining units",
+          "Scope includes power, nitrogen, LPG, wastewater treatment and storage/logistics facilities",
+          "No current news or project-specific milestone evidence was supplied"
+        ],
+        "factsVsInference": "Fact: The project expands Al Diwaniyah refinery with a new 70,000 bpd atmospheric distillation unit and additional refining units. Inference: enterprise IT, communications, storage and cybersecurity may be adjacent needs; DCS/SIS scope requires separate confirmation."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-403750",
+      "priority": "P2",
+      "fitScore": 43,
+      "demandSummary": "迈桑投资炼厂计划建设15万桶/日炼油能力，包含硫回收、蒸馏、储罐、管线和尾气处理等单元。潜在配套为企业通信、数据中心、存储、视频安防和IT/OT安全；工艺控制与安全仪表系统不应直接纳入华为范围。",
+      "recommendedHuaweiSolutions": [
+        "炼厂办公与企业园区网络",
+        "数据中心/存储/备份基础设施",
+        "与EPC及控制系统主供方协作的IT/OT网络安全"
+      ],
+      "scoreRationale": "项目有较明确的炼油工艺和里程碑，但最新新闻明确表示没有进一步更新；ICT采购包和华为准入均未证实。",
+      "risks": [
+        "MEED称暂无进一步更新，项目阶段与未来招标日期需通过业主确认",
+        "里程碑为未来计划日期，不等于已批准或已执行",
+        "DCS/SIS、燃烧/尾气控制及功能安全属于专业控制系统责任范围"
+      ],
+      "nextActions": [
+        "确认项目是否仍推进、融资和EPC选择进展",
+        "获取预审/招标文件，检查通信、数据中心及网络安全包",
+        "核实供应商资格与关键基础设施采购规则"
+      ],
+      "evidence": [
+        "里程碑记录包括商业投标提交2027-01-20、授标2027-04-20、计划完工2029-07-25",
+        "Latest News称未获得进一步更新，并相应调整关键日期"
+      ],
+      "factsVsInference": "事实：项目拟建设15万桶/日炼厂，MEED列出2027至2029年的未来关键日期，并注明暂无新进展。推断：ICT配套可能存在，但项目推进状态、采购包和供应商准入均需核验。",
+      "english": {
+        "demandSummary": "The Maysan investment refinery is planned at 150,000 bpd and includes sulphur recovery, distillation, storage tanks, pipelines and tail-gas treatment. Adjacent needs may include enterprise communications, data-center, storage, video security and IT/OT security; process control and safety-instrumented systems should not be presumed to be Huawei scope.",
+        "recommendedHuaweiSolutions": [
+          "Refinery office and enterprise campus networking",
+          "Data-center, storage and backup infrastructure",
+          "IT/OT cybersecurity in cooperation with the EPC and primary control-system vendor"
+        ],
+        "scoreRationale": "The refining scope and milestone dates are reasonably specific, but the latest-news field says no further updates were obtained. ICT packages and Huawei eligibility are unconfirmed.",
+        "risks": [
+          "MEED reports no further updates; the project stage and future tender dates require owner confirmation",
+          "Future milestone dates are plans, not proof of approval or execution",
+          "DCS/SIS, combustion/tail-gas control and functional safety belong to specialist control-system responsibilities"
+        ],
+        "nextActions": [
+          "Confirm whether the project is proceeding and check financing/EPC selection",
+          "Obtain prequalification/tender documents and check communications, data-center and cybersecurity packages",
+          "Verify vendor eligibility and critical-infrastructure procurement rules"
+        ],
+        "evidence": [
+          "Milestones list commercial bid submission on 2027-01-20, award on 2027-04-20 and planned completion on 2029-07-25",
+          "Latest News says no further updates were obtained and key dates were adjusted"
+        ],
+        "factsVsInference": "Fact: The planned refinery capacity is 150,000 bpd; MEED lists future dates from 2027 to 2029 and says there are no further updates. Inference: adjacent ICT needs may exist, but project status, package scope and vendor eligibility must be verified."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-347026",
+      "priority": "P2",
+      "fitScore": 58,
+      "demandSummary": "巴格达萨德尔城新城开发涉及约6万套住宅及学校、医院、商业、公园和道路，并包含供排水、电力变电站和电信基础设施。相较单一土建项目，智慧城市通信、园区网络、视频安防、数据平台和城市服务数字化更具相关性，但未确认独立采购包。",
+      "recommendedHuaweiSolutions": [
+        "城市级通信接入、光纤与园区网络（按运营商/业主架构）",
+        "公共设施视频安防、存储和指挥中心能力",
+        "数据中心、云平台及城市服务数字化（需明确应用与数据责任方）"
+      ],
+      "scoreRationale": "大规模综合新城有潜在数字基础设施需求，摘要明确提及电信基础设施；但建设分期、采购主体、资金和ICT包仍不清楚，适配度中等。",
+      "risks": [
+        "记录显示在建但原截止日期已过，且项目金额描述不一致：记录字段850百万美元，摘要提到1,800百万美元",
+        "新城项目可能由多个子项目/包构成，避免重复统计",
+        "公共安全、居民数据及关键基础设施需满足当地隐私和网络安全要求"
+      ],
+      "nextActions": [
+        "核对项目总投资与各期范围，解决850/1,800百万美元差异",
+        "识别NIC、地方政府、开发商、运营商及EPC各自采购职责",
+        "寻找电信、数据中心、安防和城市运营平台的正式标段"
+      ],
+      "evidence": [
+        "摘要描述约60,000套住宅及学校、医院、零售、道路、排水、电力和电信基础设施",
+        "摘要列出电信基础设施和安全系统，但没有独立ICT采购证据"
+      ],
+      "factsVsInference": "事实：项目在巴格达附近开发新城，包含约60,000套住宅及多类公共服务和市政基础设施。推断：数字基础设施和城市服务平台可能适配，但项目金额存在冲突，采购范围需进一步核验。",
+      "english": {
+        "demandSummary": "The Al Sadr City development includes about 60,000 homes plus schools, hospitals, retail, parks and roads, with water/sewerage, substations and telecommunications infrastructure. Compared with a standalone civil-works project, smart-city connectivity, campus networks, video security, data platforms and digital municipal services are more relevant, although separate procurement packages are unconfirmed.",
+        "recommendedHuaweiSolutions": [
+          "City-scale connectivity, fiber access and campus networking aligned with the operator/owner architecture",
+          "Video security, storage and command-center capabilities for public facilities",
+          "Data-center, cloud and digital municipal-service platforms once application and data ownership are clear"
+        ],
+        "scoreRationale": "The large mixed-use city has potential digital-infrastructure demand, and telecommunications infrastructure is explicitly mentioned. However, phases, procuring entities, funding and ICT packages remain unclear, so fit is moderate.",
+        "risks": [
+          "The record says under construction while the recorded deadline has passed; project values conflict: USD 850 million in the field versus USD 1.8 billion in the summary",
+          "The development may contain multiple subprojects/packages; avoid double counting",
+          "Public safety, resident data and critical infrastructure must meet local privacy and cybersecurity requirements"
+        ],
+        "nextActions": [
+          "Reconcile total investment and phase scope, including the USD 850m versus USD 1.8bn discrepancy",
+          "Map procurement responsibilities across NIC, local government, developer, operators and EPCs",
+          "Look for formal tenders for telecoms, data centers, security and city-operations platforms"
+        ],
+        "evidence": [
+          "Summary describes about 60,000 homes plus schools, hospitals, retail, roads, drainage, power and telecom infrastructure",
+          "Telecommunications infrastructure and security systems are mentioned, but no separate ICT procurement evidence is supplied"
+        ],
+        "factsVsInference": "Fact: The project develops a new city near Baghdad with about 60,000 homes and multiple public-service and municipal infrastructure elements. Inference: digital infrastructure and municipal-service platforms may fit, but the conflicting project value and procurement scope need verification."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-401465",
+      "priority": "P2",
+      "fitScore": 31,
+      "demandSummary": "鲁迈拉油田流线工程主要为井口流线、碳钢管线、钻井、热开孔、焊接、阴极保护和井口连接等油气工程。ICT需求可能仅限施工现场通信、企业网络和基础安防；核心范围不是华为ICT方案。",
+      "recommendedHuaweiSolutions": [
+        "施工现场/营地网络与安全通信（若单独采购）",
+        "企业IT及视频安防配套（需总包确认）"
+      ],
+      "scoreRationale": "项目scope几乎完全是管道和油田工程，未提及独立通信、数据中心或ICT系统，华为可寻址空间低。",
+      "risks": [
+        "记录为合同已授予且截止日期早已过去，可能已完工或仅剩少量工作",
+        "油田SCADA、井口仪表及工业控制需要由业主指定的专业供应商负责",
+        "项目金额300百万美元不代表ICT预算"
+      ],
+      "nextActions": [
+        "核验当前状态、合同承包商及是否仍有未采购的配套系统",
+        "除非出现独立ICT标段，否则降低跟踪优先级",
+        "如有网络需求，确认油田网络规范、网络安全与工业系统边界"
+      ],
+      "evidence": [
+        "MEED scope列出流线安装、生产井钻井、碳钢管道、焊接、阴极保护和井口连接",
+        "未提供专属ICT采购包或最新进展"
+      ],
+      "factsVsInference": "事实：项目涉及鲁迈拉油田流线安装及井相关工程，记录阶段为合同已授予。推断：只有施工现场通信、基础网络或安防可能形成边缘机会，需承包商确认。",
+      "english": {
+        "demandSummary": "The Rumaila flowlines project is primarily oilfield engineering: well flowlines, carbon-steel pipelines, drilling, hot tapping, welding, cathodic protection and wellhead hook-ups. ICT demand may be limited to site communications, enterprise networking and basic security; the core scope is not a Huawei ICT solution.",
+        "recommendedHuaweiSolutions": [
+          "Site/camp networking and secure communications if separately procured",
+          "Supporting enterprise IT and video security, subject to contractor confirmation"
+        ],
+        "scoreRationale": "The scope is almost entirely pipeline and oilfield work. No separate communications, data-center or ICT system is mentioned, so Huawei-addressable fit is low.",
+        "risks": [
+          "The record says contract awarded and its deadline is long past; the work may be complete or nearly complete",
+          "Oilfield SCADA, wellhead instrumentation and industrial control should remain with owner-approved specialist vendors",
+          "The USD 300 million project value is not an ICT budget"
+        ],
+        "nextActions": [
+          "Verify current status, contractor and any unprocured supporting systems",
+          "Lower tracking priority unless a distinct ICT package emerges",
+          "For any network requirement, confirm oilfield standards, cybersecurity and industrial-system boundaries"
+        ],
+        "evidence": [
+          "MEED scope lists flowline installation, producer-well drilling, carbon-steel pipelines, welding, cathodic protection and wellhead hook-ups",
+          "No dedicated ICT package or latest update was supplied"
+        ],
+        "factsVsInference": "Fact: The project covers flowline installation and related well works at Rumaila and is listed as contract awarded. Inference: only site communications, basic networking or security may be adjacent opportunities, subject to contractor confirmation."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-15944",
+      "priority": "P2",
+      "fitScore": 47,
+      "demandSummary": "阿卡斯气田LPG管道项目包含287公里管线、压缩/增压站、计量调压站、阀室及SCADA、实时监控、泄漏检测。明确出现SCADA与传感器，但这些工业控制及安全相关系统应由油气专业供应商主导；华为更适合通信承载、数据中心与IT/OT网络安全配套。",
+      "recommendedHuaweiSolutions": [
+        "管线沿线光纤/传输与站点通信（与SCADA供应商协同）",
+        "站点企业网络、视频监控和存储",
+        "IT/OT分区与网络安全配套，明确不承接工艺控制功能"
+      ],
+      "scoreRationale": "范围提及SCADA和实时监控，说明数字系统相关性高于纯管道工程；但没有采购包、架构或供应商信息，且记录时间线可能过期。",
+      "risks": [
+        "阶段显示在建但招标截止日期已过，需确认实际进度",
+        "SCADA、泄漏检测、紧急关断及工艺安全责任边界不可混淆",
+        "LPG与天然气术语在摘要中可能存在不一致，需核实设计范围"
+      ],
+      "nextActions": [
+        "确认项目当前状态、业主/总包和SCADA主供方",
+        "询问是否单独采购光纤传输、通信、视频、服务器/存储和网络安全",
+        "核实管道路线、站点数量及适用的油气网络安全标准"
+      ],
+      "evidence": [
+        "摘要提及287公里LPG管线、压缩/增压站、计量控制站、阀室",
+        "Scope明确包含SCADA、实时监控、泄漏检测传感器及自动化设备"
+      ],
+      "factsVsInference": "事实：MEED摘要列出287公里管线和SCADA、监控、泄漏检测及自动化设备。推断：通信承载和IT/OT安全可能是配套机会，但具体采购与安全责任需由业主/总包确认。",
+      "english": {
+        "demandSummary": "The Akkas LPG pipeline project includes 287 km of pipeline, compressor/booster stations, metering/regulating stations, valve stations, SCADA, real-time monitoring and leak-detection sensors. These industrial-control and safety-related systems should be led by oil-and-gas specialists; Huawei's more suitable adjacent scope is communications transport, data-center infrastructure and IT/OT cybersecurity.",
+        "recommendedHuaweiSolutions": [
+          "Fiber/transport and site communications along the pipeline in coordination with the SCADA vendor",
+          "Site enterprise networks, video surveillance and storage",
+          "Supporting IT/OT segmentation and cybersecurity, explicitly excluding process-control functions"
+        ],
+        "scoreRationale": "SCADA and real-time monitoring make the scope more digitally relevant than a pure pipeline project. However, no procurement package, architecture or vendor information is available, and the record's timeline may be stale.",
+        "risks": [
+          "The record says under construction while its bid deadline has passed; verify actual progress",
+          "Do not blur responsibility for SCADA, leak detection, emergency shutdown and process safety",
+          "The summary's LPG versus natural-gas terminology may be inconsistent; verify the design scope"
+        ],
+        "nextActions": [
+          "Confirm current status, owner/main contractor and primary SCADA vendor",
+          "Ask whether fiber transport, communications, video, servers/storage and cybersecurity are procured separately",
+          "Verify pipeline route, station count and applicable oil-and-gas cybersecurity standards"
+        ],
+        "evidence": [
+          "Summary mentions 287 km of pipeline, compressor/booster stations and metering/control stations",
+          "Scope explicitly includes SCADA, real-time monitoring, leak-detection sensors and automation equipment"
+        ],
+        "factsVsInference": "Fact: MEED lists a 287 km pipeline and SCADA, monitoring, leak detection and automation. Inference: communications transport and IT/OT security may be adjacent opportunities, but procurement and safety responsibilities must be confirmed by the owner/contractor."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-10655",
+      "priority": "P2",
+      "fitScore": 51,
+      "demandSummary": "阿卡斯气田整体开发涉及井、中央处理设施、集输系统、管线和地面基础设施，目标分阶段提升产气量并供气给安巴尔联合循环电站。潜在ICT包括通信传输、数据中心、企业网络及IT/OT安全，但摘要未给出最新里程碑或独立采购包。",
+      "recommendedHuaweiSolutions": [
+        "气田设施与中央处理站通信/光纤传输",
+        "企业网络、服务器、存储和备份（按EPC架构）",
+        "IT/OT网络安全和工业网络可视化，与控制系统供应商协作"
+      ],
+      "scoreRationale": "项目规模和生产目标清楚，且与配套电站有系统连接，但记录金额字段为0而摘要称约2,150百万美元，数据质量不一致；ICT范围未证实。",
+      "risks": [
+        "项目金额冲突：结构化字段为0，摘要描述2,150百万美元",
+        "记录状态为在建但没有最新里程碑，实际阶段需核实",
+        "气体处理、井口控制、ESD及工艺安全应由专业油气供应商负责",
+        "可能与MEED-IQ-15944 LPG Pipeline等阿卡斯相关记录存在父子关系，需去重"
+      ],
+      "nextActions": [
+        "核验真实投资额、当前阶段、EPC和主要系统供应商",
+        "确认与阿卡斯管道项目的范围边界及父子关系，避免重复计算",
+        "查找通信、服务器/存储、网络安全的明确招标包"
+      ],
+      "evidence": [
+        "摘要描述约5.6 Tcf非伴生气储量、首期100 MMscf/d并最终达到400 MMscf/d目标",
+        "Scope包括中央处理设施、井、集输管线、机电仪控和调试",
+        "结构化projectValue为0，与摘要所述US$2,150 million不一致"
+      ],
+      "factsVsInference": "事实：项目涉及阿卡斯气田开发、中央处理设施和集输系统，摘要给出分阶段产能目标。推断：通信和IT/OT安全有配套可能，但金额、进度、采购包及与相关子项目的关系都需核实。",
+      "english": {
+        "demandSummary": "The overall Akkas gas-field development includes wells, a central processing facility, gathering systems, pipelines and surface infrastructure, with phased production targets and gas supply to the Anbar combined-cycle power plant. Potential ICT includes communications transport, data-center, enterprise networking and IT/OT security, but no current milestones or separate procurement package are provided.",
+        "recommendedHuaweiSolutions": [
+          "Communications/fiber transport for field facilities and the central processing plant",
+          "Enterprise networking, servers, storage and backup aligned with the EPC architecture",
+          "IT/OT cybersecurity and industrial-network visibility alongside the control-system vendor"
+        ],
+        "scoreRationale": "The project scale and production targets are clear, and it connects to a supporting power plant. However, the structured value is zero while the summary states about USD 2.15 billion; ICT scope is unconfirmed.",
+        "risks": [
+          "Conflicting project values: structured field is 0, while the summary states USD 2.15 billion",
+          "The record says under construction but has no latest milestones; verify actual stage",
+          "Gas processing, wellhead controls, ESD and process safety should remain with specialist oil-and-gas vendors",
+          "May be a parent/related record to MEED-IQ-15944 Akkas LPG Pipeline; deduplicate scope and value"
+        ],
+        "nextActions": [
+          "Verify investment value, current stage, EPC and primary system vendors",
+          "Confirm scope boundaries and parent-child relationship with the Akkas pipeline project to avoid double counting",
+          "Look for explicit tender packages for communications, servers/storage and cybersecurity"
+        ],
+        "evidence": [
+          "Summary states about 5.6 Tcf of non-associated gas, with 100 MMscf/d initial and 400 MMscf/d plateau targets",
+          "Scope includes central processing, wells, gathering pipelines, M&E&I/control and commissioning",
+          "Structured projectValue is 0, conflicting with the summary's USD 2.15 billion"
+        ],
+        "factsVsInference": "Fact: The project covers Akkas field development, a central processing facility and gathering systems, with phased production targets in the summary. Inference: communications and IT/OT security may be adjacent needs, but value, progress, procurement and related-project boundaries require verification."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-525819",
+      "priority": "P2",
+      "fitScore": 37,
+      "demandSummary": "卡尔巴拉伊玛目侯赛因环路一期是9.2公里、60米宽道路及13个交叉口和3座立交桥建设，包含照明和信号系统。ICT机会较有限，可能涉及交通监控、道路通信或城市监控，但交通信号控制的责任边界需由道路系统集成商确认。",
+      "recommendedHuaweiSolutions": [
+        "道路沿线通信与视频监控网络（若独立采购）",
+        "交通管理中心的网络/存储配套（如业主明确提出）"
+      ],
+      "scoreRationale": "范围主要是道路土建和交通设施，未见明确智能交通、联网摄像头或管理平台标段，华为匹配度偏低。",
+      "risks": [
+        "记录显示在建，原招标截止日期已过，需核实剩余包件",
+        "道路信号系统可能由专业交通供应商交付，不应假设华为承担信号控制",
+        "项目金额仅为整体道路工程规模，ICT份额未知"
+      ],
+      "nextActions": [
+        "核实项目阶段、道路承包商和交通信号系统供应商",
+        "查明是否有智能交通、视频监控、通信或管理中心独立采购",
+        "如无独立ICT范围，降级为观察而非主动销售机会"
+      ],
+      "evidence": [
+        "摘要列出9.2公里、60米宽环路、13个交叉口和3座主要立交桥",
+        "Scope提及信号与照明系统，但未提及独立ICT包"
+      ],
+      "factsVsInference": "事实：项目为卡尔巴拉环路一期，范围含道路、交叉口、立交桥、信号和照明。推断：道路通信、视频监控或管理中心网络可能是配套需求，但无证据证明已有独立ICT采购。",
+      "english": {
+        "demandSummary": "Phase 1 of the Imam Hussein Ring Road in Karbala covers a 9.2 km, 60 m-wide road, 13 intersections and three major overpasses, with lighting and signaling. ICT opportunity is limited; traffic monitoring, roadside communications or city surveillance may be adjacent, but traffic-signal control responsibilities must be confirmed with the road systems integrator.",
+        "recommendedHuaweiSolutions": [
+          "Roadside communications and video-surveillance networking if separately procured",
+          "Network/storage support for a traffic-management center if explicitly required by the owner"
+        ],
+        "scoreRationale": "The scope is mainly road civil works and traffic infrastructure. No intelligent-transport, connected-camera or management-platform package is evidenced, so Huawei fit is low.",
+        "risks": [
+          "The record says under construction and the bid deadline has passed; verify remaining packages",
+          "Traffic-signal systems may be delivered by specialist transport vendors; do not assume Huawei owns signal control",
+          "The project value reflects overall road works, with ICT share unknown"
+        ],
+        "nextActions": [
+          "Verify project stage, road contractor and traffic-signal vendor",
+          "Check for separate ITS, video surveillance, communications or control-center procurement",
+          "If no separate ICT scope exists, downgrade to watchlist rather than active sales opportunity"
+        ],
+        "evidence": [
+          "Summary lists a 9.2 km, 60 m-wide ring road, 13 intersections and three major overpasses",
+          "Scope mentions signaling and lighting but no separate ICT package"
+        ],
+        "factsVsInference": "Fact: The project is Phase 1 of the Karbala ring road and includes roads, intersections, overpasses, signaling and lighting. Inference: roadside communications, video surveillance or control-center networking may be ancillary needs, but no separate ICT procurement is evidenced."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-493247",
+      "priority": "P2",
+      "fitScore": 46,
+      "demandSummary": "巴士拉第三海上原油出口管线包括61公里海底和9公里陆上48英寸管线、两个海上平台、单点系泊浮标及电力、通信和控制系统。通信系统是明确范围，但控制、海事安全及油气工艺系统需与专业EPC和系统供应商协同。",
+      "recommendedHuaweiSolutions": [
+        "海上/陆上站点通信传输和网络设备（经海事与油气规范确认）",
+        "视频监控、存储及企业IT配套",
+        "IT/OT网络安全与通信系统集成支持，不承接未经授权的工艺控制功能"
+      ],
+      "scoreRationale": "Scope明确列出通信和控制系统，数字基础设施关联度较强；但项目已显示在建，采购状态、供应商和技术规范尚未核实。",
+      "risks": [
+        "项目阶段和招标截止时间可能过时，需核实剩余采购包",
+        "海上平台和出口终端有严格可用性、环境、防爆及网络安全要求",
+        "控制系统与管线保护系统的安全责任必须清晰"
+      ],
+      "nextActions": [
+        "确认业主、EPC、海上平台及通信/控制系统主供应商",
+        "核实通信设备、光纤、网络安全或视频系统是否有未授标包件",
+        "按海上油气环境标准审查认证、冗余和生命周期支持要求"
+      ],
+      "evidence": [
+        "摘要描述48英寸管线，约61公里海上、9公里陆上，两个平台及SPM-4",
+        "Scope明确包括电力、通信、控制系统和阴极保护",
+        "未提供最新新闻或独立采购证据"
+      ],
+      "factsVsInference": "事实：项目为巴士拉第三海上原油出口管线，包含海陆管线、海上平台、SPM-4以及通信/控制系统。推断：通信和网络安全可能是相关配套机会，但现有供应商、剩余采购及海上认证要求需确认。",
+      "english": {
+        "demandSummary": "Basra's Third Offshore Crude Export Pipeline includes 61 km offshore and 9 km onshore of 48-inch pipeline, two offshore platforms, a single-point mooring buoy, and electrical, communications and control systems. Communications is explicitly in scope, but control, marine safety and oil-and-gas process systems require coordination with specialist EPCs and vendors.",
+        "recommendedHuaweiSolutions": [
+          "Communications transport and networking for offshore/onshore sites, subject to marine and oil-and-gas standards",
+          "Video surveillance, storage and enterprise IT support",
+          "IT/OT cybersecurity and communications integration support, without assuming unauthorized process-control scope"
+        ],
+        "scoreRationale": "Communications and control systems are explicitly listed, giving the project stronger digital-infrastructure relevance. However, it is listed as under construction, and procurement status, vendors and technical specifications are unverified.",
+        "risks": [
+          "Project stage and tender deadline may be stale; verify remaining packages",
+          "Offshore platforms and export terminals impose strict availability, environmental, hazardous-area and cybersecurity requirements",
+          "Safety responsibility for control systems and pipeline protection must be explicit"
+        ],
+        "nextActions": [
+          "Identify the owner, EPC, offshore-platform vendors and primary communications/control suppliers",
+          "Check whether communications equipment, fiber, cybersecurity or video packages remain unawarded",
+          "Review certification, redundancy and lifecycle-support requirements for offshore oil-and-gas environments"
+        ],
+        "evidence": [
+          "Summary describes a 48-inch pipeline with about 61 km offshore and 9 km onshore, two platforms and SPM-4",
+          "Scope explicitly includes electrical, communications, control and cathodic-protection systems",
+          "No latest news or separate procurement evidence was supplied"
+        ],
+        "factsVsInference": "Fact: The project is Basra's Third Offshore Crude Export Pipeline with onshore/offshore pipeline, platforms, SPM-4 and communications/control systems. Inference: communications and cybersecurity may be relevant adjacent opportunities, but incumbent vendors, remaining procurement and offshore certification must be verified."
+      }
+    }
+  ]
 }
