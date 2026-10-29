@@ -188,7 +188,7 @@ jobs:
               } catch (error) { lastError = error; }
               await sleep(attempt * 1500);
             }
-            if (!response || !response.ok) throw lastError || new Error('Kimi request failed for group ' + (index + 1));
+            if (!response || !response.ok) throw lastError || new Error('OpenAI GPT request failed for group ' + (index + 1));
             const result = await response.json();
             const text = result.choices?.[0]?.message?.content;
             if (!text) throw new Error('Empty GPT response for group ' + (index + 1));
