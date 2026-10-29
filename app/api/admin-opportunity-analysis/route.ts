@@ -119,6 +119,50 @@ async function verifyAccessJwt(request: Request): Promise<AccessIdentity | null>
   }
 }
 
+async function inspectAccessJwt(request: Request) {
+  const configuration = runtimeEnv();
+  const teamDomain = (configuration.CF_ACCESS_TEAM_DOMAIN ?? "").trim().replace(/^https?:/i, "").replaceAll("/", "");
+  const expectedAudience = (configuration.CF_ACCESS_AUD ?? "").trim();
+  const token = request.headers.get("cf-access-jwt-assertion");
+  const base = { hasToken: Boolean(token), hasTeamDomain: Boolean(teamDomain), hasExpectedAudience: Boolean(expectedAudience) };
+  if (!teamDomain || !expectedAudience || !token) return { ...base, verified: false, reason: "missing_configuration_or_token" };
+  const parts = token.split(".");
+  if (parts.length !== 3) return { ...base, verified: false, reason: "malformed_token" };
+  try {
+    const claims = decodeJsonPart<AccessClaims>(parts[1]);
+    const header = decodeJsonPart<{ alg?: string; kid?: string }>(parts[0]);
+    const now = Math.floor(Date.now() / 1000);
+    const audiences = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
+    const expectedIssuer = `https://${teamDomain}`;
+    const issuerMatches = claims.iss === expectedIssuer;
+    const audienceMatches = audiences.includes(expectedAudience);
+    const notExpired = typeof claims.exp === "number" && claims.exp > now;
+    const nbfValid = typeof claims.nbf !== "number" || claims.nbf <= now + 30;
+    if (!issuerMatches || !audienceMatches || !notExpired || !nbfValid || header.alg !== "RS256" || !header.kid) {
+      return { ...base, verified: false, reason: "claims_or_header_check_failed", issuerMatches, audienceMatches, notExpired, nbfValid, algorithmIsRs256: header.alg === "RS256", hasKeyId: Boolean(header.kid), claimKeys: Object.keys(claims).sort() };
+    }
+    const keysResponse = await fetch(`${expectedIssuer}/cdn-cgi/access/certs`, { headers: { accept: "application/json" }, signal: AbortSignal.timeout(4000) });
+    if (!keysResponse.ok) return { ...base, verified: false, reason: "jwks_fetch_failed", jwksStatus: keysResponse.status, issuerMatches, audienceMatches, notExpired, nbfValid };
+    const keySet = await keysResponse.json() as { keys?: Array<JsonWebKey & { kid?: string; alg?: string }> };
+    const jwk = keySet.keys?.find(key => key.kid === header.kid && (!key.alg || key.alg === "RS256"));
+    if (!jwk) return { ...base, verified: false, reason: "signing_key_not_found", issuerMatches, audienceMatches, notExpired, nbfValid, keyIdFound: false };
+    const publicKey = await crypto.subtle.importKey("jwk", jwk, { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" }, false, ["verify"]);
+    const valid = await crypto.subtle.verify("RSASSA-PKCS1-v1_5", publicKey, decodeBase64Url(parts[2]), new TextEncoder().encode(`${parts[0]}.${parts[1]}`));
+    const email = claims.email?.trim().toLowerCase();
+    return {
+      ...base, verified: valid, reason: valid ? "signature_verified" : "signature_invalid",
+      issuerMatches, audienceMatches, notExpired, nbfValid, algorithmIsRs256: true,
+      claimKeys: Object.keys(claims).sort(), hasEmailClaim: Boolean(email),
+      emailIsConfiguredAdmin: Boolean(email && configuredAdmin(email)),
+      commonNameMatchesMeedService: claims.common_name === "MTL GitHub Actions MEED Ingest",
+      hasCommonNameClaim: Boolean(claims.common_name),
+      audienceCount: audiences.filter(Boolean).length
+    };
+  } catch {
+    return { ...base, verified: false, reason: "diagnostic_exception" };
+  }
+}
+
 async function authorize(request: Request) {
   const identity = await verifyAccessJwt(request);
   if (!identity) return { response: json({ ok: false, error: "ADMIN_ACCESS_REQUIRED" }, 401) };
@@ -128,10 +172,13 @@ async function authorize(request: Request) {
 }
 
 export async function GET(request: Request) {
+  const url = new URL(request.url);
+  if (url.searchParams.get("diagnoseIdentity") === "1") {
+    return json({ diagnostic: await inspectAccessJwt(request) });
+  }
   const auth = await authorize(request);
   if ("response" in auth) return auth.response;
 
-  const url = new URL(request.url);
   const requested = (url.searchParams.get("priority") ?? "P0,P1,P2")
     .split(",")
     .map(value => value.trim().toUpperCase())
