@@ -108,7 +108,7 @@ jobs:
               currency: r.currency ?? '', fundingStatus: r.fundingStatus ?? '',
               bidDeadline: r.bidDeadline ?? '', summary: r.summary ?? '',
               keyProjectMilestones: r.keyProjectMilestones ?? '',
-              newsAndUpdates: r.newsAndUpdates ?? '', latestNews: r.latestNews ?? '',
+              newsAndUpdates: r.newsAndUpdates ?? '', latestNews: r.latestNews ?? '', solutionMatches: r.solutionMatches ?? null,
               sourceName: r.sourceName ?? '', sourceUrl: r.sourceUrl ?? '',
               evidence: grouped.get(String(r.id)) || []
             }));
