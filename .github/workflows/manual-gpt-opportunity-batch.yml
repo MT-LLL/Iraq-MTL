@@ -1,0 +1,168 @@
+name: Manual GPT Opportunity Batch (No Model API)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'data/manual-gpt-opportunity-batch.json'
+      - '.github/workflows/manual-gpt-opportunity-batch.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: manual-gpt-opportunity-batch
+  cancel-in-progress: false
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+          cache: npm
+      - run: npm ci
+      - name: Read next batch or write back ChatGPT analysis
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "Missing CLOUDFLARE_API_TOKEN; no records changed."; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "Missing CLOUDFLARE_ACCOUNT_ID; no records changed."; exit 1; }
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import os from 'node:os';
+          import path from 'node:path';
+          import { execFileSync } from 'node:child_process';
+          import crypto from 'node:crypto';
+
+          const inputPath = 'data/manual-gpt-opportunity-batch.json';
+          const input = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
+          function quote(v) {
+            if (v === null || v === undefined) return 'NULL';
+            if (typeof v === 'number' && Number.isFinite(v)) return String(v);
+            return "'" + String(v).replace(/'/g, "''") + "'";
+          }
+          function wrangler(sql, label, asFile = false) {
+            const args = ['wrangler', 'd1', 'execute', 'mssd_mtl_prod', '--remote', '--json'];
+            let filePath;
+            if (asFile) {
+              filePath = path.join(os.tmpdir(), 'mtl-manual-' + crypto.randomUUID() + '.sql');
+              fs.writeFileSync(filePath, sql, { mode: 0o600 });
+              args.push('--file=' + filePath);
+            } else args.push('--command', sql);
+            try {
+              const out = execFileSync('npx', args, { encoding: 'utf8', env: process.env, maxBuffer: 40 * 1024 * 1024, timeout: 120000 });
+              const start = [out.indexOf('['), out.indexOf('{')].filter(n => n >= 0);
+              if (!start.length) throw new Error('No JSON output');
+              let parsed;
+              try { parsed = JSON.parse(out.slice(Math.min(...start))); }
+              catch {
+                const raw = out.slice(Math.min(...start));
+                const end = Math.max(raw.lastIndexOf(']'), raw.lastIndexOf('}'));
+                parsed = JSON.parse(raw.slice(0, end + 1));
+              }
+              if (Array.isArray(parsed)) {
+                const failed = parsed.find(x => x.success === false || x.error);
+                if (failed) throw new Error(JSON.stringify(failed.error || failed));
+              } else if (parsed.success === false || parsed.error) throw new Error(JSON.stringify(parsed.error || parsed));
+              return parsed;
+            } catch (e) {
+              throw new Error(label + ': ' + String(e?.stderr || '') + ' ' + String(e?.message || e).slice(0, 1200));
+            } finally { if (filePath) try { fs.unlinkSync(filePath); } catch {} }
+          }
+          function rowsOf(result) {
+            if (Array.isArray(result)) {
+              for (const item of result) if (Array.isArray(item?.results)) return item.results;
+              for (const item of result) if (Array.isArray(item?.result?.results)) return item.result.results;
+            }
+            if (Array.isArray(result?.results)) return result.results;
+            if (Array.isArray(result?.result?.results)) return result.result.results;
+            return [];
+          }
+          const parseObject = v => { try { const x = typeof v === 'string' ? JSON.parse(v || '{}') : v; return x && typeof x === 'object' && !Array.isArray(x) ? x : {}; } catch { return {}; } };
+
+          if (input.mode === 'fetch') {
+            const sql = "SELECT id, external_id AS externalId, title, title_en AS titleEn, country, city, industry, stage, priority, score, confidence, project_value AS projectValue, addressable_value AS addressableValue, currency, funding_status AS fundingStatus, bid_deadline AS bidDeadline, summary, key_project_milestones AS keyProjectMilestones, news_and_updates AS newsAndUpdates, latest_news AS latestNews, solution_matches AS solutionMatches, source_name AS sourceName, source_url AS sourceUrl, updated_at AS updatedAt FROM opportunities WHERE priority IN ('P0','P1','P2') AND (source_name LIKE '%MEED%' OR id LIKE 'MEED-%') AND id <> 'MEED-IQ-20855' AND (solution_matches IS NULL OR json_extract(solution_matches, '$.opportunityAnalysis') IS NULL) ORDER BY CASE priority WHEN 'P0' THEN 0 WHEN 'P1' THEN 1 ELSE 2 END, score DESC, updated_at DESC LIMIT 10";
+            const rows = rowsOf(wrangler(sql, 'Read next ten MEED opportunities'));
+            const ids = rows.map(r => quote(r.id)).join(',');
+            const evidence = ids ? rowsOf(wrangler("SELECT opportunity_id AS opportunityId, kind, excerpt, source_url AS sourceUrl, collected_at AS collectedAt FROM evidence WHERE opportunity_id IN (" + ids + ") ORDER BY collected_at DESC", 'Read evidence for batch')) : [];
+            const grouped = new Map();
+            for (const e of evidence) {
+              const id = String(e.opportunityId);
+              const list = grouped.get(id) || [];
+              if (list.length < 8) list.push(e);
+              grouped.set(id, list);
+            }
+            const batch = rows.map(r => ({
+              id: String(r.id), externalId: r.externalId ?? null,
+              title: r.title ?? '', titleEn: r.titleEn ?? '',
+              country: r.country ?? '', city: r.city ?? '', industry: r.industry ?? '',
+              stage: r.stage ?? '', priority: r.priority ?? '', score: r.score ?? null,
+              projectValue: r.projectValue ?? null, addressableValue: r.addressableValue ?? null,
+              currency: r.currency ?? '', fundingStatus: r.fundingStatus ?? '',
+              bidDeadline: r.bidDeadline ?? '', summary: r.summary ?? '',
+              keyProjectMilestones: r.keyProjectMilestones ?? '',
+              newsAndUpdates: r.newsAndUpdates ?? '', latestNews: r.latestNews ?? '',
+              sourceName: r.sourceName ?? '', sourceUrl: r.sourceUrl ?? '',
+              evidence: grouped.get(String(r.id)) || []
+            }));
+            console.log('MANUAL_GPT_BATCH_JSON_BEGIN');
+            console.log(JSON.stringify({mode:'fetch-result',count:batch.length,items:batch}, null, 2));
+            console.log('MANUAL_GPT_BATCH_JSON_END');
+            if (!batch.length) console.log('No eligible unanalysed MEED opportunities remain.');
+            process.exit(0);
+          }
+
+          if (input.mode !== 'writeback' || !Array.isArray(input.analyses) || input.analyses.length < 1 || input.analyses.length > 10) {
+            throw new Error('Input mode must be fetch or writeback; writeback requires 1–10 analyses. No records changed.');
+          }
+          const ids = input.analyses.map(x => String(x.opportunityId || ''));
+          if (new Set(ids).size !== ids.length || ids.some(x => !x)) throw new Error('Missing or duplicate opportunity IDs; no records changed.');
+          for (const a of input.analyses) {
+            if (!['P0','P1','P2'].includes(a.priority) || !Number.isInteger(a.fitScore) || a.fitScore < 0 || a.fitScore > 100) throw new Error('Invalid priority or fitScore for ' + a.opportunityId);
+            for (const f of ['demandSummary','scoreRationale','factsVsInference']) if (typeof a[f] !== 'string' || !a[f].trim()) throw new Error('Missing ' + f + ' for ' + a.opportunityId);
+            for (const f of ['recommendedHuaweiSolutions','risks','nextActions','evidence']) if (!Array.isArray(a[f])) throw new Error('Invalid ' + f + ' for ' + a.opportunityId);
+          }
+          const existingRows = rowsOf(wrangler("SELECT id, solution_matches AS solutionMatches FROM opportunities WHERE id IN (" + ids.map(quote).join(',') + ")", 'Verify target IDs'));
+          const existing = new Map(existingRows.map(r => [String(r.id), r]));
+          if (ids.some(id => !existing.has(id))) throw new Error('One or more target IDs do not exist in D1; no records changed.');
+          const now = Date.now();
+          const statements = [];
+          for (const a of input.analyses) {
+            const previous = parseObject(existing.get(String(a.opportunityId)).solutionMatches);
+            const analysis = {
+              promptVersion: 'manual-chatgpt-scope-fit-v1',
+              analyzedAt: new Date().toISOString(),
+              analyzedBy: 'ChatGPT in current conversation',
+              source: 'Direct ChatGPT analysis; no model API',
+              priority: a.priority,
+              demandSummary: a.demandSummary,
+              recommendedHuaweiSolutions: a.recommendedHuaweiSolutions,
+              fitScore: a.fitScore,
+              scoreRationale: a.scoreRationale,
+              risks: a.risks,
+              nextActions: a.nextActions,
+              evidence: a.evidence,
+              factsVsInference: a.factsVsInference,
+              scoreMeaning: 'Scope-to-Huawei-solution fit; not win probability or project value'
+            };
+            statements.push("UPDATE opportunities SET solution_matches = " + quote(JSON.stringify({...previous, opportunityAnalysis:analysis})) + ", updated_at = " + now + " WHERE id = " + quote(a.opportunityId) + ";");
+            const metadata = JSON.stringify({promptVersion:analysis.promptVersion,fitScore:a.fitScore,priority:a.priority,analyzedAt:analysis.analyzedAt,source:analysis.source});
+            statements.push("INSERT INTO audit_logs (id, actor_id, action, entity_type, entity_id, metadata, created_at) VALUES (" + [crypto.randomUUID(),'service:Manual ChatGPT Opportunity Analysis','opportunity.scope_fit_analysis_saved','opportunity',a.opportunityId,metadata,now].map(quote).join(', ') + ");");
+          }
+          wrangler(statements.join('\n'), 'Write analysis batch', true);
+          const verify = rowsOf(wrangler("SELECT id, solution_matches AS solutionMatches FROM opportunities WHERE id IN (" + ids.map(quote).join(',') + ")", 'Readback verification'));
+          const check = new Map(verify.map(r => [String(r.id), parseObject(parseObject(r.solutionMatches).opportunityAnalysis)]));
+          const failed = input.analyses.filter(a => {
+            const x = check.get(String(a.opportunityId));
+            return !x || x.promptVersion !== 'manual-chatgpt-scope-fit-v1' || x.fitScore !== a.fitScore || x.priority !== a.priority;
+          }).map(a => a.opportunityId);
+          if (failed.length) throw new Error('D1 readback verification failed for IDs: ' + failed.join(', '));
+          console.log(JSON.stringify({result:'saved-and-readback-verified',saved:input.analyses.length,readbackVerified:verify.length,ids}, null, 2));
+          NODE
