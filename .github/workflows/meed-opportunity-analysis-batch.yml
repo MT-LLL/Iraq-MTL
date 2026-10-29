@@ -96,7 +96,7 @@ jobs:
               } else if (parsed.success === false || parsed.error) throw new Error(JSON.stringify(parsed.error || parsed));
               return parsed;
             } catch (error) {
-              throw new Error(label + ' failed: ' + String(error?.message || error).slice(0, 500));
+              throw new Error(label + ' failed: ' + String(error?.stderr || error?.message || error).slice(0, 900));
             } finally {
               if (filePath) try { fs.unlinkSync(filePath); } catch {}
             }
