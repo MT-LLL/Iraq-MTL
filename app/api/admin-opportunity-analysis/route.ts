@@ -9,10 +9,16 @@ type RuntimeEnv = {
 
 type AccessClaims = {
   email?: string;
+  common_name?: string;
   aud?: string | string[];
   iss?: string;
   exp?: number;
   nbf?: number;
+};
+
+type AccessIdentity = {
+  actorId: string;
+  kind: "admin" | "service";
 };
 
 type AnalysisUpdate = {
@@ -54,7 +60,7 @@ function configuredAdmin(email: string): boolean {
   return admins.includes(email.trim().toLowerCase());
 }
 
-async function verifyAccessJwt(request: Request): Promise<{ email: string } | null> {
+async function verifyAccessJwt(request: Request): Promise<AccessIdentity | null> {
   const configuration = runtimeEnv();
   const teamDomain = (configuration.CF_ACCESS_TEAM_DOMAIN ?? "").trim().replace(/^https?:/i, "").replaceAll("/", "");
   const expectedAudience = (configuration.CF_ACCESS_AUD ?? "").trim();
@@ -72,7 +78,12 @@ async function verifyAccessJwt(request: Request): Promise<{ email: string } | nu
     if (claims.iss !== expectedIssuer || !audiences.includes(expectedAudience)) return null;
     if (typeof claims.exp !== "number" || claims.exp <= now) return null;
     if (typeof claims.nbf === "number" && claims.nbf > now + 30) return null;
-    if (!claims.email || !configuredAdmin(claims.email)) return null;
+    const email = claims.email?.trim().toLowerCase();
+    const isAdmin = Boolean(email && configuredAdmin(email));
+    // Least-privilege exception: the existing MEED ingest service identity may use
+    // this specific analysis endpoint, but is not granted general admin access.
+    const isMeedIngestService = claims.common_name === "MTL GitHub Actions MEED Ingest";
+    if (!isAdmin && !isMeedIngestService) return null;
 
     const keysResponse = await fetch(`${expectedIssuer}/cdn-cgi/access/certs`, {
       headers: { accept: "application/json" },
@@ -99,7 +110,10 @@ async function verifyAccessJwt(request: Request): Promise<{ email: string } | nu
       decodeBase64Url(parts[2]),
       signedContent,
     );
-    return valid ? { email: claims.email.trim().toLowerCase() } : null;
+    if (!valid) return null;
+    if (isAdmin && email) return { actorId: email, kind: "admin" };
+    if (isMeedIngestService) return { actorId: "service:MTL GitHub Actions MEED Ingest", kind: "service" };
+    return null;
   } catch {
     return null;
   }
@@ -226,7 +240,7 @@ export async function POST(request: Request) {
     const savedAnalysis = {
       ...item.analysis,
       analyzedAt: item.analysis.analyzedAt || new Date(now).toISOString(),
-      analyzedBy: auth.identity.email,
+      analyzedBy: auth.identity.actorId,
       source: "ChatGPT-assisted manual analysis",
       scoreMeaning: "Scope-to-Huawei-solution fit; not win probability or project value",
     };
@@ -237,7 +251,7 @@ export async function POST(request: Request) {
       auth.db.prepare("INSERT INTO audit_logs (id, actor_id, action, entity_type, entity_id, metadata, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
         .bind(
           crypto.randomUUID(),
-          auth.identity.email,
+          auth.identity.actorId,
           "opportunity.scope_fit_analysis_saved",
           "opportunity",
           id,
