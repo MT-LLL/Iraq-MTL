@@ -34,8 +34,12 @@
           "Secure access and protection for roadside devices"
         ],
         "scoreRationale": "50/100 — bridge and road-safety use cases may create limited ICT attachments, but the core contract is civil rehabilitation with a small addressable ICT scope.",
-        "risks": "Lot 1 and Lot 2 should be reconciled under one Expressway 1 corridor plan; video/traffic systems may be procured elsewhere; tender and award status need revalidation.",
-        "nextActions": "Align Lot 1 with Lot 2 and the wider ITS plan; confirm whether bridge surveillance or incident detection is separately procured; otherwise maintain low-cost EPC tracking.",
+        "risks": [
+          "Lot 1 and Lot 2 should be reconciled under one Expressway 1 corridor plan; video/traffic systems may be procured elsewhere; tender and award status need revalidation."
+        ],
+        "nextActions": [
+          "Align Lot 1 with Lot 2 and the wider ITS plan; confirm whether bridge surveillance or incident detection is separately procured; otherwise maintain low-cost EPC tracking."
+        ],
         "evidence": [
           "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
         ],
@@ -77,8 +81,12 @@
           "CCTV, access control and site wireless coverage"
         ],
         "scoreRationale": "80/100 — a large greenfield refinery has broad digital-infrastructure needs and a clear public-sector owner, although the available record does not include an ICT bill of quantities.",
-        "risks": "The project remains subject to further federal approval and financing; DCS/SIS/instrumentation are specialist EPC/vendor domains; multi-vendor interfaces and local certification requirements are significant.",
-        "nextActions": "Track federal approval after provincial endorsement; identify FEED consultant, main EPC and process-package vendors; seek early specification entry for industrial communications, data-centre and OT security.",
+        "risks": [
+          "The project remains subject to further federal approval and financing; DCS/SIS/instrumentation are specialist EPC/vendor domains; multi-vendor interfaces and local certification requirements are significant."
+        ],
+        "nextActions": [
+          "Track federal approval after provincial endorsement; identify FEED consultant, main EPC and process-package vendors; seek early specification entry for industrial communications, data-centre and OT security."
+        ],
         "evidence": [
           "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
         ],
@@ -120,8 +128,12 @@
           "Community operations platform and small edge data-centre infrastructure"
         ],
         "scoreRationale": "58/100 — the residential scale is material and the design stage offers early influence, but no smart-building or telecom procurement list is confirmed.",
-        "risks": "The investment contract is signed but soil testing is ongoing, so ICT procurement may be distant; the developer may use local ELV integrators; operators may own broadband and indoor coverage.",
-        "nextActions": "Identify the developer's designer and main contractor; influence ELV, FTTH, security and parking standards during design; build partnerships with local operators and building integrators.",
+        "risks": [
+          "The investment contract is signed but soil testing is ongoing, so ICT procurement may be distant; the developer may use local ELV integrators; operators may own broadband and indoor coverage."
+        ],
+        "nextActions": [
+          "Identify the developer's designer and main contractor; influence ELV, FTTH, security and parking standards during design; build partnerships with local operators and building integrators."
+        ],
         "evidence": [
           "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
         ],
@@ -163,8 +175,12 @@
           "Production data-centre and remote-operations platform"
         ],
         "scoreRationale": "76/100 — a long-term gas development with distributed facilities creates recurring ICT/OT needs, although the project remains at study stage and process packages are specialist-led.",
-        "risks": "Technical studies and development plans are ongoing; a 20-year contract does not mean all facilities are in construction; pipeline communications may be procured by the owner or EPC.",
-        "nextActions": "Identify Crescent's development plan, FEED consultant and likely EPC; break down telecom needs by exploration, processing, pipeline and offtake interfaces; influence industrial-network and cybersecurity standards during FEED.",
+        "risks": [
+          "Technical studies and development plans are ongoing; a 20-year contract does not mean all facilities are in construction; pipeline communications may be procured by the owner or EPC."
+        ],
+        "nextActions": [
+          "Identify Crescent's development plan, FEED consultant and likely EPC; break down telecom needs by exploration, processing, pipeline and offtake interfaces; influence industrial-network and cybersecurity standards during FEED."
+        ],
         "evidence": [
           "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
         ],
@@ -206,8 +222,12 @@
           "Data platform, storage and cybersecurity for the water-management centre"
         ],
         "scoreRationale": "70/100 — dams naturally require remote monitoring and dispatch communications and have identifiable public owners, but the project is early-stage and no SCADA/monitoring package is disclosed.",
-        "risks": "Planning, financing and construction schedules may change; hydrological monitoring, gate control and SCADA are specialist-system domains; procurement responsibilities between federal and regional authorities need clarification.",
-        "nextActions": "Clarify Pakkerman's boundary within the Pakkerman/Dalga/Mandawa programme; identify the hydrological designer and dam-control integrator; influence communications, data-platform and cybersecurity specifications during feasibility/design.",
+        "risks": [
+          "Planning, financing and construction schedules may change; hydrological monitoring, gate control and SCADA are specialist-system domains; procurement responsibilities between federal and regional authorities need clarification."
+        ],
+        "nextActions": [
+          "Clarify Pakkerman's boundary within the Pakkerman/Dalga/Mandawa programme; identify the hydrological designer and dam-control integrator; influence communications, data-platform and cybersecurity specifications during feasibility/design."
+        ],
         "evidence": [
           "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
         ],
@@ -249,8 +269,12 @@
           "Local data-centre, backup and production-data platform"
         ],
         "scoreRationale": "58/100 — a new factory offers some digitalisation scope, but the project is about US$50 million and automation/ICT requirements are not yet detailed.",
-        "risks": "The project is at study stage with uncertain financing and schedule; equipment vendors may bundle MES/PLC/automation; ICT budget may be small relative to total investment.",
-        "nextActions": "Confirm investor, site, capacity and construction timeline; identify assembly-line vendors and local integrators; focus on factory networking, data-centre, video and IoT connectivity within Huawei's addressable scope.",
+        "risks": [
+          "The project is at study stage with uncertain financing and schedule; equipment vendors may bundle MES/PLC/automation; ICT budget may be small relative to total investment."
+        ],
+        "nextActions": [
+          "Confirm investor, site, capacity and construction timeline; identify assembly-line vendors and local integrators; focus on factory networking, data-centre, video and IoT connectivity within Huawei's addressable scope."
+        ],
         "evidence": [
           "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
         ],
@@ -292,8 +316,12 @@
           "Cybersecurity, disaster recovery and video security for cross-border control centres"
         ],
         "scoreRationale": "82/100 — a long cross-border pipeline with distributed stations requires resilient communications and aligns with Huawei's transmission and cybersecurity portfolio.",
-        "risks": "Cross-border politics, agreements, financing and route permits are major risks; this record must be reconciled with Haditha–Aqaba and Basra–Najaf records to avoid double counting; SCADA, leak detection and safety controls are specialist domains.",
-        "nextActions": "Verify current intergovernmental agreements, financing and route approvals; confirm segments and station locations with SCOP, the Ministry and potential EPCs; pursue fibre, transmission, remote communications and cybersecurity sub-systems rather than pipeline equipment.",
+        "risks": [
+          "Cross-border politics, agreements, financing and route permits are major risks; this record must be reconciled with Haditha–Aqaba and Basra–Najaf records to avoid double counting; SCADA, leak detection and safety controls are specialist domains."
+        ],
+        "nextActions": [
+          "Verify current intergovernmental agreements, financing and route approvals; confirm segments and station locations with SCOP, the Ministry and potential EPCs; pursue fibre, transmission, remote communications and cybersecurity sub-systems rather than pipeline equipment."
+        ],
         "evidence": [
           "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
         ],
@@ -335,8 +363,12 @@
           "Control-centre data-centre, backup and security operations"
         ],
         "scoreRationale": "82/100 — long-distance pipeline operations need reliable communications and remote monitoring, aligning with Huawei's transmission and cybersecurity capabilities; cross-border execution risk remains high.",
-        "risks": "The main contract has not been awarded and feasibility depends on intergovernmental coordination and financing; the route may overlap with the Najaf–Aqaba record; pipeline SCADA and leak detection are specialist-led.",
-        "nextActions": "Manage this together with the Najaf–Aqaba opportunity as one strategic export corridor to avoid double counting; verify award plans, route permits and cross-border agreements; partner with EPC/SCADA integrators for telecom and cybersecurity sub-packages.",
+        "risks": [
+          "The main contract has not been awarded and feasibility depends on intergovernmental coordination and financing; the route may overlap with the Najaf–Aqaba record; pipeline SCADA and leak detection are specialist-led."
+        ],
+        "nextActions": [
+          "Manage this together with the Najaf–Aqaba opportunity as one strategic export corridor to avoid double counting; verify award plans, route permits and cross-border agreements; partner with EPC/SCADA integrators for telecom and cybersecurity sub-packages."
+        ],
         "evidence": [
           "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
         ],
