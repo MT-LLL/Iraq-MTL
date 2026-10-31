@@ -1,5 +1,9 @@
 name: MEED Batch Opportunity Analysis Writeback
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/meed-opportunity-analysis-batch.yml"
   workflow_dispatch:
     inputs:
       cycle_started_at:
@@ -147,7 +151,7 @@ jobs:
           const opportunities = rows.filter(row => String(row.id) !== referenceId);
           console.log(JSON.stringify({ step: 'read', totalReturned: rows.length, referencePreserved: rows.some(row => String(row.id) === referenceId), queuedForAnalysis: opportunities.length }));
           if (!opportunities.length) {
-            console.log('No eligible unanalyzed, non-archived, deduplicated MEED opportunities remain. Preparing final cycle brief.');
+            console.log('No eligible unanalyzed, non-archived, deduplicated site opportunities remain. Preparing final cycle brief.');
             const cycleStartedAt = cycleStartedAtGlobal;
             const briefRows = rowsFrom(wrangler("SELECT id, title, title_en AS titleEn, country, city, industry, stage, priority, solution_matches AS solutionMatches, source_url AS sourceUrl FROM opportunities WHERE json_valid(solution_matches) AND json_extract(solution_matches, '$.opportunityAnalysis.promptVersion') = 'meed-scope-fit-v1' AND json_extract(solution_matches, '$.opportunityAnalysis.analyzedAt') >= " + quote(cycleStartedAt) + " ORDER BY json_extract(solution_matches, '$.opportunityAnalysis.fitScore') DESC", 'Read cycle analyses for final brief'));
             const reportInput = briefRows.map(row => ({ id: row.id, title: row.title, titleEn: row.titleEn, country: row.country, city: row.city, industry: row.industry, stage: row.stage, priority: row.priority, sourceUrl: row.sourceUrl, analysis: parseObject(parseObject(row.solutionMatches).opportunityAnalysis) }));
@@ -162,7 +166,7 @@ jobs:
             console.log(JSON.stringify({ result: 'cycle-complete-final-brief-created', cycleStartedAt, analyzedInCycle: reportInput.length, brief: 'artifacts/opportunity-analysis/final-brief.md' }, null, 2));
             process.exit(0);
           }
-          const evidenceRows = rowsFrom(wrangler("SELECT e.opportunity_id AS opportunityId, e.kind, e.excerpt, e.source_url AS sourceUrl, e.collected_at AS collectedAt FROM evidence e INNER JOIN opportunities o ON o.id = e.opportunity_id WHERE 1=1 ORDER BY e.collected_at DESC LIMIT 10000", 'Read MEED evidence'));
+          const evidenceRows = rowsFrom(wrangler("SELECT e.opportunity_id AS opportunityId, e.kind, e.excerpt, e.source_url AS sourceUrl, e.collected_at AS collectedAt FROM evidence e INNER JOIN opportunities o ON o.id = e.opportunity_id WHERE 1=1 ORDER BY e.collected_at DESC LIMIT 10000", 'Read opportunity evidence'));
           const evidenceById = new Map();
           for (const item of evidenceRows) {
             const id = String(item.opportunityId);
