@@ -22,7 +22,7 @@ The user starts each run by saying **“执行机会点分析工作流”** in t
 
 - GitHub Actions is deliberately non-executing and contains no model API integration.
 - The admin route currently authenticates through Cloudflare Access and writes at most 25 records per POST.
-- The existing admin GET/POST route is currently MEED-scoped. Before claiming that all non-MEED site opportunities can be processed through that route, broaden its read/write scope safely and ensure the same deduplication/archive filters are applied. Do not silently omit non-MEED records.
+- The admin GET/POST route has been broadened to include all opportunity sources (not only MEED). Deduplication, archive exclusion, and current-prompt-version exclusion are applied by the analysis operator against the live inventory before selecting each batch. Do not silently omit non-MEED records.
 - If the authenticated D1 read/write path is not available to the active ChatGPT session, explain that limitation and request an authorized export or provide the exact batch payload for the user's authorized admin path. Never claim D1 was updated without a successful write response and readback.
 
 ## Trigger phrase
