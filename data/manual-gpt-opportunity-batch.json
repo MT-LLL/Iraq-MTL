@@ -1,3 +1,347 @@
 {
-  "mode": "fetch"
+  "mode": "writeback",
+  "analyses": [
+    {
+      "opportunityId": "MEED-IQ-376486",
+      "priority": "P2",
+      "fitScore": 50,
+      "demandSummary": "该标段修复巴士拉 Expressway 1 的三座桥梁，涉及路面、桥梁、互通、服务区及道路安全设施，主要为土建修复。华为可关注重点桥梁和互通的视频监控、通信回传及交通事件检测，但当前资料未显示独立 ICT 包件。",
+      "recommendedHuaweiSolutions": [
+        "重点桥梁/互通 CCTV 与光纤回传",
+        "道路事件检测和交通管理网络（如另设采购包）",
+        "路侧设备安全接入与网络防护"
+      ],
+      "scoreRationale": "50/100 — 桥梁和道路安全场景存在有限 ICT 配套空间，但项目主体是桥梁修复，华为直接可寻址范围较小。",
+      "risks": [
+        "Lot 1 与 Lot 2 应按同一 Expressway 1 走廊核对，避免重复统计",
+        "视频和交通管理系统可能由其他 ITS 项目统一采购",
+        "投标及授标进度需重新确认"
+      ],
+      "nextActions": [
+        "与 Lot 2 合并梳理总体 ITS 规划和标段边界",
+        "确认桥梁监控、事件检测是否有单独采购",
+        "若无 ICT 预算，仅低成本跟踪土建 EPC"
+      ],
+      "evidence": [
+        "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
+      ],
+      "factsVsInference": "已知：Lot 1 包含 R8A/R8B 三座桥梁及相关道路修复。推断：视频回传和交通事件检测可能是配套需求，未证实已列入采购。",
+      "english": {
+        "demandSummary": "Lot 1 covers rehabilitation of three bridges on Expressway 1 in Basra, including pavement, bridges, interchanges, service lay-bys and road-safety works. Huawei's potential role is limited to CCTV backhaul and incident connectivity; no dedicated ICT package is confirmed.",
+        "recommendedHuaweiSolutions": [
+          "CCTV and fibre backhaul for key bridges and interchanges",
+          "Traffic-incident detection and management network, if separately procured",
+          "Secure access and protection for roadside devices"
+        ],
+        "scoreRationale": "50/100 — bridge and road-safety use cases may create limited ICT attachments, but the core contract is civil rehabilitation with a small addressable ICT scope.",
+        "risks": "Lot 1 and Lot 2 should be reconciled under one Expressway 1 corridor plan; video/traffic systems may be procured elsewhere; tender and award status need revalidation.",
+        "nextActions": "Align Lot 1 with Lot 2 and the wider ITS plan; confirm whether bridge surveillance or incident detection is separately procured; otherwise maintain low-cost EPC tracking.",
+        "evidence": [
+          "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
+        ],
+        "factsVsInference": "Known: Lot 1 covers three bridges in R8A/R8B and associated road rehabilitation. Inference: CCTV backhaul and incident detection may be ancillary needs, not confirmed procurement items."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-42054",
+      "priority": "P1",
+      "fitScore": 80,
+      "demandSummary": "Al Qayyarah 炼油厂为日产约 70,000 桶的绿地炼油项目，位于尼尼微省，目标是加工重质含硫原油并生产 Euro V 标准成品油。炼油厂通常存在生产控制外围通信、数据中心、网络安全、视频安防和园区网络需求，华为应聚焦这些 ICT 层，不替代工艺控制专业厂商。",
+      "recommendedHuaweiSolutions": [
+        "炼油厂工业光纤/IP 网络及控制系统通信承载",
+        "OT 网络分区、工业防火墙和安全运营",
+        "生产数据中心、存储、备份与灾备",
+        "视频监控、门禁及厂区无线覆盖"
+      ],
+      "scoreRationale": "80/100 — 大型绿地炼油厂具有完整的工业数字基础设施需求，规模和业主属性较好；但当前资料未提供具体 ICT 设备清单。",
+      "risks": [
+        "项目仍处于主合同投标阶段，最终审批与融资需跟踪",
+        "DCS/SIS/仪表和工艺控制通常由专业 EPC/供应商负责",
+        "跨供应商接口、网络安全认证和本地化要求较高"
+      ],
+      "nextActions": [
+        "跟踪省议会批准后提交联邦内阁审议的进展",
+        "识别 FEED 顾问、主 EPC 和炼油工艺包供应商",
+        "争取在工业通信、数据中心和 OT 安全规范中提前入围"
+      ],
+      "evidence": [
+        "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
+      ],
+      "factsVsInference": "已知：规划产能约 70,000 桶/日，目标生产 Euro V 产品，且项目仍需联邦层面进一步审批。推断：工业通信、数据中心和网络安全是典型配套机会，尚未确认具体招标包件。",
+      "english": {
+        "demandSummary": "Al Qayyarah is a proposed greenfield refinery in Nineveh with a planned capacity of about 70,000 barrels per day, processing heavy sour crude into Euro V products. A refinery of this scale typically needs supporting industrial communications, data-centre, cybersecurity, video and campus-network infrastructure. Huawei should target these ICT layers, not the process-control core.",
+        "recommendedHuaweiSolutions": [
+          "Industrial fibre/IP network and communications backhaul for plant systems",
+          "OT segmentation, industrial firewalls and security operations",
+          "Production data-centre, storage, backup and disaster recovery",
+          "CCTV, access control and site wireless coverage"
+        ],
+        "scoreRationale": "80/100 — a large greenfield refinery has broad digital-infrastructure needs and a clear public-sector owner, although the available record does not include an ICT bill of quantities.",
+        "risks": "The project remains subject to further federal approval and financing; DCS/SIS/instrumentation are specialist EPC/vendor domains; multi-vendor interfaces and local certification requirements are significant.",
+        "nextActions": "Track federal approval after provincial endorsement; identify FEED consultant, main EPC and process-package vendors; seek early specification entry for industrial communications, data-centre and OT security.",
+        "evidence": [
+          "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
+        ],
+        "factsVsInference": "Known: planned capacity is about 70,000 bpd and the project targets Euro V products; federal review is still pending. Inference: industrial communications, data-centre and cybersecurity are typical supporting needs, not confirmed tender packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-582039",
+      "priority": "P2",
+      "fitScore": 58,
+      "demandSummary": "Al Amriya Towers 是巴格达规划中的 2,400 套住宅综合体，包含多层住宅塔楼、公共绿地、停车场、道路、市政公用设施、消防、电梯和商业空间。华为机会集中于楼宇弱电、园区网络、光纤到户、视频安防和智慧社区平台。",
+      "recommendedHuaweiSolutions": [
+        "FTTH/FTTB 光纤接入和楼宇 IP 网络",
+        "公共区域 Wi-Fi、CCTV、门禁和停车管理网络",
+        "楼宇设备物联网与能源管理连接",
+        "社区运营平台和小型边缘数据中心"
+      ],
+      "scoreRationale": "58/100 — 住宅规模可观且设计阶段有利于前置影响，但没有明确的智慧楼宇或通信采购清单。",
+      "risks": [
+        "投资合同已签但当前处于土壤测试阶段，ICT 招采时间较远",
+        "开发商可能通过本地弱电承包商集成",
+        "运营商可能主导宽带接入和室内覆盖"
+      ],
+      "nextActions": [
+        "确认开发商 Al Abead Al Dhahabiya 的设计与总包单位",
+        "在建筑设计阶段推动弱电、FTTH、安防和停车系统标准",
+        "与本地运营商及楼宇集成商建立合作"
+      ],
+      "evidence": [
+        "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
+      ],
+      "factsVsInference": "已知：项目包含约 2,400 套住宅，已签投资合同并进行土壤测试。推断：FTTH、安防和智慧社区可能形成配套采购，当前并非已确认的招标内容。",
+      "english": {
+        "demandSummary": "Al Amriya Towers is a planned 2,400-unit residential complex in Baghdad, with apartment towers, landscaped areas, parking, internal roads, utilities, fire protection, lifts and retail space. Huawei's potential role is in building low-voltage ICT, campus networking, fibre access, security and smart-community platforms.",
+        "recommendedHuaweiSolutions": [
+          "FTTH/FTTB access and building IP networks",
+          "Public-area Wi-Fi, CCTV, access control and parking-network connectivity",
+          "IoT connectivity for building systems and energy management",
+          "Community operations platform and small edge data-centre infrastructure"
+        ],
+        "scoreRationale": "58/100 — the residential scale is material and the design stage offers early influence, but no smart-building or telecom procurement list is confirmed.",
+        "risks": "The investment contract is signed but soil testing is ongoing, so ICT procurement may be distant; the developer may use local ELV integrators; operators may own broadband and indoor coverage.",
+        "nextActions": "Identify the developer's designer and main contractor; influence ELV, FTTH, security and parking standards during design; build partnerships with local operators and building integrators.",
+        "evidence": [
+          "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
+        ],
+        "factsVsInference": "Known: about 2,400 residential units are planned, an investment contract has been signed and soil testing is ongoing. Inference: FTTH, security and smart-community systems may be ancillary procurements, not confirmed tender items."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-405664",
+      "priority": "P2",
+      "fitScore": 76,
+      "demandSummary": "Crescent Petroleum 在 Basra 与 Al-Muthanna 的 Khider Al-Mai 区块开展非伴生气和石油勘探开发，依据 2023 年签署的 20 年开发生产合同，范围包括地震勘探、评价井、天然气处理设施和输气管线，向附近电厂及工业用户供气。华为可提供远程站点通信、工业网络和 OT 安全。",
+      "recommendedHuaweiSolutions": [
+        "气田、处理设施和输气管线的光纤/IP 通信",
+        "远程站点无线接入、视频监控和设备物联网",
+        "工业网络分区、工业防火墙和安全监测",
+        "生产数据中心与远程运维平台"
+      ],
+      "scoreRationale": "76/100 — 长周期气田开发和跨站点设施形成持续 ICT/OT 需求，但项目仍处研究阶段，且工艺设备由专业厂商主导。",
+      "risks": [
+        "技术研究与开发计划仍在推进，投资节奏和包件范围可能变化",
+        "20 年合同不等于所有设施已进入建设/采购",
+        "管线沿线通信可能由业主或 EPC 统一采购"
+      ],
+      "nextActions": [
+        "识别 Crescent 的开发计划、FEED 顾问和潜在 EPC",
+        "按勘探、处理厂、管线和外输接口分解通信需求",
+        "争取在 FEED 阶段纳入工业网络、远程通信和网络安全规范"
+      ],
+      "evidence": [
+        "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
+      ],
+      "factsVsInference": "已知：Crescent 获得 20 年开发生产合同，项目包含地震勘探、评价井、处理设施和管线。推断：远程通信与 OT 安全有潜在需求，当前尚未确认具体采购批次。",
+      "english": {
+        "demandSummary": "Crescent Petroleum's Khider Al-Mai block spans Basra and Al-Muthanna and covers non-associated gas and oil exploration, appraisal and development under a 20-year development and production contract awarded in 2023. The scope includes seismic surveys, appraisal wells, gas processing and pipelines supplying nearby power plants and industry. Huawei can support remote-site communications and OT security.",
+        "recommendedHuaweiSolutions": [
+          "Fibre/IP communications between fields, processing facilities and pipeline assets",
+          "Remote-site wireless, video surveillance and IoT connectivity",
+          "Industrial network segmentation, firewalls and security monitoring",
+          "Production data-centre and remote-operations platform"
+        ],
+        "scoreRationale": "76/100 — a long-term gas development with distributed facilities creates recurring ICT/OT needs, although the project remains at study stage and process packages are specialist-led.",
+        "risks": "Technical studies and development plans are ongoing; a 20-year contract does not mean all facilities are in construction; pipeline communications may be procured by the owner or EPC.",
+        "nextActions": "Identify Crescent's development plan, FEED consultant and likely EPC; break down telecom needs by exploration, processing, pipeline and offtake interfaces; influence industrial-network and cybersecurity standards during FEED.",
+        "evidence": [
+          "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
+        ],
+        "factsVsInference": "Known: Crescent holds a 20-year development and production contract and the project includes seismic work, appraisal wells, processing facilities and pipelines. Inference: remote communications and OT security are potential needs, not confirmed procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-406813",
+      "priority": "P2",
+      "fitScore": 70,
+      "demandSummary": "Pakkerman 大坝由伊拉克水资源部与库区政府合作推进，属于三座战略水坝计划之一，目标是增强水资源安全、农业灌溉和气候韧性，项目处于早期规划设计阶段。华为可围绕大坝监测、远程通信、水文数据采集、视频安防和控制中心网络提供数字基础设施。",
+      "recommendedHuaweiSolutions": [
+        "坝区与远程水文站点的光纤/无线通信",
+        "水位、流量、雨量和结构健康监测数据接入",
+        "视频监控、周界安防和应急通信",
+        "水资源管理中心的数据平台、存储和网络安全"
+      ],
+      "scoreRationale": "70/100 — 水坝天然具备远程监测和调度通信需求，且业主明确；但项目仍处早期阶段，具体 SCADA/监测包件尚未披露。",
+      "risks": [
+        "项目仍在早期规划设计，融资和建设计划可能变化",
+        "水工监测、闸门控制和 SCADA 通常由专业系统商提供",
+        "库区政府与联邦部门之间的采购职责需明确"
+      ],
+      "nextActions": [
+        "确认 Pakkerman 与 Dalga、Mandawa 三座水坝的总体规划边界",
+        "识别水文设计顾问和坝体监测/控制系统集成商",
+        "在可研/设计阶段推动通信、数据平台和网络安全技术规范"
+      ],
+      "evidence": [
+        "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
+      ],
+      "factsVsInference": "已知：项目由水资源部与库区政府合作，属于三座战略水坝规划，目标包括水安全和农业支持。推断：监测通信和数据平台是合理的数字化需求，但未确认具体采购。",
+      "english": {
+        "demandSummary": "Pakkerman Dam is being developed by Iraq's Ministry of Water Resources in partnership with the Kurdistan Regional Government as one of three strategic dams intended to improve water security, irrigation and climate resilience. The project is at an early planning/design stage. Huawei can support dam monitoring connectivity, hydrological data collection, video security and control-centre networking.",
+        "recommendedHuaweiSolutions": [
+          "Fibre/wireless communications between the dam and remote hydrological stations",
+          "Connectivity for water-level, flow, rainfall and structural-health monitoring",
+          "CCTV, perimeter security and emergency communications",
+          "Data platform, storage and cybersecurity for the water-management centre"
+        ],
+        "scoreRationale": "70/100 — dams naturally require remote monitoring and dispatch communications and have identifiable public owners, but the project is early-stage and no SCADA/monitoring package is disclosed.",
+        "risks": "Planning, financing and construction schedules may change; hydrological monitoring, gate control and SCADA are specialist-system domains; procurement responsibilities between federal and regional authorities need clarification.",
+        "nextActions": "Clarify Pakkerman's boundary within the Pakkerman/Dalga/Mandawa programme; identify the hydrological designer and dam-control integrator; influence communications, data-platform and cybersecurity specifications during feasibility/design.",
+        "evidence": [
+          "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
+        ],
+        "factsVsInference": "Known: the Ministry and KRG are partners, and the dam is part of a three-dam strategic plan for water security and agriculture. Inference: monitoring communications and data platforms are logical digital needs, not confirmed procurements."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-559429",
+      "priority": "P2",
+      "fitScore": 58,
+      "demandSummary": "Babel Al Dhahabiya 计划在伊拉克建设摩托车制造工厂，生产传统和电动摩托车，采用现代装配线和电气系统，目标是满足本地交通需求并促进工业就业。华为可围绕工厂园区网络、生产数据平台、视频安防和工业物联网提供 ICT 支撑，但 MES/自动化控制需与制造设备商协同。",
+      "recommendedHuaweiSolutions": [
+        "工厂园区 LAN/WLAN、光纤和安全网络",
+        "生产设备与质量系统的工业物联网连接",
+        "视频监控、门禁和工厂安防",
+        "本地数据中心、备份和生产数据平台"
+      ],
+      "scoreRationale": "58/100 — 新建制造工厂有一定数字化建设空间，但规模约 5,000 万美元且自动化/制造系统需求未细化。",
+      "risks": [
+        "项目处于研究阶段，建设计划和融资未明确",
+        "制造设备商可能捆绑提供 MES/PLC/自动化系统",
+        "ICT 预算可能相对整体投资较小"
+      ],
+      "nextActions": [
+        "确认投资人、选址、产能和工厂建设时间表",
+        "了解装配线设备商和本地系统集成商",
+        "聚焦园区网络、数据中心、视频和 IoT 接入等华为可控范围"
+      ],
+      "evidence": [
+        "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
+      ],
+      "factsVsInference": "已知：计划建设摩托车制造工厂，兼顾传统和电动产品，并设置现代装配线。推断：工厂网络、数据中心和 IoT 可形成配套需求，未证实 MES 或自动化系统采购。",
+      "english": {
+        "demandSummary": "Babel Al Dhahabiya plans to build a motorcycle manufacturing factory in Iraq for conventional and electric motorcycles, with modern assembly lines and electrical systems. The project aims to serve domestic demand and create industrial jobs. Huawei can support the factory network, production-data platform, video security and industrial IoT, working alongside equipment vendors for MES and automation.",
+        "recommendedHuaweiSolutions": [
+          "Factory LAN/WLAN, fibre and secure campus networking",
+          "Industrial IoT connectivity for production equipment and quality systems",
+          "CCTV, access control and plant security",
+          "Local data-centre, backup and production-data platform"
+        ],
+        "scoreRationale": "58/100 — a new factory offers some digitalisation scope, but the project is about US$50 million and automation/ICT requirements are not yet detailed.",
+        "risks": "The project is at study stage with uncertain financing and schedule; equipment vendors may bundle MES/PLC/automation; ICT budget may be small relative to total investment.",
+        "nextActions": "Confirm investor, site, capacity and construction timeline; identify assembly-line vendors and local integrators; focus on factory networking, data-centre, video and IoT connectivity within Huawei's addressable scope.",
+        "evidence": [
+          "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
+        ],
+        "factsVsInference": "Known: a motorcycle factory for conventional and electric models with modern assembly lines is planned. Inference: factory networks, data-centre and IoT may be supporting needs; MES/automation procurement is not confirmed."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-15187",
+      "priority": "P1",
+      "fitScore": 82,
+      "demandSummary": "Najaf—Aqaba 原油出口管线计划连接伊拉克与约旦红海港口，资料描述了 Basra—Najaf 约 682 公里、2.25 百万桶/日管线及 Najaf—Aqaba 约 1,000 公里、100 万桶/日管线的整体出口规划。华为可切入长距离管线光纤通信、SCADA 通信承载、远程站点网络和网络安全。",
+      "recommendedHuaweiSolutions": [
+        "长距离管线沿线光纤骨干与 IP/MPLS 传输",
+        "泵站、阀室和计量站的远程通信网络",
+        "SCADA/管线监控系统的安全通信承载与网络分区",
+        "跨境控制中心网络安全、灾备和视频安防"
+      ],
+      "scoreRationale": "82/100 — 长距离跨境管线和多个泵站/控制点需要可靠通信，ICT 与华为传输和网络安全能力高度相关。",
+      "risks": [
+        "跨境政治、协议、融资和路线许可风险较高",
+        "该记录覆盖 Najaf—Aqaba 部分，须与 Haditha—Aqaba 及 Basra—Najaf 记录去重核对",
+        "SCADA、泄漏检测和管线安全控制由专业油气系统集成商负责"
+      ],
+      "nextActions": [
+        "确认当前政府间协议、融资和路线批准状态",
+        "与 SCOP、MoO 及潜在 EPC 核实管线分段与泵站位置",
+        "争取光纤、传输、远程通信和网络安全子系统，而非管道主设备"
+      ],
+      "evidence": [
+        "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
+      ],
+      "factsVsInference": "已知：资料描述 Basra—Najaf 与 Najaf—Aqaba 两段管线的长度和设计输送能力，并提及伊拉克与约旦政府讨论。推断：通信与 SCADA 承载需求存在，但项目审批和采购尚未确认。",
+      "english": {
+        "demandSummary": "The Najaf–Aqaba crude export pipeline programme is intended to connect Iraq with Jordan's Red Sea port. The profile describes an overall export plan including a roughly 682 km Basra–Najaf line at 2.25 million bpd and a roughly 1,000 km Najaf–Aqaba line at 1 million bpd. Huawei can target long-distance fibre, SCADA communications backhaul, remote-site networking and cybersecurity.",
+        "recommendedHuaweiSolutions": [
+          "Long-haul fibre backbone and IP/MPLS transmission along the pipeline",
+          "Remote communications for pump stations, valve stations and metering sites",
+          "Secure SCADA communications backhaul and network segmentation",
+          "Cybersecurity, disaster recovery and video security for cross-border control centres"
+        ],
+        "scoreRationale": "82/100 — a long cross-border pipeline with distributed stations requires resilient communications and aligns with Huawei's transmission and cybersecurity portfolio.",
+        "risks": "Cross-border politics, agreements, financing and route permits are major risks; this record must be reconciled with Haditha–Aqaba and Basra–Najaf records to avoid double counting; SCADA, leak detection and safety controls are specialist domains.",
+        "nextActions": "Verify current intergovernmental agreements, financing and route approvals; confirm segments and station locations with SCOP, the Ministry and potential EPCs; pursue fibre, transmission, remote communications and cybersecurity sub-systems rather than pipeline equipment.",
+        "evidence": [
+          "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
+        ],
+        "factsVsInference": "Known: the profile describes Basra–Najaf and Najaf–Aqaba route lengths and design capacities and mentions Iraq–Jordan discussions. Inference: communications and SCADA backhaul are likely needs, but approvals and procurement are unconfirmed."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-48011",
+      "priority": "P1",
+      "fitScore": 82,
+      "demandSummary": "Haditha—Aqaba 战略原油出口管线计划将伊拉克西部原油输送至约旦 Aqaba 港，设计目标最高约 100 万桶/日，是 Basra—Haditha—Aqaba 长期管线系统的一部分。华为可提供沿线光纤传输、泵站远程通信、SCADA 通信承载和网络安全。",
+      "recommendedHuaweiSolutions": [
+        "管线沿线光纤/IP/MPLS 骨干和冗余环网",
+        "泵站、阀室和计量站远程接入及无线通信",
+        "SCADA 通信承载、网络隔离和工业防火墙",
+        "控制中心数据中心、备份及安全运营"
+      ],
+      "scoreRationale": "82/100 — 长距离输油管线的通信和远程监控需求明确，华为传输与网络安全能力匹配；但跨境项目执行风险高。",
+      "risks": [
+        "项目尚未完成主合同授标，政府间协调和融资决定项目可行性",
+        "与 Najaf—Aqaba 记录可能存在路线/阶段重叠，须厘清 Basra—Haditha—Aqaba 的分段定义",
+        "管线 SCADA 和泄漏检测由油气专业厂商牵头"
+      ],
+      "nextActions": [
+        "与 Najaf—Aqaba 机会合并形成一个战略出口走廊账户，避免重复计算总投资",
+        "核实主合同授标计划、路线许可和跨境协议",
+        "寻找 EPC/SCADA 集成商合作，争取通信和网络安全分包"
+      ],
+      "evidence": [
+        "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
+      ],
+      "factsVsInference": "已知：项目计划通过约旦 Aqaba 港出口伊拉克原油，目标输送能力约 100 万桶/日，且主合同尚未授标。推断：管线通信和 SCADA 网络是潜在配套，需与 Najaf—Aqaba 项目记录核对范围。",
+      "english": {
+        "demandSummary": "The Haditha–Aqaba strategic crude pipeline is intended to transport western Iraqi crude to Jordan's port of Aqaba at up to about 1 million bpd, as part of the longer Basra–Haditha–Aqaba system. Huawei can provide fibre transmission, remote pump-station communications, SCADA backhaul and cybersecurity.",
+        "recommendedHuaweiSolutions": [
+          "Fibre/IP/MPLS backbone and resilient rings along the pipeline",
+          "Remote access and wireless communications for pump, valve and metering stations",
+          "SCADA backhaul, network isolation and industrial firewalls",
+          "Control-centre data-centre, backup and security operations"
+        ],
+        "scoreRationale": "82/100 — long-distance pipeline operations need reliable communications and remote monitoring, aligning with Huawei's transmission and cybersecurity capabilities; cross-border execution risk remains high.",
+        "risks": "The main contract has not been awarded and feasibility depends on intergovernmental coordination and financing; the route may overlap with the Najaf–Aqaba record; pipeline SCADA and leak detection are specialist-led.",
+        "nextActions": "Manage this together with the Najaf–Aqaba opportunity as one strategic export corridor to avoid double counting; verify award plans, route permits and cross-border agreements; partner with EPC/SCADA integrators for telecom and cybersecurity sub-packages.",
+        "evidence": [
+          "MEED project profile summary, scope and latest project update captured in the Iraq-MTL D1 record."
+        ],
+        "factsVsInference": "Known: the project aims to export western Iraqi crude via Aqaba at about 1 million bpd and the main contract has not been awarded. Inference: pipeline communications and SCADA networks are potential attachments; scope must be reconciled with the Najaf–Aqaba record."
+      }
+    }
+  ]
 }
