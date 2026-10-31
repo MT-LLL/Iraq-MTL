@@ -47,7 +47,7 @@ jobs:
           GITHUB_REF_NAME: ${{ github.event.repository.default_branch || 'main' }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           GITHUB_EVENT_PATH: ${{ github.event_path }}
-          CYCLE_STARTED_AT: ${{ inputs.cycle_started_at || github.event.workflow_run.updated_at || '' }}
+          CYCLE_STARTED_AT: ${{ inputs.cycle_started_at || github.event.workflow_run.run_started_at || '' }}
         run: |
           set -euo pipefail
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "Missing CLOUDFLARE_API_TOKEN; no records changed."; exit 1; }
@@ -131,11 +131,11 @@ jobs:
             SELECT id, external_id AS externalId, title, title_en AS titleEn, country, city, industry, stage, priority, score, confidence, project_value AS projectValue, addressable_value AS addressableValue, currency, funding_status AS fundingStatus, bid_deadline AS bidDeadline, summary, key_project_milestones AS keyProjectMilestones, news_and_updates AS newsAndUpdates, latest_news AS latestNews, solution_matches AS solutionMatches, source_name AS sourceName, source_url AS sourceUrl, updated_at AS updatedAt,
               ROW_NUMBER() OVER (PARTITION BY lower(trim(title)) || '|' || lower(trim(country)) || '|' || lower(trim(COALESCE(city,''))) ORDER BY updated_at DESC, id ASC) AS duplicateRank
             FROM opportunities
-            WHERE priority IN ('P0','P1','P2') AND (source_name LIKE '%MEED%' OR id LIKE 'MEED-%')
+            WHERE priority IN ('P0','P1','P2')  
           )
           SELECT r.* FROM ranked r
           WHERE r.duplicateRank = 1
-            AND COALESCE(json_extract(r.solutionMatches, '$.opportunityAnalysis.promptVersion'), '') <> '${promptVersion}'
+            AND COALESCE(CASE WHEN json_valid(r.solutionMatches) THEN json_extract(r.solutionMatches, '$.opportunityAnalysis.promptVersion') END, '') <> '${promptVersion}'
             AND NOT EXISTS (
               SELECT 1 FROM opportunity_tracking t WHERE t.opportunity_id = r.id
                 AND lower(t.status) IN ('archived','not_tracking','ignored','dismissed','not_valuable')
@@ -148,7 +148,7 @@ jobs:
           if (!opportunities.length) {
             console.log('No eligible unanalyzed, non-archived, deduplicated MEED opportunities remain. Preparing final cycle brief.');
             const cycleStartedAt = process.env.CYCLE_STARTED_AT || new Date().toISOString();
-            const briefRows = rowsFrom(wrangler("SELECT id, title, title_en AS titleEn, country, city, industry, stage, priority, solution_matches AS solutionMatches, source_url AS sourceUrl FROM opportunities WHERE (source_name LIKE '%MEED%' OR id LIKE 'MEED-%') AND json_extract(solution_matches, '$.opportunityAnalysis.promptVersion') = 'meed-scope-fit-v1' AND json_extract(solution_matches, '$.opportunityAnalysis.analyzedAt') >= " + quote(cycleStartedAt) + " ORDER BY json_extract(solution_matches, '$.opportunityAnalysis.fitScore') DESC", 'Read cycle analyses for final brief'));
+            const briefRows = rowsFrom(wrangler("SELECT id, title, title_en AS titleEn, country, city, industry, stage, priority, solution_matches AS solutionMatches, source_url AS sourceUrl FROM opportunities WHERE json_valid(solution_matches) AND json_extract(solution_matches, '$.opportunityAnalysis.promptVersion') = 'meed-scope-fit-v1' AND json_extract(solution_matches, '$.opportunityAnalysis.analyzedAt') >= " + quote(cycleStartedAt) + " ORDER BY json_extract(solution_matches, '$.opportunityAnalysis.fitScore') DESC", 'Read cycle analyses for final brief'));
             const reportInput = briefRows.map(row => ({ id: row.id, title: row.title, titleEn: row.titleEn, country: row.country, city: row.city, industry: row.industry, stage: row.stage, priority: row.priority, sourceUrl: row.sourceUrl, analysis: parseObject(parseObject(row.solutionMatches).opportunityAnalysis) }));
             const briefResponse = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { Authorization: 'Bearer ' + apiKey, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: 'gpt-4.1', temperature: 0.2, max_tokens: 7000, messages: [{ role: 'system', content: '你是华为伊拉克业务机会情报负责人。仅基于输入的已保存分析生成中文简报，明确证据边界，不虚构事实。输出Markdown，含总体概况、重点机会排序、各机会华为方案匹配、主要风险、建议跟进行动及数据口径。' }, { role: 'user', content: '本轮开始时间：' + cycleStartedAt + '\\n已完成并写入D1的机会分析：' + JSON.stringify(reportInput) }] }), signal: AbortSignal.timeout(60000) });
             if (!briefResponse.ok) throw new Error('Final brief GPT request failed with HTTP ' + briefResponse.status);
@@ -161,7 +161,7 @@ jobs:
             console.log(JSON.stringify({ result: 'cycle-complete-final-brief-created', cycleStartedAt, analyzedInCycle: reportInput.length, brief: 'artifacts/opportunity-analysis/final-brief.md' }, null, 2));
             process.exit(0);
           }
-          const evidenceRows = rowsFrom(wrangler("SELECT e.opportunity_id AS opportunityId, e.kind, e.excerpt, e.source_url AS sourceUrl, e.collected_at AS collectedAt FROM evidence e INNER JOIN opportunities o ON o.id = e.opportunity_id WHERE (o.source_name LIKE '%MEED%' OR o.id LIKE 'MEED-%') ORDER BY e.collected_at DESC LIMIT 5000", 'Read MEED evidence'));
+          const evidenceRows = rowsFrom(wrangler("SELECT e.opportunity_id AS opportunityId, e.kind, e.excerpt, e.source_url AS sourceUrl, e.collected_at AS collectedAt FROM evidence e INNER JOIN opportunities o ON o.id = e.opportunity_id WHERE 1=1 ORDER BY e.collected_at DESC LIMIT 10000", 'Read MEED evidence'));
           const evidenceById = new Map();
           for (const item of evidenceRows) {
             const id = String(item.opportunityId);
@@ -368,3 +368,11 @@ jobs:
             console.log(JSON.stringify({ result: 'cycle-complete-final-brief-created', cycleStartedAt, analyzedInCycle: reportInput.length, brief: 'artifacts/opportunity-analysis/final-brief.md' }, null, 2));
           }
           NODE
+
+      - name: Upload final opportunity analysis brief
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: opportunity-analysis-cycle-brief
+          path: artifacts/opportunity-analysis/
+          if-no-files-found: ignore
