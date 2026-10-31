@@ -60,6 +60,7 @@ jobs:
           import { execFileSync } from 'node:child_process';
 
           const apiKey = process.env.OPENAI_API_KEY;
+          const cycleStartedAtGlobal = process.env.CYCLE_STARTED_AT || new Date().toISOString();
           const referenceId = 'MEED-IQ-20855';
           // Validate the provider credential once before reading or analyzing production records.
           const credentialCheck = await fetch('https://api.openai.com/v1/models', {
@@ -129,7 +130,7 @@ jobs:
           }
           const query = `WITH ranked AS (
             SELECT id, external_id AS externalId, title, title_en AS titleEn, country, city, industry, stage, priority, score, confidence, project_value AS projectValue, addressable_value AS addressableValue, currency, funding_status AS fundingStatus, bid_deadline AS bidDeadline, summary, key_project_milestones AS keyProjectMilestones, news_and_updates AS newsAndUpdates, latest_news AS latestNews, solution_matches AS solutionMatches, source_name AS sourceName, source_url AS sourceUrl, updated_at AS updatedAt,
-              ROW_NUMBER() OVER (PARTITION BY lower(trim(title)) || '|' || lower(trim(country)) || '|' || lower(trim(COALESCE(city,''))) ORDER BY updated_at DESC, id ASC) AS duplicateRank
+              ROW_NUMBER() OVER (PARTITION BY lower(trim(title)) || '|' || lower(trim(country)) || '|' || lower(trim(COALESCE(city,''))) ORDER BY CASE WHEN EXISTS (SELECT 1 FROM opportunity_tracking ta WHERE ta.opportunity_id = opportunities.id AND lower(ta.status) IN ('archived','not_tracking','ignored','dismissed','not_valuable')) THEN 1 ELSE 0 END, CASE WHEN json_valid(solution_matches) AND json_extract(solution_matches, '$.opportunityAnalysis.promptVersion') = '${promptVersion}' THEN 0 ELSE 1 END, updated_at DESC, id ASC) AS duplicateRank
             FROM opportunities
             WHERE priority IN ('P0','P1','P2')  
           )
@@ -147,7 +148,7 @@ jobs:
           console.log(JSON.stringify({ step: 'read', totalReturned: rows.length, referencePreserved: rows.some(row => String(row.id) === referenceId), queuedForAnalysis: opportunities.length }));
           if (!opportunities.length) {
             console.log('No eligible unanalyzed, non-archived, deduplicated MEED opportunities remain. Preparing final cycle brief.');
-            const cycleStartedAt = process.env.CYCLE_STARTED_AT || new Date().toISOString();
+            const cycleStartedAt = cycleStartedAtGlobal;
             const briefRows = rowsFrom(wrangler("SELECT id, title, title_en AS titleEn, country, city, industry, stage, priority, solution_matches AS solutionMatches, source_url AS sourceUrl FROM opportunities WHERE json_valid(solution_matches) AND json_extract(solution_matches, '$.opportunityAnalysis.promptVersion') = 'meed-scope-fit-v1' AND json_extract(solution_matches, '$.opportunityAnalysis.analyzedAt') >= " + quote(cycleStartedAt) + " ORDER BY json_extract(solution_matches, '$.opportunityAnalysis.fitScore') DESC", 'Read cycle analyses for final brief'));
             const reportInput = briefRows.map(row => ({ id: row.id, title: row.title, titleEn: row.titleEn, country: row.country, city: row.city, industry: row.industry, stage: row.stage, priority: row.priority, sourceUrl: row.sourceUrl, analysis: parseObject(parseObject(row.solutionMatches).opportunityAnalysis) }));
             const briefResponse = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { Authorization: 'Bearer ' + apiKey, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: 'gpt-4.1', temperature: 0.2, max_tokens: 7000, messages: [{ role: 'system', content: '你是华为伊拉克业务机会情报负责人。仅基于输入的已保存分析生成中文简报，明确证据边界，不虚构事实。输出Markdown，含总体概况、重点机会排序、各机会华为方案匹配、主要风险、建议跟进行动及数据口径。' }, { role: 'user', content: '本轮开始时间：' + cycleStartedAt + '\\n已完成并写入D1的机会分析：' + JSON.stringify(reportInput) }] }), signal: AbortSignal.timeout(60000) });
@@ -342,7 +343,7 @@ jobs:
           await sleep(5 * 60 * 1000);
           const pendingRows = rowsFrom(wrangler(query, 'Check remaining eligible opportunities'));
           if (pendingRows.length > 0) {
-            const cycleStartedAt = process.env.CYCLE_STARTED_AT || new Date().toISOString();
+            const cycleStartedAt = cycleStartedAtGlobal;
             const repo = process.env.GITHUB_REPOSITORY;
             const ref = process.env.GITHUB_REF_NAME || 'main';
             const token = process.env.GH_TOKEN;
@@ -354,8 +355,8 @@ jobs:
             if (dispatch.status !== 204) throw new Error('Could not dispatch next analysis batch; GitHub returned HTTP ' + dispatch.status);
             console.log(JSON.stringify({ result: 'next-batch-dispatched', pendingAtLeast: pendingRows.length, batchSize: 30, waitMinutes: 5, cycleStartedAt }));
           } else {
-            const cycleStartedAt = process.env.CYCLE_STARTED_AT || new Date().toISOString();
-            const briefRows = rowsFrom(wrangler("SELECT id, title, title_en AS titleEn, country, city, industry, stage, priority, solution_matches AS solutionMatches, source_url AS sourceUrl FROM opportunities WHERE (source_name LIKE '%MEED%' OR id LIKE 'MEED-%') AND json_extract(solution_matches, '$.opportunityAnalysis.promptVersion') = 'meed-scope-fit-v1' AND json_extract(solution_matches, '$.opportunityAnalysis.analyzedAt') >= " + quote(cycleStartedAt) + " ORDER BY json_extract(solution_matches, '$.opportunityAnalysis.fitScore') DESC", 'Read completed cycle analyses'));
+            const cycleStartedAt = cycleStartedAtGlobal;
+            const briefRows = rowsFrom(wrangler("SELECT id, title, title_en AS titleEn, country, city, industry, stage, priority, solution_matches AS solutionMatches, source_url AS sourceUrl FROM opportunities WHERE json_valid(solution_matches) AND json_extract(solution_matches, '$.opportunityAnalysis.promptVersion') = 'meed-scope-fit-v1' AND json_extract(solution_matches, '$.opportunityAnalysis.analyzedAt') >= " + quote(cycleStartedAt) + " ORDER BY json_extract(solution_matches, '$.opportunityAnalysis.fitScore') DESC", 'Read completed cycle analyses'));
             const reportInput = briefRows.map(row => ({ id: row.id, title: row.title, titleEn: row.titleEn, country: row.country, city: row.city, industry: row.industry, stage: row.stage, priority: row.priority, sourceUrl: row.sourceUrl, analysis: parseObject(parseObject(row.solutionMatches).opportunityAnalysis) }));
             const briefResponse = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { Authorization: 'Bearer ' + apiKey, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: 'gpt-4.1', temperature: 0.2, max_tokens: 7000, messages: [{ role: 'system', content: '你是华为伊拉克业务机会情报负责人。仅基于输入的已保存分析生成中文简报，明确证据边界，不虚构事实。输出Markdown，含总体概况、重点机会排序、各机会华为方案匹配、主要风险、建议跟进行动及数据口径。' }, { role: 'user', content: '本轮开始时间：' + cycleStartedAt + '\\n已完成并写入D1的机会分析：' + JSON.stringify(reportInput) }] }), signal: AbortSignal.timeout(60000) });
             if (!briefResponse.ok) throw new Error('Final brief GPT request failed with HTTP ' + briefResponse.status);
