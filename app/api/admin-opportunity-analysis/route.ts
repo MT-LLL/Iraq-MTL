@@ -157,7 +157,6 @@ export async function GET(request: Request) {
         updated_at AS updatedAt
       FROM opportunities
       WHERE priority IN (${placeholders})
-        AND (source_name LIKE '%MEED%' OR id LIKE 'MEED-%')
       ORDER BY CASE priority WHEN 'P0' THEN 0 WHEN 'P1' THEN 1 ELSE 2 END, score DESC, updated_at DESC
       LIMIT ?
     `).bind(...requested, limit).all<Record<string, unknown>>();
@@ -233,7 +232,7 @@ export async function POST(request: Request) {
   for (const item of payload.updates) {
     const id = item.opportunityId;
     const existing = await auth.db.prepare(
-      "SELECT id, solution_matches FROM opportunities WHERE id = ? AND (source_name LIKE '%MEED%' OR id LIKE 'MEED-%')"
+      "SELECT id, solution_matches FROM opportunities WHERE id = ?"
     ).bind(id).first<{ id: string; solution_matches: string | null }>();
     if (!existing) {
       results.push({ opportunityId: id, saved: false, error: "MEED_OPPORTUNITY_NOT_FOUND" });
