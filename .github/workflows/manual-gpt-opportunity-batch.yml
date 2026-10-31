@@ -96,7 +96,7 @@ jobs:
             for (const e of evidence) {
               const id = String(e.opportunityId);
               const list = grouped.get(id) || [];
-              if (list.length < 2) list.push({...e, excerpt: String(e.excerpt || '').slice(0, 250)});
+              if (list.length < 1) list.push({...e, excerpt: String(e.excerpt || '').slice(0, 250)});
               grouped.set(id, list);
             }
             const batch = rows.map(r => ({
@@ -106,7 +106,7 @@ jobs:
               stage: r.stage ?? '', priority: r.priority ?? '', score: r.score ?? null,
               projectValue: r.projectValue ?? null, addressableValue: r.addressableValue ?? null,
               currency: r.currency ?? '', fundingStatus: r.fundingStatus ?? '',
-              bidDeadline: r.bidDeadline ?? '', summary: String(r.summary ?? '').slice(0, 3000),
+              bidDeadline: r.bidDeadline ?? '', summary: String(r.summary ?? '').slice(0, 1200),
               keyProjectMilestones: String(r.keyProjectMilestones ?? '').slice(0, 500),
               newsAndUpdates: String(r.newsAndUpdates ?? '').slice(0, 400), latestNews: String(r.latestNews ?? '').slice(0, 400), solutionMatches: r.solutionMatches ?? null,
               sourceName: r.sourceName ?? '', sourceUrl: r.sourceUrl ?? '',
