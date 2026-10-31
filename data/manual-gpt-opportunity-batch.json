@@ -12,8 +12,12 @@
           "Private wireless, video surveillance and IoT connectivity for selected sites"
         ],
         "scoreRationale": "79/100 — broad, geographically distributed infrastructure and multiple digitalisation work packages create meaningful ICT demand; the process EPC and control-system scope remains largely specialist-led.",
-        "risks": "Core DCS/SCADA and process safety systems may be specified by EPCs or incumbent vendors; project phases and package ownership are not fully clear; verify who controls telecom and data-centre procurement.",
-        "nextActions": "Map the four project components and EPCs; identify the package owners for telecom, OT security and data-centre systems; engage Basra Oil and project partners on standards and local delivery.",
+        "risks": [
+          "Core DCS/SCADA and process safety systems may be specified by EPCs or incumbent vendors; project phases and package ownership are not fully clear; verify who controls telecom and data-centre procurement."
+        ],
+        "nextActions": [
+          "Map the four project components and EPCs; identify the package owners for telecom, OT security and data-centre systems; engage Basra Oil and project partners on standards and local delivery."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
@@ -32,8 +36,12 @@
           "Digital classroom connectivity and network operations management"
         ],
         "scoreRationale": "62/100 — very large deployment footprint offers scale, but the captured scope is primarily civil construction and does not confirm funded ICT equipment or a digital-learning package.",
-        "risks": "Programme financing and implementation status need validation; ICT procurement may be separate or already allocated; school-by-school connectivity and power availability vary.",
-        "nextActions": "Identify the current phase, regional lots and construction contractors; confirm whether the Ministry has a separate smart-school/ICT specification and budget; propose a reference-school design and lifecycle O&M model.",
+        "risks": [
+          "Programme financing and implementation status need validation; ICT procurement may be separate or already allocated; school-by-school connectivity and power availability vary."
+        ],
+        "nextActions": [
+          "Identify the current phase, regional lots and construction contractors; confirm whether the Ministry has a separate smart-school/ICT specification and budget; propose a reference-school design and lifecycle O&M model."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
@@ -52,8 +60,12 @@
           "Modular data-centre/cloud platform for municipal and community services"
         ],
         "scoreRationale": "56/100 — scale is substantial, but project locations, phases, delivery model and digital infrastructure requirements are not disclosed, making near-term addressability uncertain.",
-        "risks": "The programme may be an umbrella policy rather than one executable contract; funding, land allocation and phase-level procurement are unclear; telecom may be delivered by operators or separate concessionaires.",
-        "nextActions": "Validate active housing-city projects and provincial investment commissions; shortlist projects with approved master plans; approach developers and telecom operators for embedded connectivity requirements.",
+        "risks": [
+          "The programme may be an umbrella policy rather than one executable contract; funding, land allocation and phase-level procurement are unclear; telecom may be delivered by operators or separate concessionaires."
+        ],
+        "nextActions": [
+          "Validate active housing-city projects and provincial investment commissions; shortlist projects with approved master plans; approach developers and telecom operators for embedded connectivity requirements."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
@@ -71,8 +83,12 @@
           "Secure IP networking between well-pad facilities and the operator's control centre"
         ],
         "scoreRationale": "45/100 — the stated scope is mainly roads and utilities, with no explicit telecom, automation or digital systems package.",
-        "risks": "The profile shows an old tender issue and bid-submission timeline, with no recent substantive update; road works may already be contracted; ICT package ownership is unknown.",
-        "nextActions": "Confirm whether the project remains active and whether a separate field telecom/security package exists before investing in pursuit; identify the current operator and EPC.",
+        "risks": [
+          "The profile shows an old tender issue and bid-submission timeline, with no recent substantive update; road works may already be contracted; ICT package ownership is unknown."
+        ],
+        "nextActions": [
+          "Confirm whether the project remains active and whether a separate field telecom/security package exists before investing in pursuit; identify the current operator and EPC."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
@@ -91,8 +107,12 @@
           "CCTV and secure wireless access for plant operations"
         ],
         "scoreRationale": "72/100 — a process-heavy facility with explicit instrumentation, control and telecom-adjacent systems creates credible OT/ICT demand; however, core process packages are specialist EPC territory.",
-        "risks": "The profile contains a historic tender number and says the project was handed over to Chevron; verify current package status and whether any telecom/OT scope remains open.",
-        "nextActions": "Confirm Chevron's current development and EPC structure; request the plant telecom/OT architecture and vendor registration requirements; position Huawei around network and cyber-security layers.",
+        "risks": [
+          "The profile contains a historic tender number and says the project was handed over to Chevron; verify current package status and whether any telecom/OT scope remains open."
+        ],
+        "nextActions": [
+          "Confirm Chevron's current development and EPC structure; request the plant telecom/OT architecture and vendor registration requirements; position Huawei around network and cyber-security layers."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
@@ -111,8 +131,12 @@
           "Regional control-centre data-centre, cloud and cybersecurity infrastructure"
         ],
         "scoreRationale": "74/100 — national-scale corridor and digital transport requirements offer a strong strategic fit, but this umbrella programme contains multiple segments and procurement packages.",
-        "risks": "The 1,200 km programme may be split into separate contracts; schedule and funding may change; civil EPCs and ITS vendors may own different packages.",
-        "nextActions": "Map the programme into awarded, tendered and planned segments; identify the Ministry of Transport's digital/ITS lead and the package owners for fibre, control centres and tolling.",
+        "risks": [
+          "The 1,200 km programme may be split into separate contracts; schedule and funding may change; civil EPCs and ITS vendors may own different packages."
+        ],
+        "nextActions": [
+          "Map the programme into awarded, tendered and planned segments; identify the Ministry of Transport's digital/ITS lead and the package owners for fibre, control centres and tolling."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
@@ -156,14 +180,22 @@
           "Remote-site wireless, video surveillance and IoT connectivity"
         ],
         "scoreRationale": "83/100 — large, interconnected energy assets imply substantial digital infrastructure needs, while core DCS, protection and power-control systems remain specialist domains.",
-        "risks": "Contract boundaries between NOC and the developer/operator need validation; the power, gas and solar components may have separate EPC packages; core control systems may already have nominated vendors.",
-        "nextActions": "Validate the 25-year NOC/KEPPT arrangement; map ICT/OT packages across gas processing, CCGT and solar; engage the owner and EPCs with a reference network-security architecture.",
+        "risks": [
+          "Contract boundaries between NOC and the developer/operator need validation; the power, gas and solar components may have separate EPC packages; core control systems may already have nominated vendors."
+        ],
+        "nextActions": [
+          "Validate the 25-year NOC/KEPPT arrangement; map ICT/OT packages across gas processing, CCGT and solar; engage the owner and EPCs with a reference network-security architecture."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
         "factsVsInference": "Known: the record specifies 300 MMSCFD gas processing, 1,500 MW CCGT and 200 MW solar, and mentions a 25-year NOC/KEPPT contract. Inference: supporting industrial networks and cybersecurity are addressable; no specific Huawei award is evidenced."
       },
-      "opportunityId": "MEED-IQ-568456"
+      "opportunityId": "MEED-IQ-568456",
+      "recommendedHuaweiSolutions": [],
+      "risks": [],
+      "nextActions": [],
+      "evidence": []
     },
     {
       "priority": "P1",
@@ -201,14 +233,22 @@
           "Data-centre/edge-computing and cybersecurity infrastructure for traffic operations"
         ],
         "scoreRationale": "84/100 — ITS, tolling and performance-based O&M are explicitly referenced, indicating meaningful ICT content; package boundaries still need confirmation.",
-        "risks": "ITS equipment may be procured by the road EPC or a specialist integrator; this segment may overlap with the wider Development Road programme; planned dates may change.",
-        "nextActions": "Confirm the contract boundary against the 1,200 km programme; engage the Ministry, designer and EPC on ITS specifications; prepare fibre, video backhaul, traffic-centre and cyber-security designs.",
+        "risks": [
+          "ITS equipment may be procured by the road EPC or a specialist integrator; this segment may overlap with the wider Development Road programme; planned dates may change."
+        ],
+        "nextActions": [
+          "Confirm the contract boundary against the 1,200 km programme; engage the Ministry, designer and EPC on ITS specifications; prepare fibre, video backhaul, traffic-centre and cyber-security designs."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
         "factsVsInference": "Known: the scope is a 100 km Baghdad–Samarra expressway plus feeder roads and references ITS and tolling. Inference: roadside communications and traffic systems are relevant; the exact procurement package is unconfirmed."
       },
-      "opportunityId": "MEED-IQ-570516"
+      "opportunityId": "MEED-IQ-570516",
+      "recommendedHuaweiSolutions": [],
+      "risks": [],
+      "nextActions": [],
+      "evidence": []
     },
     {
       "priority": "P1",
@@ -246,14 +286,22 @@
           "Video surveillance and wireless backhaul at bridges and critical junctions"
         ],
         "scoreRationale": "81/100 — the urban road scale and traffic-management context are relevant, but the available summary does not explicitly confirm an ITS equipment bill of quantities.",
-        "risks": "Civil works and ITS/signalling may be separate lots; bridge and road design changes may affect fibre routes; funding and tender timing need confirmation.",
-        "nextActions": "Confirm chainage, designer and EPC; establish whether signals, lighting and surveillance sit in this lot or a separate package; propose a phased road-network architecture.",
+        "risks": [
+          "Civil works and ITS/signalling may be separate lots; bridge and road design changes may affect fibre routes; funding and tender timing need confirmation."
+        ],
+        "nextActions": [
+          "Confirm chainage, designer and EPC; establish whether signals, lighting and surveillance sit in this lot or a separate package; propose a phased road-network architecture."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
         "factsVsInference": "Known: the project includes carriageways, bus lanes, bridges, interchanges and associated works. Inference: traffic networking and surveillance may be required, but specific equipment is not confirmed."
       },
-      "opportunityId": "MEED-IQ-466002"
+      "opportunityId": "MEED-IQ-466002",
+      "recommendedHuaweiSolutions": [],
+      "risks": [],
+      "nextActions": [],
+      "evidence": []
     },
     {
       "priority": "P1",
@@ -291,14 +339,22 @@
           "Site wireless, video surveillance and secure device connectivity"
         ],
         "scoreRationale": "78/100 — telecommunications, instrumentation and control are explicitly listed, although the procurement status and current package ownership need revalidation.",
-        "risks": "The tender reference and bid dates are old; process control and instrumentation are likely EPC/specialist-led; telecom may be bundled rather than separately tendered.",
-        "nextActions": "Verify the status of HFY-CON/F&C1174-1197 and the awardee; confirm telecom design responsibility and approved-vendor lists with PetroChina, SOC and the EPC; position Huawei in network and OT-security layers.",
+        "risks": [
+          "The tender reference and bid dates are old; process control and instrumentation are likely EPC/specialist-led; telecom may be bundled rather than separately tendered."
+        ],
+        "nextActions": [
+          "Verify the status of HFY-CON/F&C1174-1197 and the awardee; confirm telecom design responsibility and approved-vendor lists with PetroChina, SOC and the EPC; position Huawei in network and OT-security layers."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
         "factsVsInference": "Known: the scope explicitly lists power, instrumentation, control and a telecommunication system. Inference: Huawei can supply communications and cybersecurity infrastructure; no separate award or shortlist is confirmed."
       },
-      "opportunityId": "MEED-IQ-366344"
+      "opportunityId": "MEED-IQ-366344",
+      "recommendedHuaweiSolutions": [],
+      "risks": [],
+      "nextActions": [],
+      "evidence": []
     },
     {
       "priority": "P1",
@@ -336,14 +392,22 @@
           "Wireless coverage for the bus corridor and critical road nodes"
         ],
         "scoreRationale": "81/100 — the urban transport infrastructure has meaningful potential ICT attachments, but a separate ITS procurement package is not confirmed in the available summary.",
-        "risks": "Sections 2 and 3 must be reconciled with the overall 94 km plan to avoid double counting; signals and traffic systems may be supplied by a third-party integrator; design/funding may change.",
-        "nextActions": "Map Sections 2 and 3 under one corridor architecture; confirm ITS, signal and video procurement; influence duct, fibre and traffic-centre specifications during design.",
+        "risks": [
+          "Sections 2 and 3 must be reconciled with the overall 94 km plan to avoid double counting; signals and traffic systems may be supplied by a third-party integrator; design/funding may change."
+        ],
+        "nextActions": [
+          "Map Sections 2 and 3 under one corridor architecture; confirm ITS, signal and video procurement; influence duct, fibre and traffic-centre specifications during design."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
         "factsVsInference": "Known: Section 2 links the Dora–Yusufiyah and Abu Ghraib areas and is part of a 94 km ring-road plan. Inference: traffic communications and surveillance are potential attachments, not confirmed tenders."
       },
-      "opportunityId": "MEED-IQ-466001"
+      "opportunityId": "MEED-IQ-466001",
+      "recommendedHuaweiSolutions": [],
+      "risks": [],
+      "nextActions": [],
+      "evidence": []
     },
     {
       "priority": "P1",
@@ -381,14 +445,22 @@
           "Data-centre/cloud and cybersecurity for traffic operations"
         ],
         "scoreRationale": "82/100 — toll plazas and ITS are explicitly referenced, giving this project a strong digital-transport fit.",
-        "risks": "The project is at study stage and is reported as delayed; road EPC and ITS/tolling may be separate packages; overlap with other Development Road segments must be checked.",
-        "nextActions": "Verify the delay, financing and latest feasibility status; identify ownership of tolling, ITS and telecom packages; include the route in a corridor-level Baghdad–Basra/Development Road architecture.",
+        "risks": [
+          "The project is at study stage and is reported as delayed; road EPC and ITS/tolling may be separate packages; overlap with other Development Road segments must be checked."
+        ],
+        "nextActions": [
+          "Verify the delay, financing and latest feasibility status; identify ownership of tolling, ITS and telecom packages; include the route in a corridor-level Baghdad–Basra/Development Road architecture."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
         "factsVsInference": "Known: the motorway links Baghdad and Basra and includes toll plazas and ITS; the profile mentions implementation delay. Inference: communications and traffic-management packages are potential opportunities, not confirmed procurements."
       },
-      "opportunityId": "MEED-IQ-445892"
+      "opportunityId": "MEED-IQ-445892",
+      "recommendedHuaweiSolutions": [],
+      "risks": [],
+      "nextActions": [],
+      "evidence": []
     },
     {
       "priority": "P1",
@@ -426,14 +498,22 @@
           "CCTV, access control and site wireless coverage"
         ],
         "scoreRationale": "79/100 — control, safety and utility infrastructure are explicit, creating credible supporting ICT/OT demand; the generator, protection and control core remains specialist-led.",
-        "risks": "The bid deadline was 21 October 2026 and may have passed or been extended; EPC supply chains may already be set; generator control and protection have strict vendor/compatibility requirements.",
-        "nextActions": "Immediately verify bid outcome or extension; ask the owner and EPC about telecom, video and cybersecurity packages; propose an industrial network architecture decoupled from the GTG control core.",
+        "risks": [
+          "The bid deadline was 21 October 2026 and may have passed or been extended; EPC supply chains may already be set; generator control and protection have strict vendor/compatibility requirements."
+        ],
+        "nextActions": [
+          "Immediately verify bid outcome or extension; ask the owner and EPC about telecom, video and cybersecurity packages; propose an industrial network architecture decoupled from the GTG control core."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
         "factsVsInference": "Known: three 18–23 MW GTGs, 11 kV generation, control, safety, utilities and maintenance facilities are listed. Inference: auxiliary communications and security may be addressable; Huawei should not assume the generator-control core."
       },
-      "opportunityId": "MEED-IQ-581010"
+      "opportunityId": "MEED-IQ-581010",
+      "recommendedHuaweiSolutions": [],
+      "risks": [],
+      "nextActions": [],
+      "evidence": []
     },
     {
       "priority": "P1",
@@ -471,14 +551,22 @@
           "Cybersecurity, perimeter protection and segmented railway communications"
         ],
         "scoreRationale": "90/100 — ETCS signalling and OFC ducts are explicitly identified, making fibre and transmission infrastructure a close match to Huawei's portfolio.",
-        "risks": "ETCS safety certification and signalling interfaces are highly specialised; procurement may be split by route section and system package; consultants may already define fibre and duct standards.",
-        "nextActions": "Identify the railway owner, consultant and ETCS prime integrator; seek shortlist entry for fibre, transmission, station networks and control-centre data centres; present a communications architecture isolated from safety-critical signalling.",
+        "risks": [
+          "ETCS safety certification and signalling interfaces are highly specialised; procurement may be split by route section and system package; consultants may already define fibre and duct standards."
+        ],
+        "nextActions": [
+          "Identify the railway owner, consultant and ETCS prime integrator; seek shortlist entry for fibre, transmission, station networks and control-centre data centres; present a communications architecture isolated from safety-critical signalling."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
         "factsVsInference": "Known: the scope explicitly covers about 1,047 km and includes ETCS signalling and OFC ducts. Inference: Huawei can compete for fibre/transmission and communications infrastructure, not assume supply of the ETCS signalling core."
       },
-      "opportunityId": "MEED-IQ-513400"
+      "opportunityId": "MEED-IQ-513400",
+      "recommendedHuaweiSolutions": [],
+      "risks": [],
+      "nextActions": [],
+      "evidence": []
     },
     {
       "priority": "P1",
@@ -516,14 +604,22 @@
           "OT/IT segmentation, industrial firewalls and security operations"
         ],
         "scoreRationale": "88/100 — network, communication hubs, control rooms and security systems are explicitly stated, making ICT central to the facility rather than an incidental attachment.",
-        "risks": "Confirm whether the centre is still in procurement or already delivered by a nominated EPC; production-control and enterprise IT must be segregated; incumbent control vendors may own key interfaces.",
-        "nextActions": "Verify the status of HFY-CON/F&C1421-1444 and the EPC; obtain room, network, security and video specifications; present a layered network, data-centre and cybersecurity design to PetroChina and the EPC.",
+        "risks": [
+          "Confirm whether the centre is still in procurement or already delivered by a nominated EPC; production-control and enterprise IT must be segregated; incumbent control vendors may own key interfaces."
+        ],
+        "nextActions": [
+          "Verify the status of HFY-CON/F&C1421-1444 and the EPC; obtain room, network, security and video specifications; present a layered network, data-centre and cybersecurity design to PetroChina and the EPC."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
         "factsVsInference": "Known: control rooms, network, communication hubs, security systems and training facilities are listed. Inference: data-centre, campus-network and cybersecurity packages are addressable, subject to tender status."
       },
-      "opportunityId": "MEED-IQ-537659"
+      "opportunityId": "MEED-IQ-537659",
+      "recommendedHuaweiSolutions": [],
+      "risks": [],
+      "nextActions": [],
+      "evidence": []
     },
     {
       "priority": "P1",
@@ -561,14 +657,22 @@
           "Site video, wireless coverage and IoT connectivity"
         ],
         "scoreRationale": "79/100 — distributed production assets and pipeline facilities create a credible industrial communications need, although the summary does not identify a dedicated telecom package.",
-        "risks": "The project is at FEED and design/financing may change; process control, instrumentation and safety are specialist-led; the terminal and field facilities may be procured separately.",
-        "nextActions": "Identify the FEED consultant, owner and likely EPC; influence telecom and cybersecurity specifications during FEED; map ICT needs across gathering, processing, storage and export facilities.",
+        "risks": [
+          "The project is at FEED and design/financing may change; process control, instrumentation and safety are specialist-led; the terminal and field facilities may be procured separately."
+        ],
+        "nextActions": [
+          "Identify the FEED consultant, owner and likely EPC; influence telecom and cybersecurity specifications during FEED; map ICT needs across gathering, processing, storage and export facilities."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
         "factsVsInference": "Known: the project includes associated-gas gathering, compression, dehydration, separation, modular processing and an Umm Qasr export terminal. Inference: communications and OT security are potential packages, not confirmed procurements."
       },
-      "opportunityId": "MEED-IQ-8344"
+      "opportunityId": "MEED-IQ-8344",
+      "recommendedHuaweiSolutions": [],
+      "risks": [],
+      "nextActions": [],
+      "evidence": []
     },
     {
       "priority": "P2",
@@ -606,14 +710,22 @@
           "OT network segmentation and industrial security"
         ],
         "scoreRationale": "61/100 — digital scope is limited, but tank-farm security and pump-station communications may create supporting ICT opportunities.",
-        "risks": "The main contract may focus on tank design and supply with a small ICT budget; the design/supply tender may already be under evaluation or awarded; hazardous-area equipment requires appropriate certification.",
-        "nextActions": "Check the design/supply tender outcome and main-contract procurement plan; confirm whether CCTV, telecom and security are separate packages; pursue only once a defined ICT scope is confirmed.",
+        "risks": [
+          "The main contract may focus on tank design and supply with a small ICT budget; the design/supply tender may already be under evaluation or awarded; hazardous-area equipment requires appropriate certification."
+        ],
+        "nextActions": [
+          "Check the design/supply tender outcome and main-contract procurement plan; confirm whether CCTV, telecom and security are separate packages; pursue only once a defined ICT scope is confirmed."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
         "factsVsInference": "Known: three tanks totalling about 60,000 m³ are planned and design/supply tender information exists. Inference: security and communications may be ancillary requirements, not confirmed line items."
       },
-      "opportunityId": "MEED-IQ-563439"
+      "opportunityId": "MEED-IQ-563439",
+      "recommendedHuaweiSolutions": [],
+      "risks": [],
+      "nextActions": [],
+      "evidence": []
     },
     {
       "priority": "P2",
@@ -649,14 +761,22 @@
           "Cybersecurity and data-centre infrastructure, subject to project scope confirmation"
         ],
         "scoreRationale": "58/100 — railway infrastructure is adjacent to Huawei's communications capabilities, but no ICT/signalling work package is confirmed in the available record.",
-        "risks": "The project is mainly track rehabilitation and civil works, so ICT budget may be limited; tender/award dates may have changed; signalling and communications may sit in a separate railway-modernisation programme.",
-        "nextActions": "Confirm whether railway telecom, signalling or dispatch systems are included; ask Iraqi Republic Railways and the main EPC about separate ICT packages; treat as an industry relationship opportunity if no funded ICT scope exists.",
+        "risks": [
+          "The project is mainly track rehabilitation and civil works, so ICT budget may be limited; tender/award dates may have changed; signalling and communications may sit in a separate railway-modernisation programme."
+        ],
+        "nextActions": [
+          "Confirm whether railway telecom, signalling or dispatch systems are included; ask Iraqi Republic Railways and the main EPC about separate ICT packages; treat as an industry relationship opportunity if no funded ICT scope exists."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
         "factsVsInference": "Known: about 200 km of Taji–Baiji track rehabilitation, welding, switches and embankment works are listed. Inference: communications modernisation may be procured separately; it is not confirmed in this project's scope."
       },
-      "opportunityId": "MEED-IQ-467954"
+      "opportunityId": "MEED-IQ-467954",
+      "recommendedHuaweiSolutions": [],
+      "risks": [],
+      "nextActions": [],
+      "evidence": []
     },
     {
       "priority": "P1",
@@ -694,14 +814,22 @@
           "Cybersecurity, station campus networks and operations management"
         ],
         "scoreRationale": "90/100 — multiple lines, stations, depots and dual control centres form a large systems project with strong communications and data-centre fit.",
-        "risks": "The project has experienced delays and remains at design stage; financing and delivery timing need validation; signalling, AFC and integrated-control systems are specialist-integrator-led; procurement may be phased by line or station.",
-        "nextActions": "Verify feasibility, financing, designer and systems-prime status; seek specification entry for transmission, data centres, video and cybersecurity; establish an integrator partnership and clarify interfaces with signalling/AFC.",
+        "risks": [
+          "The project has experienced delays and remains at design stage; financing and delivery timing need validation; signalling, AFC and integrated-control systems are specialist-integrator-led; procurement may be phased by line or station."
+        ],
+        "nextActions": [
+          "Verify feasibility, financing, designer and systems-prime status; seek specification entry for transmission, data centres, video and cybersecurity; establish an integrator partnership and clarify interfaces with signalling/AFC."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
         "factsVsInference": "Known: seven lines, about 148–150 km, 64 stations, four depots and two control centres are described, with driverless trains. Inference: communications, data-centre and video packages may be high-value; this is not a confirmed tender bill of quantities."
       },
-      "opportunityId": "MEED-IQ-439745"
+      "opportunityId": "MEED-IQ-439745",
+      "recommendedHuaweiSolutions": [],
+      "risks": [],
+      "nextActions": [],
+      "evidence": []
     },
     {
       "priority": "P2",
@@ -737,14 +865,22 @@
           "Secure access for roadside devices and network protection"
         ],
         "scoreRationale": "52/100 — road-safety use cases may create small ICT attachments, but the core contract is bridge and highway rehabilitation.",
-        "risks": "The lot is relatively small and civil-works-led; video and traffic management may be procured under a wider road ITS programme; award timing needs confirmation.",
-        "nextActions": "Check whether CCTV or traffic-management systems are separate packages; align with the wider Expressway 1 ITS plan; keep pursuit effort low if no ICT budget exists.",
+        "risks": [
+          "The lot is relatively small and civil-works-led; video and traffic management may be procured under a wider road ITS programme; award timing needs confirmation."
+        ],
+        "nextActions": [
+          "Check whether CCTV or traffic-management systems are separate packages; align with the wider Expressway 1 ITS plan; keep pursuit effort low if no ICT budget exists."
+        ],
         "evidence": [
           "MEED project profile summary and scope fields stored in the Iraq-MTL D1 record."
         ],
         "factsVsInference": "Known: bridge, pavement, interchange, guardrail, signage and lighting rehabilitation are listed. Inference: video backhaul or incident detection may be ancillary, but no ICT package is confirmed."
       },
-      "opportunityId": "MEED-IQ-376491"
+      "opportunityId": "MEED-IQ-376491",
+      "recommendedHuaweiSolutions": [],
+      "risks": [],
+      "nextActions": [],
+      "evidence": []
     }
   ]
 }
