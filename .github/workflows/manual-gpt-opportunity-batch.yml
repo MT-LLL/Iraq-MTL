@@ -88,7 +88,7 @@ jobs:
           const parseObject = v => { try { const x = typeof v === 'string' ? JSON.parse(v || '{}') : v; return x && typeof x === 'object' && !Array.isArray(x) ? x : {}; } catch { return {}; } };
 
           if (input.mode === 'fetch') {
-            const sql = "SELECT id, external_id AS externalId, title, title_en AS titleEn, country, city, industry, stage, priority, score, confidence, project_value AS projectValue, addressable_value AS addressableValue, currency, funding_status AS fundingStatus, bid_deadline AS bidDeadline, summary, key_project_milestones AS keyProjectMilestones, news_and_updates AS newsAndUpdates, latest_news AS latestNews, solution_matches AS solutionMatches, source_name AS sourceName, source_url AS sourceUrl, updated_at AS updatedAt FROM opportunities WHERE priority IN ('P0','P1','P2') AND (country LIKE '%伊拉克%' OR country LIKE '%Iraq%') AND (solution_matches IS NULL OR json_extract(solution_matches, '$.opportunityAnalysis') IS NULL OR json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis') IS NULL) ORDER BY CASE priority WHEN 'P0' THEN 0 WHEN 'P1' THEN 1 ELSE 2 END, score DESC, updated_at DESC LIMIT 20";
+            const sql = "SELECT id, external_id AS externalId, title, title_en AS titleEn, country, city, industry, stage, priority, score, confidence, project_value AS projectValue, addressable_value AS addressableValue, currency, funding_status AS fundingStatus, bid_deadline AS bidDeadline, summary, key_project_milestones AS keyProjectMilestones, news_and_updates AS newsAndUpdates, latest_news AS latestNews, solution_matches AS solutionMatches, source_name AS sourceName, source_url AS sourceUrl, updated_at AS updatedAt FROM opportunities WHERE priority IN ('P0','P1','P2') AND (country LIKE '%伊拉克%' OR country LIKE '%Iraq%') AND id <> 'MEED-IQ-20855' AND (solution_matches IS NULL OR json_extract(solution_matches, '$.opportunityAnalysis') IS NULL OR json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis') IS NULL) ORDER BY CASE priority WHEN 'P0' THEN 0 WHEN 'P1' THEN 1 ELSE 2 END, score DESC, updated_at DESC LIMIT 20";
             const rows = rowsOf(wrangler(sql, 'Read next 20 unanalysed Iraq opportunities'));
             const ids = rows.map(r => quote(r.id)).join(',');
             const evidence = ids ? rowsOf(wrangler("SELECT opportunity_id AS opportunityId, kind, excerpt, source_url AS sourceUrl, collected_at AS collectedAt FROM evidence WHERE opportunity_id IN (" + ids + ") ORDER BY collected_at DESC", 'Read evidence for batch')) : [];
@@ -96,19 +96,19 @@ jobs:
             for (const e of evidence) {
               const id = String(e.opportunityId);
               const list = grouped.get(id) || [];
-              if (list.length < 8) list.push(e);
+              if (list.length < 4) list.push({...e, excerpt: String(e.excerpt || '').slice(0, 500)});
               grouped.set(id, list);
             }
             const batch = rows.map(r => ({
               id: String(r.id), externalId: r.externalId ?? null,
-              title: r.title ?? '', titleEn: r.titleEn ?? '',
+              title: String(r.title ?? '').slice(0, 300), titleEn: String(r.titleEn ?? '').slice(0, 300),
               country: r.country ?? '', city: r.city ?? '', industry: r.industry ?? '',
               stage: r.stage ?? '', priority: r.priority ?? '', score: r.score ?? null,
               projectValue: r.projectValue ?? null, addressableValue: r.addressableValue ?? null,
               currency: r.currency ?? '', fundingStatus: r.fundingStatus ?? '',
-              bidDeadline: r.bidDeadline ?? '', summary: r.summary ?? '',
-              keyProjectMilestones: r.keyProjectMilestones ?? '',
-              newsAndUpdates: r.newsAndUpdates ?? '', latestNews: r.latestNews ?? '', solutionMatches: r.solutionMatches ?? null,
+              bidDeadline: r.bidDeadline ?? '', summary: String(r.summary ?? '').slice(0, 1800),
+              keyProjectMilestones: String(r.keyProjectMilestones ?? '').slice(0, 1000),
+              newsAndUpdates: String(r.newsAndUpdates ?? '').slice(0, 800), latestNews: String(r.latestNews ?? '').slice(0, 800), solutionMatches: r.solutionMatches ?? null,
               sourceName: r.sourceName ?? '', sourceUrl: r.sourceUrl ?? '',
               evidence: grouped.get(String(r.id)) || []
             }));
