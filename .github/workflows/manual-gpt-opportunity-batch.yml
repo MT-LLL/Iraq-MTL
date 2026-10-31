@@ -106,11 +106,11 @@ jobs:
               stage: r.stage ?? '', priority: r.priority ?? '', score: r.score ?? null,
               projectValue: r.projectValue ?? null, addressableValue: r.addressableValue ?? null,
               currency: r.currency ?? '', fundingStatus: r.fundingStatus ?? '',
-              bidDeadline: r.bidDeadline ?? '', summary: String(r.summary ?? '').slice(0, 1200),
+              bidDeadline: r.bidDeadline ?? '', summary: String(r.summary ?? '').slice(0, 600),
               keyProjectMilestones: String(r.keyProjectMilestones ?? '').slice(0, 500),
               newsAndUpdates: String(r.newsAndUpdates ?? '').slice(0, 400), latestNews: String(r.latestNews ?? '').slice(0, 400), solutionMatches: r.solutionMatches ?? null,
-              sourceName: r.sourceName ?? '', sourceUrl: r.sourceUrl ?? '',
-              evidence: grouped.get(String(r.id)) || []
+              sourceName: r.sourceName ?? '',
+              evidence: []
             }));
             console.log('MANUAL_GPT_BATCH_JSON_BEGIN');
             console.log(JSON.stringify({mode:'fetch-result',count:batch.length,items:batch}, null, 2));
