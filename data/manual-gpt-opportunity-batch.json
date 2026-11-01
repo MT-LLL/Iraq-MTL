@@ -1,3 +1,1057 @@
 {
-  "mode": "fetch"
+  "mode": "writeback",
+  "analyses": [
+    {
+      "opportunityId": "MEED-IQ-554533",
+      "priority": "P2",
+      "fitScore": 76,
+      "demandSummary": "Abu Ghraib 3,000MW 联合循环燃气电站 IPP 处于 Study，项目记录金额 USD 3,000m，计划配置约400 MMscfd天然气，MEED预计主合同招标2027-01-25、授标2027-05-20、2030-03-31投运；最新动态显示尚未财务关闭。潜在华为范围为电厂园区光纤/IP、数据中心与存储、办公网络、网络安全和非工艺视频，须区分 EPC 的 DCS/保护控制系统边界。",
+      "recommendedHuaweiSolutions": [
+        "电厂园区光纤/IP与高可靠企业网络",
+        "数据中心、存储、备份及灾备",
+        "网络安全、办公协同及非工艺视频",
+        "与 DCS/保护控制 OEM 明确接口，不替代工艺控制"
+      ],
+      "scoreRationale": "76/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "The 3,000 MW Abu Ghraib combined-cycle gas IPP is at Study stage with a recorded value of USD 3,000m and planned gas allocation of about 400 MMscfd. MEED forecasts tender issue on 25 Jan 2027, award on 20 May 2027 and commissioning by 31 Mar 2030; latest update says financial close has not been reached. Huawei adjacency includes plant fibre/IP, data centre/storage, enterprise networking, cybersecurity and non-process video, subject to clear separation from EPC DCS/protection-control scope.",
+        "recommendedHuaweiSolutions": [
+          "Plant fibre/IP and resilient enterprise networking",
+          "Data centre, storage, backup and disaster recovery",
+          "Cybersecurity, office collaboration and non-process video",
+          "Define interfaces with DCS/protection OEM; do not replace process control"
+        ],
+        "scoreRationale": "76/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-554536",
+      "priority": "P2",
+      "fitScore": 72,
+      "demandSummary": "Kirkuk 1,500MW 联合循环燃气电站 IPP 处于 Study，记录金额 USD 1,500m，长期 PPA/主权担保模式仍需验证；MEED预计2027年初招标，2027-05-20授标。财务关闭尚未完成。华为可关注电厂通信骨干、数据中心、存储、网络安全及非工艺视频，控制系统由专业 OEM/EPC 负责。",
+      "recommendedHuaweiSolutions": [
+        "电厂光纤/IP通信和园区网络",
+        "数据中心/存储、备份与灾备",
+        "网络安全及非工艺视频回传",
+        "核实融资、PPA、EPC与控制系统接口"
+      ],
+      "scoreRationale": "72/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "The 1,500 MW Kirkuk combined-cycle gas IPP is at Study stage with a recorded value of USD 1,500m. Its long-term PPA/sovereign-guarantee structure requires validation; MEED forecasts tendering in early 2027 and award on 20 May 2027. Financial close remains outstanding. Huawei may target plant communications, data centre, storage, cybersecurity and non-process video; process control remains with specialist OEM/EPC.",
+        "recommendedHuaweiSolutions": [
+          "Plant fibre/IP communications and campus networking",
+          "Data centre/storage, backup and disaster recovery",
+          "Cybersecurity and non-process video backhaul",
+          "Verify financing, PPA, EPC and control-system interfaces"
+        ],
+        "scoreRationale": "72/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-22358",
+      "priority": "P1",
+      "fitScore": 88,
+      "demandSummary": "Basra–Baghdad Development Road 铁路线规划约530km，连接 Faw 港并通往欧洲方向，设计运能约900万旅客及2,000万吨货运/年，项目金额 USD 4,600m，处于 Design，预计2027年招标。华为可评估铁路通信骨干、站点网络、调度中心数据中心/存储、网络安全及非安全关键视频；信号、列控和安全关键系统应由铁路专业厂商负责。",
+      "recommendedHuaweiSolutions": [
+        "铁路光纤/IP/MPLS通信骨干",
+        "车站、车辆段及运营设施园区网络",
+        "调度中心数据中心、存储、备份及网络安全",
+        "与信号/列控专业厂商定义接口"
+      ],
+      "scoreRationale": "88/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "The approximately 530 km Basra–Baghdad Development Road railway is planned to connect Faw Port toward Europe, with design capacity of about 9 million passengers and 20 million tonnes of freight annually. The USD 4,600m project is at Design stage with tendering expected in 2027. Huawei can assess railway communications backbone, station networks, dispatch-centre data centre/storage, cybersecurity and non-safety-critical video; signalling, train control and safety-critical systems should remain with specialist railway vendors.",
+        "recommendedHuaweiSolutions": [
+          "Railway fibre/IP/MPLS communications backbone",
+          "Campus networking for stations, depots and operations facilities",
+          "Dispatch-centre data centre, storage, backup and cybersecurity",
+          "Define interfaces with signalling/train-control specialists"
+        ],
+        "scoreRationale": "88/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-445880",
+      "priority": "P2",
+      "fitScore": 78,
+      "demandSummary": "Balad Residential City 规划约5,956套住宅、服务约35,736人，覆盖2,226 dunams，记录金额 USD 500m，当前 Study，预计2028年招标、2031年底完工；最新动态显示项目延期。潜在需求为城市/社区光纤、公共 Wi-Fi、智慧物业、视频、数据中心及公用设施通信，需按分期核实采购窗口。",
+      "recommendedHuaweiSolutions": [
+        "城市/社区光纤/IP骨干与园区网络",
+        "公共 Wi-Fi、视频及智慧物业平台",
+        "学校、医疗及公用设施通信",
+        "分期数据中心/存储与统一运维"
+      ],
+      "scoreRationale": "78/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "Balad Residential City plans about 5,956 housing units for 35,736 people across 2,226 dunams, with a recorded value of USD 500m. It is at Study stage, with tendering expected in 2028 and completion by end-2031; the latest update reports delay. Potential needs include city/community fibre, public Wi-Fi, smart property, video, data centre and utility communications, subject to phase-by-phase procurement validation.",
+        "recommendedHuaweiSolutions": [
+          "City/community fibre/IP backbone and campus networking",
+          "Public Wi-Fi, video and smart-property platform",
+          "Connectivity for schools, healthcare and utilities",
+          "Phased data centre/storage and unified operations"
+        ],
+        "scoreRationale": "78/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-551364",
+      "priority": "P2",
+      "fitScore": 74,
+      "demandSummary": "Damac Hills Baghdad 规划约6.2平方公里高端住宅社区，首期已于2025年10月推出，包含封闭式别墅组团、专用水电、太阳能热水、商业和休闲设施，处于 Design。MEED日期字段存在重复/不一致，须先校准分期和招标时间。华为可匹配社区光纤、Wi-Fi、智慧楼宇/物业、视频、数据中心及能源管理通信。",
+      "recommendedHuaweiSolutions": [
+        "社区光纤/IP和高品质 Wi-Fi 覆盖",
+        "智慧物业、楼宇管理和视频平台",
+        "数据中心/存储与网络安全",
+        "能源/水务设施通信接口"
+      ],
+      "scoreRationale": "74/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "Damac Hills Baghdad is a planned 6.2 km² premium residential community. Its first phase launched in October 2025 and includes gated villa clusters, dedicated water/power, solar water heating, retail and leisure facilities; the record is at Design stage. MEED milestone dates are duplicated/inconsistent and need reconciliation. Huawei may target community fibre, Wi-Fi, smart-building/property systems, video, data centre and energy-management communications.",
+        "recommendedHuaweiSolutions": [
+          "Community fibre/IP and high-quality Wi-Fi",
+          "Smart property, building management and video platforms",
+          "Data centre/storage and cybersecurity",
+          "Communications interfaces for energy/water facilities"
+        ],
+        "scoreRationale": "74/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-556406",
+      "priority": "P1",
+      "fitScore": 82,
+      "demandSummary": "约旦 NEPCO/Al Shams 100MW 光伏项目包含400kV变电站、输电线路及 IPP3 变电站，记录金额 USD 150m，处于 Study，预计2027年招标、2029年底投运。华为潜在范围为电力通信、站间光纤/IP、调度数据网络、网络安全和站点视频；需确认 NEPCO 通信规范、保护通信和既有供应商兼容性。",
+      "recommendedHuaweiSolutions": [
+        "变电站间光纤/IP通信与传输",
+        "电力调度数据网络及网络安全",
+        "站点视频、存储和远程运维",
+        "核实保护通信接口及 NEPCO 技术规范"
+      ],
+      "scoreRationale": "82/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "Jordan's NEPCO/Al Shams 100 MW solar project includes a 400 kV substation, transmission line and IPP3 substation, with a recorded value of USD 150m. It is at Study stage, with tendering expected in 2027 and commissioning by end-2029. Huawei adjacency includes utility communications, inter-substation fibre/IP, dispatch data networking, cybersecurity and site video; verify NEPCO standards, protection-telecom boundaries and incumbent compatibility.",
+        "recommendedHuaweiSolutions": [
+          "Inter-substation fibre/IP communications and transport",
+          "Power-dispatch data networking and cybersecurity",
+          "Site video, storage and remote operations",
+          "Verify protection-telecom interfaces and NEPCO specifications"
+        ],
+        "scoreRationale": "82/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-554959",
+      "priority": "P1",
+      "fitScore": 86,
+      "demandSummary": "Amrah City 可持续城市开发一期位于 Zarqa，规划服务约100万至150万人，包含混合用途开发、会展中心、绿色基础设施及公共交通连接，处于 Main Contract PQ，记录金额字段为0但摘要提及 USD 350m，存在金额字段冲突。华为可重点关注城市级光纤、智慧城市平台、数据中心、公共 Wi-Fi、交通/公用事业通信；先核实 PQ 名单和招标包。",
+      "recommendedHuaweiSolutions": [
+        "城市级光纤/IP骨干与数据中心",
+        "智慧城市/园区平台、公共 Wi-Fi 和视频",
+        "交通与公用事业通信接口",
+        "核实 USD 350m 金额及 PQ/主合同包边界"
+      ],
+      "scoreRationale": "86/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "Phase 1 of Amrah City sustainable urban development in Zarqa targets 1–1.5 million residents and includes mixed-use development, a convention/exhibition centre, green infrastructure and public-transport links. It is at Main Contract PQ. The structured value is zero while the narrative mentions USD 350m, requiring reconciliation. Huawei can target city fibre, smart-city platforms, data centres, public Wi-Fi and transport/utility communications; verify PQ shortlist and tender packages first.",
+        "recommendedHuaweiSolutions": [
+          "City-scale fibre/IP backbone and data centre",
+          "Smart-city/campus platform, public Wi-Fi and video",
+          "Transport and utility communications interfaces",
+          "Reconcile USD 350m value and PQ/main-contract package boundaries"
+        ],
+        "scoreRationale": "86/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-513375",
+      "priority": "P1",
+      "fitScore": 80,
+      "demandSummary": "Baiji–Mosul 189km 铁路轨道更新项目处于 Design，记录金额 USD 250m，涉及轨道、桥梁和线路提速至客运160km/h，MEED预计2027年招标，当前采购尚未启动。华为机会限于铁路通信光纤/IP、站点网络、运维数据、非安全关键视频和网络安全；信号列控需专业系统商。",
+      "recommendedHuaweiSolutions": [
+        "沿线光纤/IP及铁路通信承载",
+        "车站/维修基地园区网络",
+        "运维数据平台、存储与网络安全",
+        "与信号列控系统明确接口"
+      ],
+      "scoreRationale": "80/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "The 189 km Baiji–Mosul railway-track renewal is at Design stage with a recorded value of USD 250m. Scope includes track and bridge upgrades and passenger speeds up to 160 km/h. MEED expects tendering in 2027; procurement has not started. Huawei adjacency is railway fibre/IP communications, station networks, maintenance data, non-safety-critical video and cybersecurity; signalling/train control requires specialist suppliers.",
+        "recommendedHuaweiSolutions": [
+          "Corridor fibre/IP and railway communications transport",
+          "Campus networking for stations/maintenance depots",
+          "Maintenance data platform, storage and cybersecurity",
+          "Define interfaces with signalling/train-control systems"
+        ],
+        "scoreRationale": "80/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-371708",
+      "priority": "P2",
+      "fitScore": 72,
+      "demandSummary": "Ninawa Science City 规划占地约215,000平方米，包含商业、教育、文化、休闲和公共设施，记录金额 USD 135m，处于 Design，最新动态称实施延期。华为可关注园区光纤、企业/公共 Wi-Fi、视频、数据中心、智慧园区及统一运维；需确认油项目换项目协议下的资金兑现、业主和建设分期。",
+      "recommendedHuaweiSolutions": [
+        "园区光纤/IP和企业网络",
+        "公共 Wi-Fi、视频及智慧园区平台",
+        "数据中心/存储和网络安全",
+        "核实项目融资协议、业主和分期"
+      ],
+      "scoreRationale": "72/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "Ninawa Science City covers about 215,000 m² and includes commercial, educational, cultural, recreational and public facilities. The recorded value is USD 135m, it is at Design stage, and the latest update reports implementation delay. Huawei can assess campus fibre, enterprise/public Wi-Fi, video, data centre, smart-campus and unified operations; verify funding realisation under the oil-for-projects arrangement, owner and phases.",
+        "recommendedHuaweiSolutions": [
+          "Campus fibre/IP and enterprise networking",
+          "Public Wi-Fi, video and smart-campus platform",
+          "Data centre/storage and cybersecurity",
+          "Verify funding agreement, owner and phases"
+        ],
+        "scoreRationale": "72/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-48425",
+      "priority": "P2",
+      "fitScore": 78,
+      "demandSummary": "Bekaa–Beirut 规划建设约28km公路隧道，含通风井、安全系统和照明，记录金额 USD 250m，当前 Study；可研咨询 RFP 已发布，主合同预计2027年末至2028年初推进。华为可评估隧道通信骨干、光纤/IP、运营中心网络、非安全关键视频和网络安全；隧道安全/通风联锁控制应由专业安全系统商负责。",
+      "recommendedHuaweiSolutions": [
+        "隧道光纤/IP通信骨干及运营中心网络",
+        "非安全关键视频回传、存储和运维",
+        "网络安全与统一通信",
+        "与通风、消防及安全联锁系统明确隔离和接口"
+      ],
+      "scoreRationale": "78/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "The Bekaa–Beirut project plans an approximately 28 km road tunnel with ventilation shafts, safety systems and lighting, with a recorded value of USD 250m. It is at Study stage; an RFP for feasibility-study consultancy has been issued, while the main contract is expected around late 2027/early 2028. Huawei can assess tunnel communications backbone, fibre/IP, operations-centre networking, non-safety-critical video and cybersecurity; safety/ventilation interlocks should remain with specialist safety-system vendors.",
+        "recommendedHuaweiSolutions": [
+          "Tunnel fibre/IP communications backbone and operations-centre networking",
+          "Non-safety-critical video backhaul, storage and operations",
+          "Cybersecurity and unified communications",
+          "Define separation and interfaces with ventilation, fire and safety interlocks"
+        ],
+        "scoreRationale": "78/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-445914",
+      "priority": "P2",
+      "fitScore": 68,
+      "demandSummary": "Karbala Dream Sports City 规划约50,000平方米体育城，包含体育场、训练场、健身中心、看台、停车、住宿及行政设施，记录金额 USD 50m，处于 Study，最新动态显示延期。行业标签 Water Transport 错误，应修正。潜在华为范围为场馆网络、公共 Wi-Fi、赛事/办公通信、视频和数据存储。",
+      "recommendedHuaweiSolutions": [
+        "场馆光纤/IP和高密 Wi-Fi",
+        "赛事运营、办公通信及视频平台",
+        "数据存储、网络安全和统一运维",
+        "先修正行业分类并确认场馆系统包件"
+      ],
+      "scoreRationale": "68/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "Karbala Dream Sports City plans a 50,000 m² sports complex with stadium, training fields, gym, stands, parking, accommodation and administration. The recorded value is USD 50m, it is at Study stage and latest update reports delay. The Water Transport sector tag is incorrect and should be fixed. Potential Huawei scope includes venue networking, public Wi-Fi, event/office communications, video and data storage.",
+        "recommendedHuaweiSolutions": [
+          "Venue fibre/IP and high-density Wi-Fi",
+          "Event operations, office communications and video platform",
+          "Data storage, cybersecurity and unified operations",
+          "Correct sector classification and confirm venue-system packages first"
+        ],
+        "scoreRationale": "68/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-22179",
+      "priority": "P1",
+      "fitScore": 88,
+      "demandSummary": "Baghdad–Mosul Development Road 铁路规划约402km双线，设计速度客运250km/h、货运140km/h，运能约600万旅客及2,000万吨货运/年，记录金额 USD 3,900m，处于 Design，设计工作持续推进。华为可争取铁路通信骨干、站点网络、调度中心数据中心/存储、网络安全及非安全关键视频；列控信号由铁路专业厂商承担。",
+      "recommendedHuaweiSolutions": [
+        "铁路光纤/IP/MPLS通信骨干",
+        "车站、车辆段和调度中心网络",
+        "数据中心、存储、灾备与网络安全",
+        "与列控/信号 OEM 进行接口协同"
+      ],
+      "scoreRationale": "88/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "The Baghdad–Mosul Development Road railway plans about 402 km of double track, designed for 250 km/h passenger and 140 km/h freight, with capacity of about 6 million passengers and 20 million tonnes of freight annually. The recorded value is USD 3,900m, at Design stage, with design progressing. Huawei can target railway communications backbone, station networks, dispatch-centre data centre/storage, cybersecurity and non-safety-critical video; train-control signalling remains with specialist railway vendors.",
+        "recommendedHuaweiSolutions": [
+          "Railway fibre/IP/MPLS communications backbone",
+          "Networking for stations, depots and dispatch centres",
+          "Data centre, storage, disaster recovery and cybersecurity",
+          "Coordinate interfaces with train-control/signalling OEMs"
+        ],
+        "scoreRationale": "88/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-478113",
+      "priority": "WATCH",
+      "fitScore": 10,
+      "demandSummary": "USACE Dormitory Complex Phase 1 是约旦境内由美国陆军工程兵团规划的宿舍及配套设施项目，记录金额 USD 50m，处于 Study。鉴于项目的军事机构背景，不提供安防、监控、指挥或军事通信方案；仅在采购资格和合规边界明确时考虑普通行政办公 IT/基础网络，当前维持低优先级观察。",
+      "recommendedHuaweiSolutions": [
+        "不提供军事通信、安防监控或指挥控制方案",
+        "仅在合规许可下核实普通行政办公 IT 是否独立采购"
+      ],
+      "scoreRationale": "10/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "USACE Dormitory Complex Phase 1 is a planned dormitory/support-facility project in Jordan sponsored by the US Army Corps of Engineers, with a recorded value of USD 50m at Study stage. Given the military-institution context, no security, surveillance, command or military-communications solution is proposed. Only ordinary administrative IT/basic networking may be considered if procurement eligibility and compliance boundaries are explicit; maintain low-priority watch.",
+        "recommendedHuaweiSolutions": [
+          "No military communications, security-surveillance or command-and-control proposal",
+          "Only verify separately procured ordinary administrative IT if expressly permitted and compliant"
+        ],
+        "scoreRationale": "10/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-466000",
+      "priority": "P2",
+      "fitScore": 66,
+      "demandSummary": "Baghdad Fourth Ring Road Section 1 为94km总体环路中的约21km标段，包含双向多车道、公交专用道、辅路、立交、休息区和道路安全设施；记录金额 USD 150m，处于 Bid Evaluation，最新动态显示资金分配及技术行政程序仍影响授标。华为可评估独立 ITS 通信、沿线光纤、运营中心网络和非安全关键视频，需核实标段采购包。",
+      "recommendedHuaweiSolutions": [
+        "道路运营中心光纤/IP网络",
+        "ITS 通信承载及非安全关键视频",
+        "视频存储、网络安全和统一运维",
+        "核实 Section 1 独立 ITS/CCTV 标包和授标时间"
+      ],
+      "scoreRationale": "66/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "Section 1 of Baghdad's Fourth Ring Road covers about 21 km of a 94 km overall ring road, with multi-lane carriageways, bus lane, service roads, interchanges, rest areas and road-safety facilities. The recorded value is USD 150m and stage is Bid Evaluation; latest update says award depends on technical/administrative procedures and funding allocation. Huawei can assess separately procured ITS communications, corridor fibre, operations-centre networking and non-safety-critical video, subject to package confirmation.",
+        "recommendedHuaweiSolutions": [
+          "Fibre/IP networking for road operations centres",
+          "ITS communications transport and non-safety-critical video",
+          "Video storage, cybersecurity and unified operations",
+          "Verify standalone ITS/CCTV package and award timing for Section 1"
+        ],
+        "scoreRationale": "66/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-468779",
+      "priority": "P2",
+      "fitScore": 72,
+      "demandSummary": "Faw 港天然气进口平台由 South Gas Company 推动，规划大型储罐、再气化设施及约100km管线接入国家天然气网络，记录金额 USD 200m，处于 Bid Evaluation，主合同尚未授标。华为潜在范围为港区/管线光纤通信、工业网络分区、OT 网络安全、运营数据回传和非工艺视频；工艺控制和安全仪表系统须由专业厂商负责。",
+      "recommendedHuaweiSolutions": [
+        "港区及管线光纤/IP通信",
+        "工业网络分区和 OT 网络安全",
+        "运营数据回传、存储及非工艺视频",
+        "确认 EPC、工艺控制 OEM 与通信包边界"
+      ],
+      "scoreRationale": "72/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "The Faw Port gas-import platform is sponsored by South Gas Company and plans large storage tanks, regasification facilities and an approximately 100 km pipeline connection to the national gas network. The recorded value is USD 200m, at Bid Evaluation, with the main contract not yet awarded. Huawei adjacency includes port/pipeline fibre communications, industrial network segmentation, OT cybersecurity, operational-data backhaul and non-process video; process control and safety-instrumented systems remain with specialist vendors.",
+        "recommendedHuaweiSolutions": [
+          "Port and pipeline fibre/IP communications",
+          "Industrial network segmentation and OT cybersecurity",
+          "Operational-data backhaul, storage and non-process video",
+          "Confirm EPC, process-control OEM and communications package boundaries"
+        ],
+        "scoreRationale": "72/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-539348",
+      "priority": "P2",
+      "fitScore": 74,
+      "demandSummary": "North Rumaila NGL 第四列压缩机组扩建项目记录金额 USD 100m，阶段 Bid Evaluation，投标已提交并由包括 CPECC、ENKA 等企业参与评审，预计2026-11-30授标。华为可关注现场光纤/IP、工业网络、OT 网络安全、生产数据通信和视频；需核实 Basrah Gas Company 的现网标准及 EPC/设备商分工，避免介入工艺控制。",
+      "recommendedHuaweiSolutions": [
+        "现场光纤/IP及工业通信网络",
+        "OT 网络分区、边界安全和安全运维",
+        "生产数据回传、存储及视频",
+        "对接 BGC、EPC 和压缩机组 OEM 确认接口与供货边界"
+      ],
+      "scoreRationale": "74/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "The North Rumaila NGL fourth compression-train expansion has a recorded value of USD 100m and is at Bid Evaluation. Bids have been submitted, with companies including CPECC and ENKA among bidders; award is expected on 30 Nov 2026. Huawei can assess site fibre/IP, industrial networking, OT cybersecurity, production-data communications and video. Verify Basrah Gas Company's network standards and EPC/vendor responsibilities; do not encroach on process control.",
+        "recommendedHuaweiSolutions": [
+          "Site fibre/IP and industrial communications network",
+          "OT segmentation, perimeter security and secure operations",
+          "Production-data backhaul, storage and video",
+          "Engage BGC, EPC and compressor OEM to confirm interfaces and supply boundaries"
+        ],
+        "scoreRationale": "74/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-376760",
+      "priority": "WATCH",
+      "fitScore": 38,
+      "demandSummary": "Expressway 1 R9A 追加工程约10km，记录金额 USD 18m，处于 Bid Evaluation，主合同尚未授标；Scope 主要为路面、涵洞和道路安全设施修复。华为 ICT 相关性有限，只有招标明确包含路侧通信、ITS 或 CCTV 时才考虑小规模光纤回传/视频网络，不应将普通道路维护包装成 ICT 机会。",
+      "recommendedHuaweiSolutions": [
+        "暂不推荐完整 ICT 方案",
+        "仅在明确采购 ITS/CCTV 时评估路侧光纤/IP和视频回传"
+      ],
+      "scoreRationale": "38/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "The Expressway 1 R9A additional works cover about 10 km with a recorded value of USD 18m and are at Bid Evaluation; the main contract has not been awarded. Scope is primarily pavement, culvert and road-safety-facility rehabilitation. Huawei ICT relevance is limited; consider small-scale fibre backhaul/video networking only if roadside communications, ITS or CCTV are explicitly tendered. Do not present ordinary road maintenance as an ICT opportunity.",
+        "recommendedHuaweiSolutions": [
+          "No full ICT solution recommended",
+          "Assess roadside fibre/IP and video backhaul only if ITS/CCTV is explicitly procured"
+        ],
+        "scoreRationale": "38/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-443937",
+      "priority": "P2",
+      "fitScore": 76,
+      "demandSummary": "Baghdad 新污水管网项目规划约50km管线、大型泵站、储罐、实验室及配套设施，记录金额 USD 70m，处于 FEED，预计2027年主合同招标。行业标签 Oil & Gas 与污水项目标题不符，应修正。华为可匹配泵站/水务站点通信、SCADA 承载网络、OT 网络安全、运营数据平台和非工艺视频。",
+      "recommendedHuaweiSolutions": [
+        "泵站及水务设施光纤/IP通信",
+        "SCADA 数据承载与 IT/OT 网络分区",
+        "运营数据存储、视频及统一运维",
+        "修正行业标签并核实泵站自动化与 ICT 标包"
+      ],
+      "scoreRationale": "76/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "The Baghdad new sewerage pipeline project plans about 50 km of pipelines, a major pumping station, storage tanks, laboratory and associated facilities. The recorded value is USD 70m, at FEED, with main-contract tendering expected in 2027. The Oil & Gas sector tag conflicts with the wastewater title and should be corrected. Huawei can target pump/water-site communications, SCADA transport, OT cybersecurity, operational-data platforms and non-process video.",
+        "recommendedHuaweiSolutions": [
+          "Fibre/IP communications for pumping and water facilities",
+          "SCADA data transport and IT/OT segmentation",
+          "Operational data storage, video and unified operations",
+          "Correct sector tag and verify pumping automation and ICT packages"
+        ],
+        "scoreRationale": "76/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-562590",
+      "priority": "P1",
+      "fitScore": 84,
+      "demandSummary": "Al Sadr City 50床医院由伊拉克卫生部推动，记录金额 USD 25m，处于 Bid Evaluation，预计2026-12-22授标、2029年投运；最新动态显示项目延期。范围包括病房、门诊、急诊、诊断实验室和行政设施。华为可匹配医院园区网络、Wi-Fi、数据中心/存储、备份灾备、网络安全及非临床视频，并与 HIS/EMR/PACS 和医疗设备集成商明确接口。",
+      "recommendedHuaweiSolutions": [
+        "医院有线/无线园区网络与核心交换",
+        "数据中心、存储、备份和灾备",
+        "网络安全、统一通信及非临床视频",
+        "对接 HIS/EMR、PACS、医疗设备及弱电总包"
+      ],
+      "scoreRationale": "84/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "The 50-bed Al Sadr City Hospital is sponsored by Iraq's Ministry of Health, with a recorded value of USD 25m at Bid Evaluation. Award is expected on 22 Dec 2026 and commissioning in 2029; latest update reports delay. Scope includes wards, outpatient, emergency, diagnostics/labs and administration. Huawei can target hospital campus networking, Wi-Fi, data centre/storage, backup/DR, cybersecurity and non-clinical video, with interfaces agreed with HIS/EMR/PACS and medical-device integrators.",
+        "recommendedHuaweiSolutions": [
+          "Hospital wired/wireless campus networking and core switching",
+          "Data centre, storage, backup and disaster recovery",
+          "Cybersecurity, unified communications and non-clinical video",
+          "Integrate with HIS/EMR, PACS, medical devices and ELV contractor"
+        ],
+        "scoreRationale": "84/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-427022",
+      "priority": "WATCH",
+      "fitScore": 48,
+      "demandSummary": "West Qurna 2 Yamama Priority Well Pads & Roads 项目记录金额 USD 15m，阶段 Bid Evaluation，最新动态称项目已交由 Chevron 进一步开发；现有范围为井场、井口、道路及配套土建。华为仅可关注油田现场基础通信、光纤/IP、工业网络和 OT 安全的潜在分包需求，必须核实 Chevron 运营标准、SOC/EPC 分工及是否仍有采购窗口。",
+      "recommendedHuaweiSolutions": [
+        "现场光纤/IP基础通信（如仍未采购）",
+        "工业网络分区与 OT 网络安全",
+        "非工艺视频和运营数据回传",
+        "核实 Chevron 接管后的采购窗口、供应商资格和标准"
+      ],
+      "scoreRationale": "48/100 — 结合项目规模、当前阶段、已知 Scope 与华为 ICT/数字基础设施能力的相关性评估。仅在有明确通信/IT需求证据时提高优先级；潜在子系统仍须由正式招标文件确认。",
+      "risks": [
+        "项目总投资额不是华为可寻址预算，ICT 子系统可能已包含在 EPC 或 OEM 供货范围内",
+        "电力/铁路/油气项目的工艺控制、保护、列控及安全关键系统须由专业 OEM 负责，华为定位通信与 IT 基础设施层",
+        "阶段、融资、金额和里程碑来自当前 MEED 记录，需在业主/招标文件中复核"
+      ],
+      "nextActions": [
+        "核实业主、EPC、设计顾问、融资关闭及最新合同阶段",
+        "获取正式技术规范，确认通信、数据中心、网络安全、视频等子系统的采购包和供货边界",
+        "核实现有供应商、技术标准、接口、分包资格及剩余采购窗口",
+        "对金额、里程碑及父子项目关系执行数据质量复核"
+      ],
+      "evidence": [
+        "当前 D1/MEED 记录中的项目摘要、阶段、金额及里程碑字段；分析对记录中的资金/采购状态和信息缺口作了显式区分。"
+      ],
+      "factsVsInference": "事实：项目范围、阶段、金额和里程碑以当前 D1/MEED 记录为依据。推断：推荐的 ICT/通信/数字化子系统属于潜在配套机会，须由业主/EPC 正式技术规范确认；不把总项目金额视为华为可寻址预算。",
+      "english": {
+        "demandSummary": "The West Qurna 2 Yamama Priority Well Pads & Roads project has a recorded value of USD 15m and is at Bid Evaluation; latest update says the project has been handed over to Chevron for further development. Scope covers well pads, wellheads, roads and associated civil works. Huawei may only assess potential subcontracting for field communications, fibre/IP, industrial networking and OT security, subject to Chevron operating standards, SOC/EPC responsibilities and remaining procurement windows.",
+        "recommendedHuaweiSolutions": [
+          "Basic site fibre/IP communications, if still unprocured",
+          "Industrial network segmentation and OT cybersecurity",
+          "Non-process video and operational-data backhaul",
+          "Verify procurement window, vendor eligibility and standards after Chevron handover"
+        ],
+        "scoreRationale": "48/100 — assessed against project scale, current stage, known scope and relevance to Huawei ICT/digital-infrastructure capabilities. Priority is raised only where there is evidence of an ICT/communications need; potential packages still require confirmation in formal tender documents.",
+        "risks": [
+          "Total project investment is not Huawei-addressable budget; ICT subsystems may be included in EPC or OEM supply",
+          "Process control, protection, train control and safety-critical systems in power/rail/oil-and-gas projects must remain with specialist OEMs; Huawei's role is communications and IT infrastructure",
+          "Stage, financing, value and milestones are based on current MEED records and must be verified against owner/tender documents"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC, design consultant, financial close and latest contract stage",
+          "Obtain formal specifications and confirm package/supply boundaries for communications, data centre, cybersecurity and video",
+          "Verify incumbent vendors, technical standards, interfaces, subcontracting eligibility and remaining procurement window",
+          "Quality-check values, milestones and parent/child project relationships"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage, value and milestone fields; the analysis explicitly distinguishes reported funding/procurement status from information gaps."
+        ],
+        "factsVsInference": "Known: project scope, stage, value and milestones are based on current D1/MEED records. Inference: recommended ICT/communications/digital subsystems are potential supporting opportunities requiring confirmation in formal owner/EPC specifications; total project value is not Huawei-addressable budget."
+      }
+    }
+  ]
 }
