@@ -1,3 +1,939 @@
 {
-  "mode": "fetch"
+  "mode": "writeback",
+  "analyses": [
+    {
+      "opportunityId": "MEED-IQ-46730",
+      "priority": "WATCH",
+      "fitScore": 30,
+      "demandSummary": "伊拉克 11GW 燃气电站计划一期目前只有 MEED 自动生成的项目名称、阶段和行业摘要，无法确认具体电站位置、EPC、机组配置或 ICT 工作包。大型电站通常存在工业通信、生产数据、视频及 OT 网络安全配套需求，但当前不能据此认定为已确认商机。",
+      "recommendedHuaweiSolutions": [
+        "暂不推荐具体产品包",
+        "资料补齐后评估工业通信、数据平台、存储和 OT 网络安全"
+      ],
+      "scoreRationale": "30/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "Phase I of Iraq's 11 GW gas-fired power programme is represented only by an auto-generated title, stage and sector summary. Plant locations, EPC, unit configuration and ICT packages are not confirmed. Large power plants may need industrial communications, production data, video and OT cybersecurity, but no such package is evidenced here.",
+        "recommendedHuaweiSolutions": [
+          "No specific product package recommended",
+          "After scope validation, assess industrial communications, data platforms, storage and OT cybersecurity"
+        ],
+        "scoreRationale": "30/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-555601",
+      "priority": "WATCH",
+      "fitScore": 28,
+      "demandSummary": "Basra Oil Company 第九油田电站目前仅有占位摘要，缺少装机容量、工艺配置、EPC 和采购范围。可暂时识别的方向仅为一般电站通信、生产网络和网络安全潜在需求，不能推定存在独立 ICT 招标。",
+      "recommendedHuaweiSolutions": [
+        "暂不推荐具体产品",
+        "待正式项目 Scope 明确后评估工业网络、数据存储和 OT 安全"
+      ],
+      "scoreRationale": "28/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "The Basra Oil Company 9th Oil Field Power Plant has only a placeholder summary, with no capacity, process configuration, EPC or procurement scope. Potential adjacency is limited to general plant communications, production networking and cybersecurity; no standalone ICT tender is confirmed.",
+        "recommendedHuaweiSolutions": [
+          "No specific products recommended",
+          "Assess industrial networking, data storage and OT security only after the formal scope is obtained"
+        ],
+        "scoreRationale": "28/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-13362",
+      "priority": "WATCH",
+      "fitScore": 32,
+      "demandSummary": "Nasiriyah 国际机场项目目前只有项目名称及 Under Construction 阶段占位摘要，未提供航站楼、跑道、空管、机场运营系统或 ICT 范围。机场项目可能存在企业网络、机场运营 IT 和非安全关键视频承载需求，但需先核实项目实际建设范围及供应商资格。",
+      "recommendedHuaweiSolutions": [
+        "暂不匹配空管或航空安全关键系统",
+        "仅在采购范围明确后评估航站楼企业网络、数据中心及非安全关键视频网络"
+      ],
+      "scoreRationale": "32/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "The Nasiriyah International Airport record contains only the project name and Under Construction stage. Terminal, runway, air-traffic, airport-operations and ICT scope are absent. Airports may require enterprise networking, airport operations IT and non-safety-critical video transport, but the actual scope and supplier eligibility must be verified first.",
+        "recommendedHuaweiSolutions": [
+          "Do not position air-traffic or aviation safety-critical systems",
+          "Assess terminal enterprise networking, data-centre and non-safety-critical video networking only if tendered"
+        ],
+        "scoreRationale": "32/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-536878",
+      "priority": "WATCH",
+      "fitScore": 40,
+      "demandSummary": "Khor Al-Zubair 港口 Basra FSRU 项目目前只有占位摘要，缺少 LNG 接收、再气化、船岸接口、EPC 和控制系统范围。可关注工业通信、站点网络、数据平台和 OT 网络安全的潜在配套，但不能假设华为参与工艺控制或安全仪表系统。",
+      "recommendedHuaweiSolutions": [
+        "工业通信与光纤/IP承载（待 Scope 确认）",
+        "生产数据平台、存储和 OT 网络分区",
+        "不涉及 DCS/SIS 等工艺安全核心系统"
+      ],
+      "scoreRationale": "40/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "The Basra FSRU at Khor Al-Zubair Port has only a placeholder summary, without LNG reception, regasification, ship-shore interfaces, EPC or control-system details. Potential adjacency includes industrial communications, site networking, data platforms and OT cybersecurity, without assuming Huawei involvement in process control or safety-instrumented systems.",
+        "recommendedHuaweiSolutions": [
+          "Industrial communications and fibre/IP transport, subject to scope",
+          "Production data platforms, storage and OT segmentation",
+          "Exclude core process-safety systems such as DCS/SIS"
+        ],
+        "scoreRationale": "40/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-571698",
+      "priority": "WATCH",
+      "fitScore": 38,
+      "demandSummary": "West Qurna-1 集气基础设施项目已显示 Contract Awarded，但当前摘要没有管线、集气站、压缩设施、EPC 或数字系统详细范围。华为可在后续核实后关注站点通信、数据回传、视频和 OT 网络安全；当前阶段更适合确认总包和分包边界，而非假设仍有开放主合同机会。",
+      "recommendedHuaweiSolutions": [
+        "站点光纤/IP通信和数据回传（仅限独立分包）",
+        "OT 网络安全及非核心视频承载",
+        "不涉及油气工艺控制系统"
+      ],
+      "scoreRationale": "38/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "The West Qurna-1 gas-gathering infrastructure is recorded as Contract Awarded, but the summary lacks pipeline, gathering-station, compression, EPC and digital-system details. Huawei may assess site communications, data backhaul, video and OT cybersecurity after verification. The immediate task is to identify the awarded contractor and subcontract boundaries, not assume an open main-contract opportunity.",
+        "recommendedHuaweiSolutions": [
+          "Site fibre/IP communications and data backhaul, only if separately subcontracted",
+          "OT cybersecurity and non-core video transport",
+          "Exclude oil-and-gas process-control systems"
+        ],
+        "scoreRationale": "38/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-478845",
+      "priority": "WATCH",
+      "fitScore": 20,
+      "demandSummary": "NEPCO Northern Green 400/132/33kV 变电站目前只有自动采集占位摘要，缺少变电站位置、主变容量、一次/二次设备、保护通信和 OPGW 范围。不能仅凭电压等级认定华为有明确 ICT 采购机会。",
+      "recommendedHuaweiSolutions": [
+        "暂不推荐具体产品",
+        "补齐正式技术规范后评估站内通信、光纤传输、调度网络和网络安全"
+      ],
+      "scoreRationale": "20/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "The NEPCO Northern Green 400/132/33 kV substation record contains only an auto-generated placeholder. Location, transformer capacity, primary/secondary equipment, protection telecom and OPGW scope are missing. Voltage levels alone do not establish a Huawei ICT procurement opportunity.",
+        "recommendedHuaweiSolutions": [
+          "No specific product recommended",
+          "After obtaining formal specifications, assess substation communications, fibre transport, dispatch networking and cybersecurity"
+        ],
+        "scoreRationale": "20/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-513372",
+      "priority": "WATCH",
+      "fitScore": 38,
+      "demandSummary": "Al-Yussifia–Baghdad 32km 铁路轨道更新项目处于 Design，但当前摘要未提供轨道工程边界、车站/信号改造、沿线通信和采购包信息。华为潜在方向限于站点企业网络、通信承载及非安全关键视频回传，铁路信号和列控需由专业系统商负责。",
+      "recommendedHuaweiSolutions": [
+        "车站企业网络与光纤/IP承载（待采购范围确认）",
+        "非安全关键视频回传和网络安全",
+        "不匹配列控/信号核心系统"
+      ],
+      "scoreRationale": "38/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "The 32 km Al-Yussifia–Baghdad track-renewal project is at Design stage, but the summary lacks civil scope, station/signalling upgrades, line communications and package details. Huawei adjacency is limited to station enterprise networks, communications transport and non-safety-critical video backhaul; signalling and train control remain specialist-led.",
+        "recommendedHuaweiSolutions": [
+          "Station enterprise networking and fibre/IP transport, subject to procurement scope",
+          "Non-safety-critical video backhaul and cybersecurity",
+          "Do not position train-control or core signalling"
+        ],
+        "scoreRationale": "38/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-513374",
+      "priority": "WATCH",
+      "fitScore": 36,
+      "demandSummary": "Baghdad–Taji 20km 铁路轨道更新项目处于 Design，缺少车站、信号、通信和 EPC 细节。与华为的潜在匹配主要是普通站点网络、沿线传输和非安全关键运维通信，需核实是否有独立 ICT 包，并与其他 IREM 轨道更新标段区分。",
+      "recommendedHuaweiSolutions": [
+        "站点网络和沿线光纤/IP通信（待核实）",
+        "运维数据通信和网络安全",
+        "不涉及信号/列控核心系统"
+      ],
+      "scoreRationale": "36/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "The 20 km Baghdad–Taji track-renewal project is at Design stage, with no station, signalling, telecom or EPC details. Potential Huawei fit is limited to ordinary station networks, line transport and non-safety-critical operations communications. Confirm a standalone ICT package and distinguish this lot from other IREM renewals.",
+        "recommendedHuaweiSolutions": [
+          "Station networking and line fibre/IP communications, subject to validation",
+          "Operations data communications and cybersecurity",
+          "Exclude core signalling/train control"
+        ],
+        "scoreRationale": "36/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-513397",
+      "priority": "WATCH",
+      "fitScore": 42,
+      "demandSummary": "Basra–Baghdad 520km 铁路区段整治项目处于 Design，线路跨度较长，可能存在沿线通信承载、站点网络、运维通信和视频回传需求。但当前记录是占位摘要，尚无正式 Scope、站点清单和采购包证据，需与 IREM 其他轨道更新标段去重并核实边界。",
+      "recommendedHuaweiSolutions": [
+        "沿线光纤/IP传输和站点网络（待 Scope 确认）",
+        "运维通信、视频回传及网络安全",
+        "先核实与其他 IREM 标段的范围重叠"
+      ],
+      "scoreRationale": "42/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "The 520 km Basra–Baghdad railway-section rehabilitation is at Design stage. Its length may create needs for line communications, station networks, operations connectivity and video backhaul. However, the current record is only a placeholder; formal scope, station list and package evidence are absent. Deduplicate against other IREM renewal lots and confirm boundaries.",
+        "recommendedHuaweiSolutions": [
+          "Line fibre/IP transport and station networks, subject to scope confirmation",
+          "Operations communications, video backhaul and cybersecurity",
+          "First verify scope overlap with other IREM lots"
+        ],
+        "scoreRationale": "42/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-16815",
+      "priority": "WATCH",
+      "fitScore": 32,
+      "demandSummary": "Diffaf Karbala City 一期处于 Design，但当前只有自动采集占位摘要，没有住宅/商业配套规模、公共设施、智能化和 ICT 设计内容。城市综合开发通常可能需要园区网络、公共 Wi-Fi、视频、智慧园区和数据平台，但目前应先补齐真实项目范围。",
+      "recommendedHuaweiSolutions": [
+        "暂不推荐具体产品包",
+        "补齐项目背景后评估园区网络、公共 Wi-Fi、视频及智慧社区平台"
+      ],
+      "scoreRationale": "32/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "Diffaf Karbala City Phase I is at Design stage, but the current record contains only an auto-generated placeholder without residential/commercial scale, public facilities, smart-city or ICT design details. Integrated urban developments may need campus networking, public Wi-Fi, video, smart-community and data platforms, but the actual project scope must first be obtained.",
+        "recommendedHuaweiSolutions": [
+          "No specific package recommended",
+          "After obtaining project details, assess campus networking, public Wi-Fi, video and smart-community platforms"
+        ],
+        "scoreRationale": "32/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-443521",
+      "priority": "P2",
+      "fitScore": 58,
+      "demandSummary": "Baghdad Sustainable Forests 是旅游休闲目的地项目，前期工程包括场地清理、拆除、土方和基础设施。后续可关注园区光纤/IP网络、公共区域 Wi-Fi、视频安防、游客服务数字化和运营数据平台，但需考虑项目分期、实际开发内容及原军事营地土地转换带来的审批要求。",
+      "recommendedHuaweiSolutions": [
+        "园区光纤/IP骨干及公共区域 Wi-Fi",
+        "非敏感公共区域视频安防和统一运维",
+        "游客服务、票务及运营数据平台（如在项目范围内）"
+      ],
+      "scoreRationale": "58/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "Baghdad Sustainable Forests is a tourism and leisure destination. Early works include site clearance, demolition, excavation and infrastructure. Later opportunities may include campus fibre/IP, public-area Wi-Fi, video security, visitor-service digitalisation and operations data platforms. Validate phasing, final development scope and approvals associated with redevelopment of the former military-camp site.",
+        "recommendedHuaweiSolutions": [
+          "Campus fibre/IP backbone and public-area Wi-Fi",
+          "Video security for non-sensitive public areas and unified operations",
+          "Visitor services, ticketing and operations data platforms, if in scope"
+        ],
+        "scoreRationale": "58/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-13208",
+      "priority": "P1",
+      "fitScore": 78,
+      "demandSummary": "Kut 400床教学医院项目包括临床科室、手术室、实验室、教学空间、员工住宿及配套设施，存在较明确的医院数字基础设施需求。华为可关注医院园区网络、数据中心/存储、灾备、视频、统一通信和网络安全；医疗设备及临床信息系统应与专业医疗 ISV/OEM 协同。",
+      "recommendedHuaweiSolutions": [
+        "医院园区有线/无线网络与高可靠核心网",
+        "数据中心、存储、备份与灾备",
+        "视频安防、统一通信及网络安全",
+        "与 HIS/EMR、影像和医疗设备厂商集成"
+      ],
+      "scoreRationale": "78/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "The 400-bed teaching hospital in Kut includes clinical departments, operating theatres, laboratories, teaching spaces, staff accommodation and supporting facilities. It has credible digital-infrastructure needs. Huawei can target hospital campus networking, data centre/storage, disaster recovery, video, unified communications and cybersecurity, working with specialist medical ISVs/OEMs for clinical systems and medical devices.",
+        "recommendedHuaweiSolutions": [
+          "Hospital wired/wireless campus networking and resilient core",
+          "Data centre, storage, backup and disaster recovery",
+          "Video security, unified communications and cybersecurity",
+          "Integration with HIS/EMR, imaging and medical-device vendors"
+        ],
+        "scoreRationale": "78/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-474597",
+      "priority": "P2",
+      "fitScore": 74,
+      "demandSummary": "West Irbid 污水管网及泵站项目面向分布式污水收集和输送设施，存在泵站远程通信、SCADA 数据承载、视频和 OT 网络安全需求。华为适合提供通信与 IT 基础设施层，不替代水务自动化集成商的工艺控制系统。",
+      "recommendedHuaweiSolutions": [
+        "泵站光纤/IP与无线回传",
+        "SCADA 通信承载、网络分区和网络安全",
+        "远程站点视频与集中运维"
+      ],
+      "scoreRationale": "74/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "The West Irbid wastewater network and pumping infrastructure involves distributed collection and conveyance assets. It creates plausible needs for remote pump-station communications, SCADA data transport, video and OT cybersecurity. Huawei fits the communications and IT infrastructure layer, not the water-process control system supplied by specialist automation integrators.",
+        "recommendedHuaweiSolutions": [
+          "Fibre/IP and wireless backhaul for pump stations",
+          "SCADA communications transport, segmentation and cybersecurity",
+          "Remote-site video and centralised operations"
+        ],
+        "scoreRationale": "74/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-15272",
+      "priority": "P2",
+      "fitScore": 58,
+      "demandSummary": "Basra Cultural Center 项目目前处于 On Hold，原规划包含展览区、会议厅、博物馆、影院、剧院、广播电视部门、图书馆及行政设施。若项目重启，华为可关注场馆网络、Wi-Fi、数据中心/存储、视频、会议协作和广播电视制作传输基础设施；当前不宜投入近期销售资源。",
+      "recommendedHuaweiSolutions": [
+        "重启后评估场馆光纤/IP网络与公共 Wi-Fi",
+        "会议协作、视频存储和数据中心基础设施",
+        "广播电视制作传输网络（须核实独立采购）"
+      ],
+      "scoreRationale": "58/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "The Basra Cultural Center is currently On Hold. Its planned scope includes exhibition areas, conference halls, museums, cinemas, a theatre, a broadcasting department, a library and administration facilities. If revived, Huawei could target venue networking, Wi-Fi, data centre/storage, video, collaboration and broadcast-production transport infrastructure. No near-term sales investment is recommended while the project remains on hold.",
+        "recommendedHuaweiSolutions": [
+          "If revived, assess venue fibre/IP networking and public Wi-Fi",
+          "Collaboration, video storage and data-centre infrastructure",
+          "Broadcast production/transport networks, subject to separate procurement"
+        ],
+        "scoreRationale": "58/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-442338",
+      "priority": "P1",
+      "fitScore": 78,
+      "demandSummary": "Basra Martyr Ezzedine Salim Medical City 包括100床医院、肿瘤中心、透析中心、血液病中心及基层医疗中心，适合评估医疗园区网络、数据中心、存储与灾备、视频和网络安全等数字基础设施。医疗临床系统及设备需由专业医疗供应商负责并通过接口集成。",
+      "recommendedHuaweiSolutions": [
+        "医疗园区有线/无线网络",
+        "数据中心、存储、备份与灾备",
+        "视频安防、统一通信和网络安全",
+        "与 HIS/EMR、PACS 及医疗设备系统集成"
+      ],
+      "scoreRationale": "78/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "The Martyr Ezzedine Salim Medical City in Basra includes a 100-bed hospital, oncology, dialysis and haematology centres, and primary healthcare centres. It is suitable for assessing healthcare campus networking, data centre, storage and disaster recovery, video and cybersecurity. Clinical systems and medical equipment should remain with specialist healthcare vendors and be integrated through defined interfaces.",
+        "recommendedHuaweiSolutions": [
+          "Healthcare campus wired/wireless networking",
+          "Data centre, storage, backup and disaster recovery",
+          "Video security, unified communications and cybersecurity",
+          "Integration with HIS/EMR, PACS and medical-device systems"
+        ],
+        "scoreRationale": "78/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-22677",
+      "priority": "P2",
+      "fitScore": 64,
+      "demandSummary": "Maysan 708套烈士家属住宅项目包含住宅、学校、幼儿园、医疗中心、商业市场、行政建筑、道路和公用设施，具有社区级数字基础设施需求。华为可关注园区光纤/IP、公共 Wi-Fi、视频安防、社区管理网络和公共设施通信，需确认智能化预算及开发商采购范围。",
+      "recommendedHuaweiSolutions": [
+        "社区光纤/IP骨干及公共 Wi-Fi",
+        "公共区域视频安防和园区网络",
+        "学校、医疗中心及公共设施通信"
+      ],
+      "scoreRationale": "64/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "The Maysan housing complex for martyrs' families includes 708 homes, schools, a kindergarten, healthcare centre, market, administration buildings, roads and utilities. It has community-level digital-infrastructure needs. Huawei can target campus fibre/IP, public Wi-Fi, video security, community-management networking and public-facility communications, subject to smart-infrastructure budget and developer procurement scope.",
+        "recommendedHuaweiSolutions": [
+          "Community fibre/IP backbone and public Wi-Fi",
+          "Public-area video security and campus networking",
+          "Connectivity for schools, healthcare and public facilities"
+        ],
+        "scoreRationale": "64/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-48931",
+      "priority": "P2",
+      "fitScore": 65,
+      "demandSummary": "Mosul Diwan 住宅综合体三期包括9栋16层住宅楼、576套公寓及商业/公共配套，具有园区网络、楼宇通信、公共区域 Wi-Fi、视频安防和物业数字化潜在需求。需区分三期与整体 Diwan 项目记录，避免项目金额和机会重复计算。",
+      "recommendedHuaweiSolutions": [
+        "园区光纤/IP网络和公共 Wi-Fi",
+        "楼宇网络、视频安防及统一运维",
+        "智慧物业和公共设施通信（如纳入开发范围）"
+      ],
+      "scoreRationale": "65/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "Phase 3 of the Diwan residential compound in Mosul includes nine 16-storey buildings, 576 apartments and commercial/community facilities. Potential needs include campus networking, building connectivity, public-area Wi-Fi, video security and property digitalisation. Distinguish this phase from the parent Diwan project to avoid double-counting project value and opportunity.",
+        "recommendedHuaweiSolutions": [
+          "Campus fibre/IP networking and public Wi-Fi",
+          "Building networking, video security and unified operations",
+          "Smart-property and public-facility connectivity, if in scope"
+        ],
+        "scoreRationale": "65/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-15987",
+      "priority": "P2",
+      "fitScore": 66,
+      "demandSummary": "Al Jadriya Crystal Towers 包含两栋22层办公塔楼、办公空间、餐饮和停车配套，具备企业网络、无线覆盖、楼宇安防、数据中心/弱电机房和智慧楼宇管理需求。华为可围绕园区网络、Wi-Fi、视频、网络安全及楼宇运营平台开展方案匹配。",
+      "recommendedHuaweiSolutions": [
+        "双塔楼光纤/IP骨干和高密 Wi-Fi",
+        "企业网络、视频安防和网络安全",
+        "智慧楼宇运营及统一管理平台"
+      ],
+      "scoreRationale": "66/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "Al Jadriya Crystal Towers comprises two 22-storey office towers with office space, food and beverage facilities and parking. It has plausible needs for enterprise networking, wireless coverage, building security, data-room infrastructure and smart-building management. Huawei can target campus networking, Wi-Fi, video, cybersecurity and building-operations platforms.",
+        "recommendedHuaweiSolutions": [
+          "Fibre/IP backbone and high-density Wi-Fi for both towers",
+          "Enterprise networking, video security and cybersecurity",
+          "Smart-building operations and unified management platform"
+        ],
+        "scoreRationale": "66/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-48933",
+      "priority": "P2",
+      "fitScore": 62,
+      "demandSummary": "Diwan Mosul 整体住宅综合体记录包含多期住宅、公寓、别墅、市场和公共设施，与 Diwan Phase 3 记录存在明显父子/分期关系。整体层面可评估园区网络、公共 Wi-Fi、视频和智慧物业平台，但必须与三期记录合并核对，不得重复计算总投资和华为可寻址金额。",
+      "recommendedHuaweiSolutions": [
+        "整体园区光纤/IP网络与公共 Wi-Fi",
+        "公共区域视频安防和智慧物业平台",
+        "按项目总包/分期边界拆分网络及楼宇子包"
+      ],
+      "scoreRationale": "62/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "The parent Diwan Mosul residential-compound record covers multiple phases of apartments, villas, markets and community facilities, and overlaps with the separate Phase 3 record. At parent level, assess campus networking, public Wi-Fi, video and smart-property platforms, but reconcile against the Phase 3 record to avoid double-counting total investment and Huawei-addressable value.",
+        "recommendedHuaweiSolutions": [
+          "Parent-level campus fibre/IP and public Wi-Fi",
+          "Public-area video security and smart-property platform",
+          "Split network/building packages by main contract and phase boundaries"
+        ],
+        "scoreRationale": "62/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-16823",
+      "priority": "P2",
+      "fitScore": 66,
+      "demandSummary": "Maysan Amara 住宅项目规划约4,200套住房，并配套学校、市场、停车、道路和公共设施，具备大规模社区网络、公共 Wi-Fi、视频安防及物业管理数字化潜在需求。当前项目价值、最终户数和承包商尚未确认，需先核实开发进度与分期采购。",
+      "recommendedHuaweiSolutions": [
+        "社区光纤/IP骨干及公共 Wi-Fi",
+        "视频安防和智慧物业网络",
+        "学校、市场及公共设施通信"
+      ],
+      "scoreRationale": "66/100 — 依据当前项目 Scope 与华为通信、数据中心、企业网络及网络安全能力的相关性评分；具体 ICT 采购包、预算和供应商资格仍需正式文件确认。",
+      "risks": [
+        "ICT 子系统是否独立采购尚未确认，可能由 EPC/专业集成商打包",
+        "项目进度、资金和采购范围需以业主/正式招标文件核实"
+      ],
+      "nextActions": [
+        "获取最新业主 Scope、EPC 和采购包划分",
+        "核实通信/数据/网络安全是否为独立包及其预算",
+        "在技术规范和招标阶段确认华为供应商资格与合作伙伴路径"
+      ],
+      "evidence": [
+        "当前 D1 项目摘要、项目阶段及已记录 Scope；若为占位摘要，已在分析中明确标注证据缺口。"
+      ],
+      "factsVsInference": "事实：项目范围与阶段以当前 D1 记录为准。推断：推荐的通信、网络、数据和安全需求属于基于项目类型及已知 Scope 的潜在配套机会，不代表已确认独立采购包。",
+      "english": {
+        "demandSummary": "The Maysan Amara housing project plans around 4,200 homes with schools, markets, parking, roads and community facilities. It may require large-scale community networking, public Wi-Fi, video security and digital property management. Project value, final unit count and contractor remain unconfirmed; validate development progress and phased procurement first.",
+        "recommendedHuaweiSolutions": [
+          "Community fibre/IP backbone and public Wi-Fi",
+          "Video security and smart-property networking",
+          "Connectivity for schools, markets and public facilities"
+        ],
+        "scoreRationale": "66/100 — scored against the relevance of the recorded project scope to Huawei communications, data-centre, enterprise-network and cybersecurity capabilities. Specific ICT packages, budgets and supplier eligibility still require formal confirmation.",
+        "risks": [
+          "Standalone ICT procurement is not confirmed and may be bundled by the EPC or specialist integrator",
+          "Project progress, funding and procurement scope require owner/tender validation"
+        ],
+        "nextActions": [
+          "Obtain the latest owner scope, EPC and procurement-package breakdown",
+          "Verify whether telecom, data and cybersecurity are standalone packages and confirm their budgets",
+          "Confirm Huawei supplier eligibility and partner route during specification and tender stages"
+        ],
+        "evidence": [
+          "Current D1 project summary, stage and recorded scope; where only a placeholder summary exists, the evidence gap is explicitly stated."
+        ],
+        "factsVsInference": "Known: project scope and stage are based on the current D1 record. Inference: the recommended communications, networking, data and security needs are potential supporting opportunities based on project type and known scope, not confirmed standalone procurement packages."
+      }
+    }
+  ]
 }
