@@ -1,3 +1,240 @@
 {
-  "mode": "fetch"
+  "mode": "writeback",
+  "analyses": [
+    {
+      "opportunityId": "MEED-JO-478551",
+      "priority": "P2",
+      "fitScore": 64,
+      "demandSummary": "Aqaba Bulk Terminal (Silica) upgrades marine export infrastructure, cargo handling and supporting utilities. Huawei should focus on port fibre/IP backbone, operations connectivity, CCTV networking and secure data communications where separately procured.",
+      "recommendedHuaweiSolutions": [
+        "港口光纤/IP骨干",
+        "运营网络与视频承载",
+        "安全数据通信与网络安全"
+      ],
+      "scoreRationale": "64/100 — 基于当前项目 Scope，通信、数据网络及数字化基础设施存在明确或合理的配套空间；具体采购包仍需通过业主/EPC 招标确认。",
+      "risks": [
+        "ICT范围可能由EPC或专业系统集成商打包",
+        "项目阶段、融资或采购计划可能变化"
+      ],
+      "nextActions": [
+        "确认业主、EPC及当前招标包边界",
+        "识别独立通信、数据网络和网络安全分包窗口",
+        "在技术规范阶段推动华为相关能力进入需求清单"
+      ],
+      "evidence": [
+        "机会库中的项目摘要、Scope、关键里程碑和 Latest News（MEED 项目记录）"
+      ],
+      "factsVsInference": "事实：以上项目范围来自当前机会库记录。推断：推荐的通信、数据和安全方案属于基于项目范围的配套需求判断，不代表已确认的独立采购包。",
+      "english": {
+        "demandSummary": "The Aqaba Bulk Terminal (Silica) upgrades marine export infrastructure, cargo handling and supporting utilities. Huawei should focus on port fibre/IP backbone, operations connectivity, CCTV networking and secure data communications where separately procured.",
+        "recommendedHuaweiSolutions": [
+          "Port fibre/IP backbone",
+          "Operations networking and video transport",
+          "Secure data communications and cybersecurity"
+        ],
+        "scoreRationale": "64/100 — based on the current project scope, communications, data-network and digital-infrastructure needs are clear or reasonably adjacent; specific procurement packages still require owner/EPC tender confirmation.",
+        "risks": [
+          "ICT scope may be bundled by an EPC or specialist integrator",
+          "Project stage, financing or procurement schedule may change"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC and current package boundaries",
+          "Identify standalone telecom, data-network and cybersecurity subcontract windows",
+          "Influence relevant technical specifications early"
+        ],
+        "evidence": [
+          "Project summary, scope, milestones and latest news from the MEED opportunity record."
+        ],
+        "factsVsInference": "Known: the project scope comes from the current opportunity record. Inference: the recommended communications, data and security solutions are supporting-need assessments and do not confirm a standalone procurement package."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-418349",
+      "priority": "P2",
+      "fitScore": 65,
+      "demandSummary": "Al Ghabawi 填埋气发电厂扩建包含气体收集、分析、控制和发电设施。华为可关注工业通信、IT/OT 网络隔离、远程运维和数据基础设施，不替代核心过程控制。",
+      "recommendedHuaweiSolutions": [
+        "工业通信与站点网络",
+        "IT/OT安全分区",
+        "远程运维与数据基础设施"
+      ],
+      "scoreRationale": "65/100 — 基于当前项目 Scope，通信、数据网络及数字化基础设施存在明确或合理的配套空间；具体采购包仍需通过业主/EPC 招标确认。",
+      "risks": [
+        "ICT范围可能由EPC或专业系统集成商打包",
+        "项目阶段、融资或采购计划可能变化"
+      ],
+      "nextActions": [
+        "确认业主、EPC及当前招标包边界",
+        "识别独立通信、数据网络和网络安全分包窗口",
+        "在技术规范阶段推动华为相关能力进入需求清单"
+      ],
+      "evidence": [
+        "机会库中的项目摘要、Scope、关键里程碑和 Latest News（MEED 项目记录）"
+      ],
+      "factsVsInference": "事实：以上项目范围来自当前机会库记录。推断：推荐的通信、数据和安全方案属于基于项目范围的配套需求判断，不代表已确认的独立采购包。",
+      "english": {
+        "demandSummary": "The Al Ghabawi landfill-gas power extension includes gas collection, analysis, control and generation facilities. Huawei can target industrial communications, IT/OT segmentation, remote operations and data infrastructure, not core process controls.",
+        "recommendedHuaweiSolutions": [
+          "Industrial communications and site networking",
+          "IT/OT security segmentation",
+          "Remote operations and data infrastructure"
+        ],
+        "scoreRationale": "65/100 — based on the current project scope, communications, data-network and digital-infrastructure needs are clear or reasonably adjacent; specific procurement packages still require owner/EPC tender confirmation.",
+        "risks": [
+          "ICT scope may be bundled by an EPC or specialist integrator",
+          "Project stage, financing or procurement schedule may change"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC and current package boundaries",
+          "Identify standalone telecom, data-network and cybersecurity subcontract windows",
+          "Influence relevant technical specifications early"
+        ],
+        "evidence": [
+          "Project summary, scope, milestones and latest news from the MEED opportunity record."
+        ],
+        "factsVsInference": "Known: the project scope comes from the current opportunity record. Inference: the recommended communications, data and security solutions are supporting-need assessments and do not confirm a standalone procurement package."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-569388",
+      "priority": "P2",
+      "fitScore": 68,
+      "demandSummary": "Jaber 边境口岸重建包含货运场、检查通道及旅客和货物处理设施。华为可在依法合规且非敏感的民用范围关注园区网络、数据通信、旅客/货运运营系统承载及视频网络，不涉及执法或敏感安全系统。",
+      "recommendedHuaweiSolutions": [
+        "园区光纤/IP网络",
+        "民用运营系统通信承载",
+        "非敏感视频网络与统一运维"
+      ],
+      "scoreRationale": "68/100 — 基于当前项目 Scope，通信、数据网络及数字化基础设施存在明确或合理的配套空间；具体采购包仍需通过业主/EPC 招标确认。",
+      "risks": [
+        "ICT范围可能由EPC或专业系统集成商打包",
+        "项目阶段、融资或采购计划可能变化"
+      ],
+      "nextActions": [
+        "确认业主、EPC及当前招标包边界",
+        "识别独立通信、数据网络和网络安全分包窗口",
+        "在技术规范阶段推动华为相关能力进入需求清单"
+      ],
+      "evidence": [
+        "机会库中的项目摘要、Scope、关键里程碑和 Latest News（MEED 项目记录）"
+      ],
+      "factsVsInference": "事实：以上项目范围来自当前机会库记录。推断：推荐的通信、数据和安全方案属于基于项目范围的配套需求判断，不代表已确认的独立采购包。",
+      "english": {
+        "demandSummary": "The Jaber border-crossing redevelopment includes cargo yards, inspection lanes and passenger/freight processing facilities. Within lawful, non-sensitive civil scope, Huawei can target campus networking, data communications, operational-system connectivity and video networking, without addressing enforcement or sensitive security systems.",
+        "recommendedHuaweiSolutions": [
+          "Campus fibre/IP networking",
+          "Civil operational-system connectivity",
+          "Non-sensitive video networking and unified operations"
+        ],
+        "scoreRationale": "68/100 — based on the current project scope, communications, data-network and digital-infrastructure needs are clear or reasonably adjacent; specific procurement packages still require owner/EPC tender confirmation.",
+        "risks": [
+          "ICT scope may be bundled by an EPC or specialist integrator",
+          "Project stage, financing or procurement schedule may change"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC and current package boundaries",
+          "Identify standalone telecom, data-network and cybersecurity subcontract windows",
+          "Influence relevant technical specifications early"
+        ],
+        "evidence": [
+          "Project summary, scope, milestones and latest news from the MEED opportunity record."
+        ],
+        "factsVsInference": "Known: the project scope comes from the current opportunity record. Inference: the recommended communications, data and security solutions are supporting-need assessments and do not confirm a standalone procurement package."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-358802",
+      "priority": "P1",
+      "fitScore": 76,
+      "demandSummary": "FFI 约旦氢气生产项目将配套大规模风光资源及下游生产设施。华为可关注园区通信、数据网络、数据中心/存储、视频及工业网络安全，并结合可再生能源数字化接口寻找机会。",
+      "recommendedHuaweiSolutions": [
+        "工业园区光纤/IP网络",
+        "数据中心、存储与备份",
+        "工业网络安全与远程运维"
+      ],
+      "scoreRationale": "76/100 — 基于当前项目 Scope，通信、数据网络及数字化基础设施存在明确或合理的配套空间；具体采购包仍需通过业主/EPC 招标确认。",
+      "risks": [
+        "ICT范围可能由EPC或专业系统集成商打包",
+        "项目阶段、融资或采购计划可能变化"
+      ],
+      "nextActions": [
+        "确认业主、EPC及当前招标包边界",
+        "识别独立通信、数据网络和网络安全分包窗口",
+        "在技术规范阶段推动华为相关能力进入需求清单"
+      ],
+      "evidence": [
+        "机会库中的项目摘要、Scope、关键里程碑和 Latest News（MEED 项目记录）"
+      ],
+      "factsVsInference": "事实：以上项目范围来自当前机会库记录。推断：推荐的通信、数据和安全方案属于基于项目范围的配套需求判断，不代表已确认的独立采购包。",
+      "english": {
+        "demandSummary": "FFI's Jordan hydrogen project includes large-scale solar/wind resources and downstream production facilities. Huawei can target campus communications, data networks, data-centre/storage, video and industrial cybersecurity, while pursuing interfaces with renewable-energy digital infrastructure.",
+        "recommendedHuaweiSolutions": [
+          "Industrial campus fibre/IP networking",
+          "Data centre, storage and backup",
+          "Industrial cybersecurity and remote operations"
+        ],
+        "scoreRationale": "76/100 — based on the current project scope, communications, data-network and digital-infrastructure needs are clear or reasonably adjacent; specific procurement packages still require owner/EPC tender confirmation.",
+        "risks": [
+          "ICT scope may be bundled by an EPC or specialist integrator",
+          "Project stage, financing or procurement schedule may change"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC and current package boundaries",
+          "Identify standalone telecom, data-network and cybersecurity subcontract windows",
+          "Influence relevant technical specifications early"
+        ],
+        "evidence": [
+          "Project summary, scope, milestones and latest news from the MEED opportunity record."
+        ],
+        "factsVsInference": "Known: the project scope comes from the current opportunity record. Inference: the recommended communications, data and security solutions are supporting-need assessments and do not confirm a standalone procurement package."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-576732",
+      "priority": "P1",
+      "fitScore": 80,
+      "demandSummary": "Aqaba 港口油品码头包含液体散货装卸、储罐、泵站、自动计量及 SCADA 相关设施。华为机会集中在工业通信、SCADA 承载网络、OT 网络安全、视频与远程运维基础设施。",
+      "recommendedHuaweiSolutions": [
+        "工业通信与SCADA承载",
+        "OT网络安全与分区",
+        "视频网络和远程运维"
+      ],
+      "scoreRationale": "80/100 — 基于当前项目 Scope，通信、数据网络及数字化基础设施存在明确或合理的配套空间；具体采购包仍需通过业主/EPC 招标确认。",
+      "risks": [
+        "ICT范围可能由EPC或专业系统集成商打包",
+        "项目阶段、融资或采购计划可能变化"
+      ],
+      "nextActions": [
+        "确认业主、EPC及当前招标包边界",
+        "识别独立通信、数据网络和网络安全分包窗口",
+        "在技术规范阶段推动华为相关能力进入需求清单"
+      ],
+      "evidence": [
+        "机会库中的项目摘要、Scope、关键里程碑和 Latest News（MEED 项目记录）"
+      ],
+      "factsVsInference": "事实：以上项目范围来自当前机会库记录。推断：推荐的通信、数据和安全方案属于基于项目范围的配套需求判断，不代表已确认的独立采购包。",
+      "english": {
+        "demandSummary": "The Aqaba oil terminal includes liquid-bulk handling, storage tanks, pump stations, automated metering and SCADA-related facilities. Huawei's opportunity is in industrial communications, SCADA transport networks, OT cybersecurity, video and remote-operations infrastructure.",
+        "recommendedHuaweiSolutions": [
+          "Industrial communications and SCADA transport",
+          "OT cybersecurity and segmentation",
+          "Video networking and remote operations"
+        ],
+        "scoreRationale": "80/100 — based on the current project scope, communications, data-network and digital-infrastructure needs are clear or reasonably adjacent; specific procurement packages still require owner/EPC tender confirmation.",
+        "risks": [
+          "ICT scope may be bundled by an EPC or specialist integrator",
+          "Project stage, financing or procurement schedule may change"
+        ],
+        "nextActions": [
+          "Confirm owner, EPC and current package boundaries",
+          "Identify standalone telecom, data-network and cybersecurity subcontract windows",
+          "Influence relevant technical specifications early"
+        ],
+        "evidence": [
+          "Project summary, scope, milestones and latest news from the MEED opportunity record."
+        ],
+        "factsVsInference": "Known: the project scope comes from the current opportunity record. Inference: the recommended communications, data and security solutions are supporting-need assessments and do not confirm a standalone procurement package."
+      }
+    }
+  ]
 }
