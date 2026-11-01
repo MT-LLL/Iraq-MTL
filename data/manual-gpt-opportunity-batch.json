@@ -1,3 +1,320 @@
 {
-  "mode": "fetch"
+  "mode": "writeback",
+  "analyses": [
+    {
+      "opportunityId": "MEED-JO-575330",
+      "priority": "P2",
+      "fitScore": 72,
+      "demandSummary": "约旦 Greater Irbid 供水网络和泵站项目涉及输配水网络及分布式泵站，重点机会是泵站通信、SCADA 承载、视频和 IT/OT 网络安全。",
+      "recommendedHuaweiSolutions": [
+        "泵站光纤/IP与无线通信",
+        "SCADA 通信承载与安全分区",
+        "远程站点视频与统一运维"
+      ],
+      "scoreRationale": "72/100 — 项目范围与华为通信、数据网络和网络安全能力具有明确相关性，但具体 ICT 包件仍需通过招标文件确认。",
+      "risks": [
+        "SCADA 可能由水务集成商打包",
+        "采购包边界尚未披露"
+      ],
+      "nextActions": [
+        "确认 WAJ、EPC 和自动化集成商",
+        "在招标阶段锁定通信和网络安全子系统"
+      ],
+      "evidence": [
+        "机会库项目摘要、Scope、关键里程碑和 Latest News（MEED 项目记录）"
+      ],
+      "factsVsInference": "事实：以上判断基于当前项目 Scope 和阶段。推断：通信、数据或网络安全可能形成配套需求；未证实独立 ICT 采购包。",
+      "english": {
+        "demandSummary": "The Greater Irbid water network and pump-station project creates opportunities in pump communications, SCADA backhaul, video and IT/OT cybersecurity.",
+        "recommendedHuaweiSolutions": [
+          "Fibre/IP and wireless communications for pump stations",
+          "Secure SCADA backhaul and segmentation",
+          "Remote-site video and unified operations"
+        ],
+        "scoreRationale": "72/100 — the project scope has clear relevance to Huawei communications, data-network and cybersecurity capabilities, but specific ICT packages still require tender confirmation.",
+        "risks": [
+          "SCADA may be bundled by a water-sector integrator",
+          "Package boundaries are not yet disclosed"
+        ],
+        "nextActions": [
+          "Identify WAJ, EPC and automation integrator",
+          "Secure telecom and cybersecurity sub-scope during tender"
+        ],
+        "evidence": [
+          "Project summary, scope, milestones and latest news from the MEED opportunity record."
+        ],
+        "factsVsInference": "Known: the assessment is based on the current project scope and stage. Inference: communications, data or cybersecurity may be supporting needs; a standalone ICT package is not confirmed."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-2754",
+      "priority": "P1",
+      "fitScore": 82,
+      "demandSummary": "约旦区域铁路网络连接安曼与周边跨境走廊，华为可关注铁路光纤、IP/MPLS、调度数据网络、车站网络、视频和网络安全。",
+      "recommendedHuaweiSolutions": [
+        "铁路光纤与 IP/MPLS 骨干",
+        "调度中心与站点数据网络",
+        "车站网络、CCTV 与网络安全"
+      ],
+      "scoreRationale": "82/100 — 项目范围与华为通信、数据网络和网络安全能力具有明确相关性，但具体 ICT 包件仍需通过招标文件确认。",
+      "risks": [
+        "跨境协调和融资风险高",
+        "核心信号系统由专业铁路供应商负责"
+      ],
+      "nextActions": [
+        "识别规划顾问和铁路系统集成商",
+        "推动通信和网络安全规范前置"
+      ],
+      "evidence": [
+        "机会库项目摘要、Scope、关键里程碑和 Latest News（MEED 项目记录）"
+      ],
+      "factsVsInference": "事实：以上判断基于当前项目 Scope 和阶段。推断：通信、数据或网络安全可能形成配套需求；未证实独立 ICT 采购包。",
+      "english": {
+        "demandSummary": "Jordan's inter-regional railway network creates opportunities in railway fibre, IP/MPLS, dispatch data networks, station connectivity, video and cybersecurity.",
+        "recommendedHuaweiSolutions": [
+          "Railway fibre and IP/MPLS backbone",
+          "Dispatch-centre and station data networks",
+          "Station networking, CCTV and cybersecurity"
+        ],
+        "scoreRationale": "82/100 — the project scope has clear relevance to Huawei communications, data-network and cybersecurity capabilities, but specific ICT packages still require tender confirmation.",
+        "risks": [
+          "Cross-border coordination and financing risks are high",
+          "Core signalling is specialist-led"
+        ],
+        "nextActions": [
+          "Identify planning consultants and railway integrators",
+          "Influence telecom and cybersecurity specifications early"
+        ],
+        "evidence": [
+          "Project summary, scope, milestones and latest news from the MEED opportunity record."
+        ],
+        "factsVsInference": "Known: the assessment is based on the current project scope and stage. Inference: communications, data or cybersecurity may be supporting needs; a standalone ICT package is not confirmed."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-473361",
+      "priority": "P1",
+      "fitScore": 80,
+      "demandSummary": "Northern Green 高压变电站及输电线路项目可关注变电站通信、光纤传输、调度数据网络和网络安全。",
+      "recommendedHuaweiSolutions": [
+        "变电站通信与光纤传输",
+        "调度 IP 承载与网络安全",
+        "远程运维和站区视频"
+      ],
+      "scoreRationale": "80/100 — 项目范围与华为通信、数据网络和网络安全能力具有明确相关性，但具体 ICT 包件仍需通过招标文件确认。",
+      "risks": [
+        "保护控制核心可能由电力 OEM 打包",
+        "项目仍处研究阶段"
+      ],
+      "nextActions": [
+        "确认 NEPCO 技术规范和 EPC",
+        "锁定 OPGW、通信和网络安全范围"
+      ],
+      "evidence": [
+        "机会库项目摘要、Scope、关键里程碑和 Latest News（MEED 项目记录）"
+      ],
+      "factsVsInference": "事实：以上判断基于当前项目 Scope 和阶段。推断：通信、数据或网络安全可能形成配套需求；未证实独立 ICT 采购包。",
+      "english": {
+        "demandSummary": "The Northern Green high-voltage substation and transmission project creates opportunities in substation communications, fibre transport, dispatch data networking and cybersecurity.",
+        "recommendedHuaweiSolutions": [
+          "Substation communications and fibre transport",
+          "Dispatch IP transport and cybersecurity",
+          "Remote operations and site video"
+        ],
+        "scoreRationale": "80/100 — the project scope has clear relevance to Huawei communications, data-network and cybersecurity capabilities, but specific ICT packages still require tender confirmation.",
+        "risks": [
+          "Protection/control core may be bundled by power OEMs",
+          "The project remains at study stage"
+        ],
+        "nextActions": [
+          "Identify NEPCO specifications and EPC",
+          "Target OPGW, telecom and cybersecurity scope"
+        ],
+        "evidence": [
+          "Project summary, scope, milestones and latest news from the MEED opportunity record."
+        ],
+        "factsVsInference": "Known: the assessment is based on the current project scope and stage. Inference: communications, data or cybersecurity may be supporting needs; a standalone ICT package is not confirmed."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-559716",
+      "priority": "P1",
+      "fitScore": 82,
+      "demandSummary": "AAWDCP 主变电站连接工程服务淡化厂、增压站和能源设施，重点是 OPGW/光纤、调度通信、IP 承载和网络安全。",
+      "recommendedHuaweiSolutions": [
+        "OPGW/光纤通信",
+        "调度 IP 承载与网络安全",
+        "远程站点视频和运维通信"
+      ],
+      "scoreRationale": "82/100 — 项目范围与华为通信、数据网络和网络安全能力具有明确相关性，但具体 ICT 包件仍需通过招标文件确认。",
+      "risks": [
+        "通信子系统可能由 EPC/OEM 打包",
+        "需快速确认评标阶段窗口"
+      ],
+      "nextActions": [
+        "识别 EPC 和通信分包窗口",
+        "确认 OPGW 和调度通信责任边界"
+      ],
+      "evidence": [
+        "机会库项目摘要、Scope、关键里程碑和 Latest News（MEED 项目记录）"
+      ],
+      "factsVsInference": "事实：以上判断基于当前项目 Scope 和阶段。推断：通信、数据或网络安全可能形成配套需求；未证实独立 ICT 采购包。",
+      "english": {
+        "demandSummary": "The AAWDCP connection project supporting desalination and energy infrastructure creates strong opportunities in OPGW/fibre, dispatch communications, IP transport and cybersecurity.",
+        "recommendedHuaweiSolutions": [
+          "OPGW/fibre communications",
+          "Dispatch IP transport and cybersecurity",
+          "Remote-site video and operations communications"
+        ],
+        "scoreRationale": "82/100 — the project scope has clear relevance to Huawei communications, data-network and cybersecurity capabilities, but specific ICT packages still require tender confirmation.",
+        "risks": [
+          "Telecom may be bundled by EPC/OEM",
+          "Bid-evaluation windows need rapid confirmation"
+        ],
+        "nextActions": [
+          "Identify EPC and telecom subcontract windows",
+          "Clarify responsibility for OPGW and dispatch communications"
+        ],
+        "evidence": [
+          "Project summary, scope, milestones and latest news from the MEED opportunity record."
+        ],
+        "factsVsInference": "Known: the assessment is based on the current project scope and stage. Inference: communications, data or cybersecurity may be supporting needs; a standalone ICT package is not confirmed."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-555872",
+      "priority": "P1",
+      "fitScore": 84,
+      "demandSummary": "Deir Ammar II 825MW 联合循环电站是大型新增发电项目，华为可关注工业通信、数据基础设施、视频安防、OT 网络安全和远程运维。",
+      "recommendedHuaweiSolutions": [
+        "工业通信与光纤/IP网络",
+        "OT 安全分区",
+        "数据平台、存储、备份和视频安防"
+      ],
+      "scoreRationale": "84/100 — 项目范围与华为通信、数据网络和网络安全能力具有明确相关性，但具体 ICT 包件仍需通过招标文件确认。",
+      "risks": [
+        "项目早期阶段，融资和时间表不确定",
+        "DCS/SIS 核心控制由专业厂商负责"
+      ],
+      "nextActions": [
+        "跟踪 MoEW、融资与 FEED",
+        "提前进入 EPC/OEM 的通信和 OT 安全规范"
+      ],
+      "evidence": [
+        "机会库项目摘要、Scope、关键里程碑和 Latest News（MEED 项目记录）"
+      ],
+      "factsVsInference": "事实：以上判断基于当前项目 Scope 和阶段。推断：通信、数据或网络安全可能形成配套需求；未证实独立 ICT 采购包。",
+      "english": {
+        "demandSummary": "Deir Ammar II is a major 825MW combined-cycle plant opportunity for industrial communications, data infrastructure, video security, OT cybersecurity and remote operations.",
+        "recommendedHuaweiSolutions": [
+          "Industrial communications and fibre/IP networking",
+          "OT security segmentation",
+          "Data platform, storage, backup and video security"
+        ],
+        "scoreRationale": "84/100 — the project scope has clear relevance to Huawei communications, data-network and cybersecurity capabilities, but specific ICT packages still require tender confirmation.",
+        "risks": [
+          "Early-stage financing and schedule uncertainty",
+          "DCS/SIS core controls are specialist-led"
+        ],
+        "nextActions": [
+          "Track MoEW, financing and FEED",
+          "Enter EPC/OEM telecom and OT-security specifications early"
+        ],
+        "evidence": [
+          "Project summary, scope, milestones and latest news from the MEED opportunity record."
+        ],
+        "factsVsInference": "Known: the assessment is based on the current project scope and stage. Inference: communications, data or cybersecurity may be supporting needs; a standalone ICT package is not confirmed."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-555790",
+      "priority": "P2",
+      "fitScore": 78,
+      "demandSummary": "Deir Ammar I 465MW 电站现代化可关注网络升级、OT 安全、数据存储、备份和远程运维。",
+      "recommendedHuaweiSolutions": [
+        "电站网络升级与光纤/IP承载",
+        "OT 安全与远程运维",
+        "数据存储、备份和视频安防"
+      ],
+      "scoreRationale": "78/100 — 项目范围与华为通信、数据网络和网络安全能力具有明确相关性，但具体 ICT 包件仍需通过招标文件确认。",
+      "risks": [
+        "改造可能由原设备 OEM 主导",
+        "暂无重大进展"
+      ],
+      "nextActions": [
+        "确认现代化范围和 OEM",
+        "寻找独立网络、安全和数据升级包"
+      ],
+      "evidence": [
+        "机会库项目摘要、Scope、关键里程碑和 Latest News（MEED 项目记录）"
+      ],
+      "factsVsInference": "事实：以上判断基于当前项目 Scope 和阶段。推断：通信、数据或网络安全可能形成配套需求；未证实独立 ICT 采购包。",
+      "english": {
+        "demandSummary": "The Deir Ammar I 465MW modernisation project can create opportunities in network upgrades, OT security, storage, backup and remote operations.",
+        "recommendedHuaweiSolutions": [
+          "Plant network upgrade and fibre/IP transport",
+          "OT security and remote operations",
+          "Storage, backup and video security"
+        ],
+        "scoreRationale": "78/100 — the project scope has clear relevance to Huawei communications, data-network and cybersecurity capabilities, but specific ICT packages still require tender confirmation.",
+        "risks": [
+          "Modernisation may be led by existing OEMs",
+          "No major progress is currently reported"
+        ],
+        "nextActions": [
+          "Confirm modernisation scope and OEM",
+          "Look for standalone network, security and data packages"
+        ],
+        "evidence": [
+          "Project summary, scope, milestones and latest news from the MEED opportunity record."
+        ],
+        "factsVsInference": "Known: the assessment is based on the current project scope and stage. Inference: communications, data or cybersecurity may be supporting needs; a standalone ICT package is not confirmed."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-42404",
+      "priority": "P1",
+      "fitScore": 80,
+      "demandSummary": "Al Ghadir 污水处理厂扩建包括处理能力提升、大规模污水管网及约 19,000 户连接，可关注 SCADA 通信、远程接入、数据平台和网络安全。",
+      "recommendedHuaweiSolutions": [
+        "水务 SCADA 通信与光纤/IP",
+        "处理厂和泵站远程接入",
+        "数据平台、网络安全和视频安防"
+      ],
+      "scoreRationale": "80/100 — 项目范围与华为通信、数据网络和网络安全能力具有明确相关性，但具体 ICT 包件仍需通过招标文件确认。",
+      "risks": [
+        "SCADA 自动化可能由系统集成商提供",
+        "采购和技术规范仍待确认"
+      ],
+      "nextActions": [
+        "主合同招标前接触 CDR 和设计顾问",
+        "推动通信、数据和安全进入技术规范"
+      ],
+      "evidence": [
+        "机会库项目摘要、Scope、关键里程碑和 Latest News（MEED 项目记录）"
+      ],
+      "factsVsInference": "事实：以上判断基于当前项目 Scope 和阶段。推断：通信、数据或网络安全可能形成配套需求；未证实独立 ICT 采购包。",
+      "english": {
+        "demandSummary": "The Al Ghadir wastewater expansion includes major treatment and sewerage upgrades and around 19,000 connections, creating opportunities in SCADA communications, remote connectivity, data platforms and cybersecurity.",
+        "recommendedHuaweiSolutions": [
+          "Water-sector SCADA communications and fibre/IP",
+          "Remote connectivity for plant and pumping assets",
+          "Data platform, cybersecurity and video security"
+        ],
+        "scoreRationale": "80/100 — the project scope has clear relevance to Huawei communications, data-network and cybersecurity capabilities, but specific ICT packages still require tender confirmation.",
+        "risks": [
+          "SCADA automation may be supplied by an integrator",
+          "Procurement and specifications remain to be confirmed"
+        ],
+        "nextActions": [
+          "Engage CDR and consultants before tender",
+          "Influence telecom, data and security specifications"
+        ],
+        "evidence": [
+          "Project summary, scope, milestones and latest news from the MEED opportunity record."
+        ],
+        "factsVsInference": "Known: the assessment is based on the current project scope and stage. Inference: communications, data or cybersecurity may be supporting needs; a standalone ICT package is not confirmed."
+      }
+    }
+  ]
 }
