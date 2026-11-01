@@ -1,3 +1,923 @@
 {
-  "mode": "fetch"
+  "mode": "writeback",
+  "analyses": [
+    {
+      "opportunityId": "MEED-IQ-512936",
+      "priority": "WATCH",
+      "fitScore": 50,
+      "demandSummary": "Najaf–Karbala Al-Haj Road 第三期包括双车道高速公路、排水、桥涵、服务区、标志和照明，主要为交通土建工程。华为可关注沿线光纤/IP通信、道路运营中心网络及非安全关键视频回传，但需确认 ITS/CCTV 是否独立采购。",
+      "recommendedHuaweiSolutions": [
+        "道路运营中心光纤/IP网络",
+        "非安全关键视频回传与存储",
+        "路侧通信和 ITS 接口（如招标）"
+      ],
+      "scoreRationale": "50/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "Phase 3 of the Najaf–Karbala Al-Haj Road includes a dual-carriageway highway, drainage, bridges/culverts, service areas, signage and lighting. It is primarily a civil transport project. Huawei may assess corridor fibre/IP, road-operations networking and non-safety-critical video backhaul, subject to confirmation of separate ITS/CCTV procurement.",
+        "recommendedHuaweiSolutions": [
+          "Fibre/IP networking for road operations centres",
+          "Non-safety-critical video backhaul and storage",
+          "Roadside communications and ITS interfaces, if tendered"
+        ],
+        "scoreRationale": "50/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-524505",
+      "priority": "P1",
+      "fitScore": 82,
+      "demandSummary": "Al-Shamiya 供水项目设计能力约4,000立方米/小时，包括海水/苦咸水淡化、处理和储存设施，具备水厂通信、泵站远程连接、SCADA 承载、工业网络安全和运营数据平台需求。",
+      "recommendedHuaweiSolutions": [
+        "水厂/泵站光纤/IP通信",
+        "SCADA 承载网络与 IT/OT 分区",
+        "视频安防、存储和统一运维平台"
+      ],
+      "scoreRationale": "82/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "The Al-Shamiya water project has a stated capacity of about 4,000 m³/hour and includes desalination, treatment and storage facilities. It has credible needs for plant communications, remote pump connectivity, SCADA transport, industrial cybersecurity and operational data platforms.",
+        "recommendedHuaweiSolutions": [
+          "Fibre/IP communications for plants and pump stations",
+          "SCADA transport and IT/OT segmentation",
+          "Video security, storage and unified operations platform"
+        ],
+        "scoreRationale": "82/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-36107",
+      "priority": "WATCH",
+      "fitScore": 45,
+      "demandSummary": "Mar Chaaya–Atchaneh–Ain Alak 约4km 道路项目处于 On Hold，范围包括道路、信号系统、立交、地下通道和道路安全设施。若恢复，可评估非安全关键视频、道路运营网络和交通通信；当前不宜投入近期商务资源。",
+      "recommendedHuaweiSolutions": [
+        "复工后评估道路运营网络和光纤回传",
+        "非安全关键视频网络（如独立采购）"
+      ],
+      "scoreRationale": "45/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "The approximately 4 km Mar Chaaya–Atchaneh–Ain Alak road project is On Hold. Scope includes roads, signalling, overpass/underpass structures and road-safety facilities. If revived, assess non-safety-critical video, road-operations networking and traffic communications; no near-term commercial investment is warranted.",
+        "recommendedHuaweiSolutions": [
+          "If resumed, assess road-operations networking and fibre backhaul",
+          "Non-safety-critical video networking, if separately procured"
+        ],
+        "scoreRationale": "45/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-36108",
+      "priority": "WATCH",
+      "fitScore": 42,
+      "demandSummary": "Maten Highway 分两期建设，包含道路、互通、照明、排水、护栏和交通安全设施，目前处于 On Hold。潜在华为范围限于道路运营中心通信、非安全关键视频和路侧网络，须待项目融资和复工时间明确后再跟进。",
+      "recommendedHuaweiSolutions": [
+        "复工后评估道路光纤/IP与运营中心网络",
+        "非安全关键 CCTV 回传及存储"
+      ],
+      "scoreRationale": "42/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "The Maten Highway is planned in two phases with roads, interchanges, lighting, drainage, barriers and traffic-safety facilities and is currently On Hold. Potential Huawei scope is limited to road-operations communications, non-safety-critical video and roadside networking, pending financing and restart confirmation.",
+        "recommendedHuaweiSolutions": [
+          "If restarted, assess road fibre/IP and operations-centre networking",
+          "Non-safety-critical CCTV backhaul and storage"
+        ],
+        "scoreRationale": "42/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-377508",
+      "priority": "P1",
+      "fitScore": 84,
+      "demandSummary": "Dair Alla–Karamah 供水系统第五标段服务17个社区，包括主泵站、3座增压泵站、8座蓄水池、约41.3km主输水管及约405km配水管网。分布式资产需要可靠通信和远程监控，华为可匹配泵站通信、SCADA 承载、OT 安全和集中运维。",
+      "recommendedHuaweiSolutions": [
+        "泵站/水池光纤与无线通信",
+        "SCADA 数据承载及网络分区",
+        "远程视频、数据平台和统一运维"
+      ],
+      "scoreRationale": "84/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "Lot 5 of the Dair Alla–Karamah water system serves 17 localities and includes a main pump station, three booster stations, eight reservoirs, about 41.3 km of primary pipelines and 405 km of distribution pipelines. Distributed assets require reliable communications and remote monitoring; Huawei can target pump communications, SCADA transport, OT security and centralised operations.",
+        "recommendedHuaweiSolutions": [
+          "Fibre and wireless communications for pump stations/reservoirs",
+          "SCADA data transport and network segmentation",
+          "Remote video, data platform and unified operations"
+        ],
+        "scoreRationale": "84/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-15721",
+      "priority": "P1",
+      "fitScore": 86,
+      "demandSummary": "Diffaf Karbala City 整体新城规划约46,000套住宅，覆盖约2,233公顷，分四期开发并包含公共服务、体育、医疗、商业、娱乐和清洁能源设施。项目规模和城市综合属性适合华为评估城市光纤骨干、智慧城市平台、公共 Wi-Fi、视频、数据中心及公用事业数字化。",
+      "recommendedHuaweiSolutions": [
+        "城市级光纤/IP骨干和园区网络",
+        "智慧城市/社区运营平台与统一运维",
+        "公共 Wi-Fi、视频安防和数据中心",
+        "能源、水务及市政设施通信接口"
+      ],
+      "scoreRationale": "86/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "The wider Diffaf Karbala City development plans about 46,000 homes across roughly 2,233 hectares in four phases, with public services, sports, healthcare, retail, entertainment and clean-energy facilities. Its scale and integrated-city nature suit Huawei assessment of city fibre backbone, smart-city platforms, public Wi-Fi, video, data centres and utility digitalisation.",
+        "recommendedHuaweiSolutions": [
+          "City-scale fibre/IP backbone and campus networking",
+          "Smart-city/community operations platform and unified operations",
+          "Public Wi-Fi, video security and data centre",
+          "Connectivity interfaces for energy, water and municipal utilities"
+        ],
+        "scoreRationale": "86/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-31349",
+      "priority": "WATCH",
+      "fitScore": 62,
+      "demandSummary": "Zahle 区域供水系统第三标段目前处于 On Hold，Scope 包含取水构筑物、流量调节、污泥处理、消毒接触池、消化池和曝气等水处理设施。若恢复，可评估水厂通信、SCADA 承载和 OT 网络安全；需先核实项目名称与供水/污水工艺范围是否一致。",
+      "recommendedHuaweiSolutions": [
+        "复工后评估水厂光纤/IP通信",
+        "SCADA 承载、OT 分区和网络安全",
+        "远程运维数据平台"
+      ],
+      "scoreRationale": "62/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "Package 3 of the Zahle area water-supply systems is On Hold. Scope includes intake structures, flow regulation, sludge handling, disinfection contact tank, digestion and aeration facilities. If resumed, assess plant communications, SCADA transport and OT cybersecurity; first verify that the project title and water/wastewater process scope are consistent.",
+        "recommendedHuaweiSolutions": [
+          "If resumed, assess plant fibre/IP communications",
+          "SCADA transport, OT segmentation and cybersecurity",
+          "Remote-operations data platform"
+        ],
+        "scoreRationale": "62/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-12551",
+      "priority": "WATCH",
+      "fitScore": 68,
+      "demandSummary": "Marjayoun 污水项目包括污水处理厂、完整收集/输送管网及约250km管线，规模化分布式水务设施需要泵站通信、SCADA 数据承载、远程监控和 OT 网络安全。项目目前 On Hold，应先核实融资和重启计划。",
+      "recommendedHuaweiSolutions": [
+        "泵站光纤/IP及无线回传",
+        "SCADA 通信承载和 OT 网络安全",
+        "视频、数据存储及远程运维"
+      ],
+      "scoreRationale": "68/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "The Marjayoun sewerage project includes a wastewater treatment plant, collection/conveyance networks and about 250 km of pipelines. Distributed water assets create needs for pump-station communications, SCADA data transport, remote monitoring and OT cybersecurity. The project is On Hold; verify financing and restart plans first.",
+        "recommendedHuaweiSolutions": [
+          "Fibre/IP and wireless backhaul for pump stations",
+          "SCADA communications transport and OT cybersecurity",
+          "Video, data storage and remote operations"
+        ],
+        "scoreRationale": "68/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-40539",
+      "priority": "WATCH",
+      "fitScore": 70,
+      "demandSummary": "Sarafand 污水收集与输送系统包括污水处理厂、一级至三级处理单元、输送管线及进出水设施，具备处理厂和泵站通信、SCADA 承载、视频与 OT 网络安全潜在需求。项目目前 On Hold，商务跟进应以资金和复工为前提。",
+      "recommendedHuaweiSolutions": [
+        "处理厂/泵站光纤/IP网络",
+        "SCADA 承载与网络安全分区",
+        "视频安防和集中运维"
+      ],
+      "scoreRationale": "70/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "The Sarafand wastewater collection and conveyance project includes a treatment plant, primary-to-tertiary treatment units, sewer transmission lines and inlet/outlet channels. It may require plant/pump communications, SCADA transport, video and OT cybersecurity. The project is On Hold, so commercial engagement depends on funding and restart.",
+        "recommendedHuaweiSolutions": [
+          "Fibre/IP networking for plant and pumping assets",
+          "SCADA transport and cybersecurity segmentation",
+          "Video security and centralised operations"
+        ],
+        "scoreRationale": "70/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-14937",
+      "priority": "WATCH",
+      "fitScore": 73,
+      "demandSummary": "Jbeil Caza 水与污水处理厂第一标段包含50.5km输水管、27.5km配水管、4.5km泵送管线及水处理/污水处理设施。可评估跨站点通信、泵站回传、SCADA 承载和网络安全；项目 On Hold，需确认恢复条件和标段边界。",
+      "recommendedHuaweiSolutions": [
+        "水厂/泵站光纤/IP与无线通信",
+        "SCADA 承载及 OT 网络安全",
+        "远程视频和统一运维"
+      ],
+      "scoreRationale": "73/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "Package 1 of the Jbeil Caza water and wastewater treatment plant includes 50.5 km of transmission pipelines, 27.5 km of distribution network, 4.5 km of pumping lines and water/wastewater facilities. Assess multi-site communications, pump backhaul, SCADA transport and cybersecurity. The project is On Hold; confirm restart conditions and package boundaries.",
+        "recommendedHuaweiSolutions": [
+          "Fibre/IP and wireless communications for plants/pump stations",
+          "SCADA transport and OT cybersecurity",
+          "Remote video and unified operations"
+        ],
+        "scoreRationale": "73/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-34636",
+      "priority": "WATCH",
+      "fitScore": 48,
+      "demandSummary": "Tripoli Eastern Ring Road 包含两个标段、约9.4km道路及20座桥梁/立交等结构，当前处于 On Hold。若复工，可关注道路运营中心通信、沿线光纤、非安全关键视频和交通管理网络；需先核实资金及合同重启。",
+      "recommendedHuaweiSolutions": [
+        "复工后评估沿线光纤/IP和运营中心网络",
+        "非安全关键视频回传及存储"
+      ],
+      "scoreRationale": "48/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "The Tripoli Eastern Ring Road comprises two packages, about 9.4 km of roads and 20 bridges/interchanges and related structures. It is On Hold. If restarted, assess road-operations communications, corridor fibre, non-safety-critical video and traffic-management networking; verify financing and contract restart first.",
+        "recommendedHuaweiSolutions": [
+          "If restarted, assess corridor fibre/IP and operations-centre networking",
+          "Non-safety-critical video backhaul and storage"
+        ],
+        "scoreRationale": "48/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-36901",
+      "priority": "WATCH",
+      "fitScore": 15,
+      "demandSummary": "Eastern Ring Road 第一标段记录只有项目标题、On Hold 阶段和占位摘要，且可能属于 Tripoli Eastern Ring Road 父项目的分包/子标段。需先核实与 MEED-LB-34636 的关系、范围和金额，避免重复计算；目前不推荐具体 ICT 方案。",
+      "recommendedHuaweiSolutions": [
+        "暂不推荐方案",
+        "与父项目核对标段范围、合同金额和 ICT 采购边界"
+      ],
+      "scoreRationale": "15/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "The Eastern Ring Road Package 1 record contains only a title, On Hold stage and placeholder summary and may be a sub-package of the parent Tripoli Eastern Ring Road project. Verify its relationship, scope and value against MEED-LB-34636 to avoid double counting; no specific ICT solution is recommended yet.",
+        "recommendedHuaweiSolutions": [
+          "No solution recommended at this stage",
+          "Reconcile package scope, contract value and ICT boundaries with the parent project"
+        ],
+        "scoreRationale": "15/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-441255",
+      "priority": "WATCH",
+      "fitScore": 15,
+      "demandSummary": "Hemrin Bridge 项目目前只有自动采集占位摘要，缺少桥梁位置、长度、交通组织、监控和 ITS 范围。桥梁土建本身不能证明存在 ICT 采购，需补齐正式项目资料后再评估道路通信或视频。",
+      "recommendedHuaweiSolutions": [
+        "暂不推荐具体产品",
+        "补齐桥梁 Scope、业主和 ITS/CCTV 采购边界后再评估"
+      ],
+      "scoreRationale": "15/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "The Hemrin Bridge record contains only an auto-generated placeholder, with no location, length, traffic arrangements, monitoring or ITS scope. Bridge civil works alone do not prove ICT procurement; obtain the formal project profile before assessing road communications or video.",
+        "recommendedHuaweiSolutions": [
+          "No specific product recommended",
+          "Reassess after bridge scope, owner and ITS/CCTV procurement boundaries are confirmed"
+        ],
+        "scoreRationale": "15/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-511926",
+      "priority": "WATCH",
+      "fitScore": 15,
+      "demandSummary": "Amara–Bateera–Fajr 道路修复维护项目目前只有占位摘要，缺少道路长度、施工内容、路侧设施和交通管理系统范围。暂列 WATCH，待正式 Scope 补齐后评估道路运营通信和非安全关键视频。",
+      "recommendedHuaweiSolutions": [
+        "暂不推荐具体产品",
+        "补齐路线长度、路侧设施及 ITS/CCTV 采购范围后再评估"
+      ],
+      "scoreRationale": "15/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "The Amara–Bateera–Fajr road rehabilitation and maintenance record has only a placeholder summary, with no road length, work items, roadside facilities or traffic-management scope. Keep at WATCH until the formal scope is obtained, then assess road-operations communications and non-safety-critical video.",
+        "recommendedHuaweiSolutions": [
+          "No specific product recommended",
+          "Reassess after route length, roadside facilities and ITS/CCTV procurement scope are confirmed"
+        ],
+        "scoreRationale": "15/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-369237",
+      "priority": "WATCH",
+      "fitScore": 20,
+      "demandSummary": "Anjar–Majdel Anjar–Qabb Elias 污水处理厂第一标段目前只有占位摘要，项目处于 On Hold。若复工，可评估处理厂通信、泵站回传、SCADA 承载和 OT 网络安全；需先补齐工艺规模、站点和融资信息。",
+      "recommendedHuaweiSolutions": [
+        "暂不推荐具体产品",
+        "补齐处理能力、泵站、自动化和融资信息后重新评估"
+      ],
+      "scoreRationale": "20/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "Lot 1 of the Anjar–Majdel Anjar–Qabb Elias wastewater treatment plant has only a placeholder summary and is On Hold. If resumed, assess plant communications, pump backhaul, SCADA transport and OT cybersecurity; first obtain process capacity, site and financing details.",
+        "recommendedHuaweiSolutions": [
+          "No specific product recommended",
+          "Reassess after treatment capacity, pump stations, automation and financing are confirmed"
+        ],
+        "scoreRationale": "20/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-369259",
+      "priority": "WATCH",
+      "fitScore": 18,
+      "demandSummary": "Anjar–Majdel Anjar–Qabb Elias 污水处理厂第二标段目前只有占位摘要，且与 Lot 1 及父项目存在明显关联。需核实各标段工艺、设施和采购边界，避免重复计入同一污水处理项目；当前无足够 ICT 证据。",
+      "recommendedHuaweiSolutions": [
+        "暂不推荐具体方案",
+        "与 Lot 1/父项目合并核对 Scope 和 ICT 包件"
+      ],
+      "scoreRationale": "18/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "Lot 2 of the Anjar–Majdel Anjar–Qabb Elias wastewater treatment plant has only a placeholder summary and is clearly related to Lot 1 and the parent project. Verify process, facilities and procurement boundaries across lots to avoid double-counting; current ICT evidence is insufficient.",
+        "recommendedHuaweiSolutions": [
+          "No specific solution recommended",
+          "Reconcile scope and ICT packages with Lot 1 and the parent project"
+        ],
+        "scoreRationale": "18/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-425129",
+      "priority": "WATCH",
+      "fitScore": 18,
+      "demandSummary": "Al Hadi Towers Baghdad 目前只有项目名称和 Under Construction 占位摘要，缺少塔楼数量、楼层、办公/住宅功能和弱电系统范围。待正式资料补齐后可评估企业网络、Wi-Fi、视频安防和智慧楼宇平台。",
+      "recommendedHuaweiSolutions": [
+        "暂不推荐具体方案",
+        "补齐楼宇功能、规模、开发商和弱电/ICT 采购范围后评估"
+      ],
+      "scoreRationale": "18/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "Al Hadi Towers in Baghdad has only a project title and Under Construction placeholder, without tower count, floors, office/residential function or ELV scope. Once formal information is obtained, assess enterprise networking, Wi-Fi, video security and smart-building platforms.",
+        "recommendedHuaweiSolutions": [
+          "No specific solution recommended",
+          "Assess after building function, scale, developer and ELV/ICT procurement scope are confirmed"
+        ],
+        "scoreRationale": "18/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-39821",
+      "priority": "WATCH",
+      "fitScore": 18,
+      "demandSummary": "Anjar–Majdel Anjar–Qabb Elias 污水处理厂父项目记录目前只有占位摘要，且与 Lot 1、Lot 2 两条记录重复关联。应作为父项目主档进行去重归并，不单独重复计算投资额或 ICT 机会；待正式 Scope 补齐后统一分析。",
+      "recommendedHuaweiSolutions": [
+        "暂不推荐单独方案",
+        "与 Lot 1/Lot 2 归并后统一评估通信、SCADA 和网络安全包"
+      ],
+      "scoreRationale": "18/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "The parent Anjar–Majdel Anjar–Qabb Elias wastewater-treatment record has only a placeholder summary and overlaps with the separate Lot 1 and Lot 2 records. Treat it as the parent master record for deduplication, not as an additional investment/ICT opportunity; analyse the consolidated scope once formal details are available.",
+        "recommendedHuaweiSolutions": [
+          "No standalone solution recommended",
+          "Consolidate with Lots 1 and 2 before assessing communications, SCADA and cybersecurity packages"
+        ],
+        "scoreRationale": "18/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-36265",
+      "priority": "WATCH",
+      "fitScore": 15,
+      "demandSummary": "Tripoli 至叙利亚边境铁路桥梁建设项目目前只有占位摘要，处于 On Hold，未提供桥梁数量、铁路线路、信号通信或跨境协调范围。若恢复，可评估非安全关键铁路通信和桥梁运维网络，但需核实跨境融资与采购资格。",
+      "recommendedHuaweiSolutions": [
+        "暂不推荐具体产品",
+        "项目复工后补齐铁路线路、桥梁及通信范围再评估"
+      ],
+      "scoreRationale": "15/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "The railway-bridge project between Tripoli and the Syrian border has only a placeholder summary, is On Hold and lacks bridge count, railway alignment, signalling/telecom or cross-border coordination details. If revived, assess non-safety-critical railway communications and bridge-operations networking, subject to cross-border financing and procurement eligibility.",
+        "recommendedHuaweiSolutions": [
+          "No specific product recommended",
+          "Reassess after restart and confirmation of railway alignment, bridge and communications scope"
+        ],
+        "scoreRationale": "15/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    },
+    {
+      "opportunityId": "MEED-LB-35821",
+      "priority": "WATCH",
+      "fitScore": 20,
+      "demandSummary": "Beirut Museum of Art 项目目前只有项目名称和 Under Construction 占位摘要，未提供建筑规模、展陈系统、藏品数字化、安防或 ICT 范围。可在补齐项目资料后评估场馆网络、Wi-Fi、视频、存储和数字展陈基础设施。",
+      "recommendedHuaweiSolutions": [
+        "暂不推荐具体方案",
+        "补齐建筑、展陈、数字化和弱电采购范围后评估"
+      ],
+      "scoreRationale": "20/100 — 依据现有项目范围与华为 ICT/数字基础设施能力的相关性评估；On Hold 或占位记录维持 WATCH，不把潜在配套需求表述为已确认采购。",
+      "risks": [
+        "项目当前为 On Hold 或缺少正式 Scope 时，实际采购和商务窗口不确定",
+        "ICT 是否独立采购、预算及 EPC/系统集成商责任边界尚需核实"
+      ],
+      "nextActions": [
+        "核实项目状态、融资/复工计划及业主顾问",
+        "获取正式 Scope 并确认通信、SCADA、网络或视频采购包",
+        "对父子项目和分标进行归并去重，避免重复计算"
+      ],
+      "evidence": [
+        "当前 D1/MEED 项目摘要、阶段和 Scope 描述；占位记录已明确标记证据不足。"
+      ],
+      "factsVsInference": "事实：项目范围和状态来自当前 D1 记录。推断：推荐的 ICT 方案属于潜在配套需求，需由业主/EPC 正式采购文件确认；On Hold 项目未假设近期招标。",
+      "english": {
+        "demandSummary": "The Beirut Museum of Art record contains only a title and Under Construction placeholder, with no building scale, exhibition systems, collection digitisation, security or ICT scope. After obtaining project details, assess venue networking, Wi-Fi, video, storage and digital-exhibition infrastructure.",
+        "recommendedHuaweiSolutions": [
+          "No specific solution recommended",
+          "Assess after building, exhibition, digitisation and ELV procurement scope are confirmed"
+        ],
+        "scoreRationale": "20/100 — assessed against the current project scope and relevance to Huawei ICT/digital infrastructure. On-hold or placeholder records remain WATCH; potential supporting needs are not represented as confirmed procurement.",
+        "risks": [
+          "For projects On Hold or lacking formal scope, procurement timing and commercial windows are uncertain",
+          "Standalone ICT procurement, budget and EPC/system-integrator responsibilities remain to be verified"
+        ],
+        "nextActions": [
+          "Verify project status, financing/restart plan and owner consultant",
+          "Obtain formal scope and confirm communications, SCADA, networking or video packages",
+          "Reconcile parent/child projects and lots to avoid double counting"
+        ],
+        "evidence": [
+          "Current D1/MEED project summary, stage and scope description; placeholder records are explicitly marked as evidence gaps."
+        ],
+        "factsVsInference": "Known: project scope and status are based on the current D1 record. Inference: recommended ICT solutions are potential supporting needs requiring confirmation in owner/EPC procurement documents; no near-term tender is assumed for on-hold projects."
+      }
+    }
+  ]
 }
