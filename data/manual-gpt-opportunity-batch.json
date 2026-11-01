@@ -1,3 +1,5 @@
 {
-  "mode": "fetch"
+  "mode": "fetch",
+  "countries": ["Iraq", "Jordan", "Lebanon"],
+  "limit": 20
 }
