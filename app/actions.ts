@@ -698,6 +698,19 @@ export async function saveWeeklyReportSnapshot(input: { weekStart: string; weekE
   return { ok: true as const, id };
 }
 
+export async function getWeeklyReportSnapshotById(id: string): Promise<{ snapshot: WeeklyReportSnapshot; audience: "internal" | "partner"; language: "zh" | "en" }> {
+  const { profile, db } = await currentIdentity();
+  assertWeeklyReportAccess(profile);
+  const rows = await db.select().from(weeklyReports).where(eq(weeklyReports.id, id)).limit(1);
+  const row = rows[0];
+  if (!row) throw new Error("WEEKLY_REPORT_NOT_FOUND");
+  return {
+    snapshot: JSON.parse(row.reportData) as WeeklyReportSnapshot,
+    audience: row.audience as "internal" | "partner",
+    language: row.language as "zh" | "en",
+  };
+}
+
 export async function getWeeklyReportHistory() {
   const { profile, db } = await currentIdentity();
   assertWeeklyReportAccess(profile);
