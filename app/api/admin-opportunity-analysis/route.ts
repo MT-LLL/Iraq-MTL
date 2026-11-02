@@ -136,10 +136,10 @@ export async function GET(request: Request) {
   if ("response" in auth) return auth.response;
 
   const url = new URL(request.url);
-  const requested = (url.searchParams.get("priority") ?? "P0,P1,P2")
+  const requested = (url.searchParams.get("priority") ?? "P0,P1,P2,WATCH")
     .split(",")
     .map(value => value.trim().toUpperCase())
-    .filter(value => ["P0", "P1", "P2"].includes(value));
+    .filter(value => ["P0", "P1", "P2", "WATCH"].includes(value));
   if (!requested.length) return json({ ok: false, error: "INVALID_PRIORITY_FILTER" }, 400);
 
   const rawLimit = Number(url.searchParams.get("limit") ?? 100);
@@ -157,7 +157,7 @@ export async function GET(request: Request) {
         updated_at AS updatedAt
       FROM opportunities
       WHERE priority IN (${placeholders})
-      ORDER BY CASE priority WHEN 'P0' THEN 0 WHEN 'P1' THEN 1 ELSE 2 END, score DESC, updated_at DESC
+      ORDER BY CASE priority WHEN 'P0' THEN 0 WHEN 'P1' THEN 1 WHEN 'P2' THEN 2 ELSE 3 END, score DESC, updated_at DESC
       LIMIT ?
     `).bind(...requested, limit).all<Record<string, unknown>>();
     opportunities = rows.results ?? [];
@@ -218,7 +218,7 @@ export async function POST(request: Request) {
     if (!Number.isInteger(analysis.fitScore) || analysis.fitScore < 0 || analysis.fitScore > 100) {
       return json({ ok: false, error: "FIT_SCORE_MUST_BE_0_TO_100" }, 400);
     }
-    if (!["P0", "P1", "P2"].includes(analysis.priority) ||
+    if (!["P0", "P1", "P2", "WATCH"].includes(analysis.priority) ||
         !analysis.demandSummary?.trim() || !analysis.scoreRationale?.trim() ||
         !Array.isArray(analysis.recommendedHuaweiSolutions) ||
         !Array.isArray(analysis.risks) || !Array.isArray(analysis.nextActions) ||
@@ -258,8 +258,8 @@ export async function POST(request: Request) {
     };
     const nextValue = JSON.stringify({ ...merged, opportunityAnalysis: savedAnalysis });
     await auth.db.batch([
-      auth.db.prepare("UPDATE opportunities SET solution_matches = ?, updated_at = ? WHERE id = ?")
-        .bind(nextValue, now, id),
+      auth.db.prepare("UPDATE opportunities SET priority = ?, solution_matches = ?, updated_at = ? WHERE id = ?")
+        .bind(analysis.priority, nextValue, now, id),
       auth.db.prepare("INSERT INTO audit_logs (id, actor_id, action, entity_type, entity_id, metadata, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
         .bind(
           crypto.randomUUID(),
