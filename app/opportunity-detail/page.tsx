@@ -67,16 +67,27 @@ export default async function OpportunityDetailPage({ searchParams }: { searchPa
           <section style={{ background: "#fff", border: "1px solid #dce9e6", borderRadius: 18, padding: "24px 26px" }}><div style={{ color: "#0b837c", fontSize: 12, fontWeight: 800, letterSpacing: 1 }}>{tr(lang,"04 · 项目里程碑与进展","04 · MILESTONES & UPDATES")}</div>{[item.keyProjectMilestones || item.deadline,item.newsAndUpdates,item.latestNews].filter(Boolean).map((entry,index)=><div key={index} style={{ display: "flex", gap: 14, marginTop: 18 }}><span style={{ width: 10, height: 10, borderRadius: "50%", background: "#0b8a82", marginTop: 7, flex: "0 0 auto" }} /><p style={{ ...textStyle, margin: 0 }}>{entry}</p></div>)}</section>
           <section style={{ background: "#fff", border: "1px solid #dce9e6", borderRadius: 18, padding: "24px 26px", marginTop: 16 }}>
             <div style={{ color: "#0b837c", fontSize: 12, fontWeight: 800, letterSpacing: 1 }}>{tr(lang,"05 · 项目联系人","05 · PROJECT CONTACTS")}</div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 12, marginTop: 16 }}>
-              {[
-                [tr(lang,"联系人姓名","CONTACT NAME"), item.contactName],
-                [tr(lang,"职位","JOB TITLE"), item.contactJobTitle],
-                [tr(lang,"联系电话","PHONE"), item.contactPhone],
-                [tr(lang,"联系邮箱","EMAIL"), item.contactEmail],
-                [tr(lang,"所属公司","COMPANY"), item.companyName],
-                [tr(lang,"公司电话","COMPANY PHONE"), item.companyPhoneNumber]
-              ].filter(([,value]) => Boolean(value)).map(([label,value]) => <div key={String(label)} style={{ padding: "14px 15px", borderRadius: 12, background: "#f4f8f7", border: "1px solid #dce9e6" }}><div style={{ color: "#668188", fontSize: 10, letterSpacing: .8, fontWeight: 700 }}>{label}</div><div style={{ marginTop: 7, color: "#183940", fontWeight: 700, fontSize: 14, wordBreak: "break-word" }}>{String(value)}</div></div>)}
+            <div style={{ marginTop: 14, padding: "14px 16px", borderRadius: 12, background: "#f2f8f7", border: "1px solid #dce9e6" }}>
+              <div style={{ color: "#668188", fontSize: 10, fontWeight: 800, letterSpacing: .8 }}>{tr(lang,"首选触达方式","PREFERRED CONTACT")}</div>
+              <div style={{ marginTop: 7, color: "#183940", fontWeight: 700, wordBreak: "break-word" }}>{contact.preferredMethodLabel}: {contact.preferredMethod}</div>
+              <div style={{ marginTop: 6, color: "#668188", fontSize: 12 }}>{contact.contactCompleteness}</div>
             </div>
+            {contacts.length ? <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: 12, marginTop: 14 }}>
+              {contacts.map((entry,index) => <div key={index} style={{ padding: "15px 16px", borderRadius: 12, background: "#fff", border: "1px solid #dce9e6" }}>
+                <div style={{ fontWeight: 800, color: "#183940", marginBottom: 10 }}>{[entry.name,entry.title].filter(Boolean).join(" · ") || entry.company || tr(lang,"项目联系人","Project contact")}</div>
+                {entry.role ? <div style={{ marginTop: 7 }}><small style={{ color: "#668188" }}>{tr(lang,"项目角色","Project role")}</small><div style={{ color: "#315158" }}>{entry.role}</div></div> : null}
+                {entry.company ? <div style={{ marginTop: 7 }}><small style={{ color: "#668188" }}>{tr(lang,"所属公司","Organization")}</small><div style={{ color: "#315158" }}>{entry.company}</div></div> : null}
+                {entry.email ? <div style={{ marginTop: 7 }}><small style={{ color: "#668188" }}>Email</small><div><a style={{ color: "#087f79", fontWeight: 700, wordBreak: "break-word" }} href={"mailto:" + entry.email}>{entry.email}</a></div></div> : null}
+                {entry.phone ? <div style={{ marginTop: 7 }}><small style={{ color: "#668188" }}>{tr(lang,"联系电话","Direct phone")}</small><div><a style={{ color: "#087f79", fontWeight: 700 }} href={"tel:" + entry.phone}>{entry.phone}</a></div></div> : null}
+                {entry.companyPhone ? <div style={{ marginTop: 7 }}><small style={{ color: "#668188" }}>{tr(lang,"机构电话","Organization phone")}</small><div><a style={{ color: "#087f79", fontWeight: 700 }} href={"tel:" + entry.companyPhone}>{entry.companyPhone}</a></div></div> : null}
+                {entry.source ? <div style={{ marginTop: 7, color: "#829499", fontSize: 11 }}>{tr(lang,"来源","Source")}: {entry.source}</div> : null}
+              </div>)}
+            </div> : <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: 12, marginTop: 14 }}>
+              {[[tr(lang,"联系人姓名","CONTACT NAME"),contact.name],[tr(lang,"职位","JOB TITLE"),contact.title],[tr(lang,"所属公司","COMPANY"),contact.company],[tr(lang,"联系邮箱","EMAIL"),contact.email],[tr(lang,"联系电话","PHONE"),contact.phone],[tr(lang,"公司电话","COMPANY PHONE"),contact.companyPhone]].map(([label,value]) => <div key={String(label)} style={{ padding: "13px 14px", borderRadius: 12, background: "#f7faf9", border: "1px solid #e1ebe8" }}><div style={{ color: "#668188", fontSize: 10, fontWeight: 700 }}>{label}</div><div style={{ marginTop: 6, color: "#183940", fontSize: 13, fontWeight: 700, wordBreak: "break-word" }}>{String(value || "—")}</div></div>)}
+            </div>}
+            <p style={{ ...textStyle, fontSize: 12, marginTop: 14 }}>{contact.status}</p>
+            <p style={{ ...textStyle, fontSize: 12, marginTop: 5 }}><b>{tr(lang,"采购入口：","Procurement entry: ")}</b>{contact.procurementEntry}</p>
+            <p style={{ ...textStyle, fontSize: 12, marginTop: 5 }}><b>{tr(lang,"补齐动作：","Completion action: ")}</b>{contact.completionAction}</p>
           </section>
         </div>
         <aside>
