@@ -22,7 +22,6 @@ const navItems: { id: View; zh: string; en: string; glyph: string; badge?: strin
   { id: "mtl", zh: "MTL内容库", en: "MTL Library", glyph: "▣" },
   { id: "dispatch", zh: "线索分发", en: "Lead Dispatch", glyph: "⇄", badge: "0" },
   { id: "partners", zh: "伙伴协同", en: "Partner Collaboration", glyph: "◇", badge: "3" },
-  { id: "email", zh: "邮件推送", en: "Email Push", glyph: "✉" },
   { id: "weekly-report", zh: "运营周报", en: "Weekly Report", glyph: "▥" },
   { id: "approvals", zh: "账户审批", en: "Account Approval", glyph: "✓" },
   { id: "imports", zh: "数据与导入", en: "Data & Imports", glyph: "↥" },
