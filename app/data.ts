@@ -294,7 +294,7 @@ export type BilingualAnalysisText = {
 export type SavedOpportunityAnalysis = {
   promptVersion: string;
   analyzedAt: string;
-  priority: "P0" | "P1" | "P2";
+  priority: Priority;
   demandSummary: string;
   recommendedHuaweiSolutions: string[];
   fitScore: number;
