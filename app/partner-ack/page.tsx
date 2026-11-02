@@ -130,14 +130,24 @@ export default async function PartnerAckPage({ searchParams }: { searchParams?: 
             <section className="ack-block contact">
               <strong>{tr(lang, "联系人信息与采购入口", "Contacts and procurement entry")}</strong>
               <div className="ack-contact-primary"><small>{tr(lang, "首选触达方式", "Preferred contact method")}</small><b>{item.contact.preferredMethodLabel} · {item.contact.preferredMethod}</b><em>{item.contact.contactCompleteness}</em></div>
-              <div className="ack-contact-grid">
+              {item.contacts?.length ? <div className="ack-contact-grid">
+                {item.contacts.map((entry: { name?: string; title?: string; company?: string; role?: string; email?: string; phone?: string; companyPhone?: string; source?: string }, contactIndex: number) => <div key={item.id + "-contact-" + contactIndex} className="ack-contact-entry">
+                  <b>{[entry.name, entry.title].filter(Boolean).join(" · ") || entry.company || tr(lang, "项目联系人", "Project contact")}</b>
+                  {entry.role ? <span><small>{tr(lang, "角色", "Role")}</small><b>{entry.role}</b></span> : null}
+                  {entry.company ? <span><small>{tr(lang, "公司", "Company")}</small><b>{entry.company}</b></span> : null}
+                  {entry.email ? <span><small>{tr(lang, "邮箱", "Email")}</small><b><a href={"mailto:" + entry.email}>{entry.email}</a></b></span> : null}
+                  {entry.phone ? <span><small>{tr(lang, "电话", "Phone")}</small><b><a href={"tel:" + entry.phone}>{entry.phone}</a></b></span> : null}
+                  {entry.companyPhone ? <span><small>{tr(lang, "机构电话", "Institution phone")}</small><b><a href={"tel:" + entry.companyPhone}>{entry.companyPhone}</a></b></span> : null}
+                  {entry.source ? <span><small>{tr(lang, "来源", "Source")}</small><b>{entry.source}</b></span> : null}
+                </div>)}
+              </div> : <div className="ack-contact-grid">
                 <span><small>{tr(lang, "联系人", "Contact")}</small><b>{item.contact.name}</b></span>
                 <span><small>{tr(lang, "职位", "Title")}</small><b>{item.contact.title}</b></span>
                 <span><small>{tr(lang, "公司", "Company")}</small><b>{item.contact.company}</b></span>
                 <span><small>{tr(lang, "邮箱", "Email")}</small><b>{item.contact.email}</b></span>
                 <span><small>{tr(lang, "手机号", "Mobile")}</small><b>{item.contact.phone}</b></span>
                 <span><small>{tr(lang, "机构电话", "Institution phone")}</small><b>{item.contact.companyPhone}</b></span>
-              </div>
+              </div>}
               <p>{item.contact.status}</p>
               <p><b>{tr(lang, "采购入口：", "Procurement entry: ")}</b>{item.contact.procurementEntry}</p>
               <p><b>{tr(lang, "补齐动作：", "Completion action: ")}</b>{item.contact.completionAction}</p>
