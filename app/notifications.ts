@@ -609,16 +609,12 @@ export function buildContent(opportunities: Opportunity[], audience: Audience, a
       </td>
     </tr>
   </table>`;
-  const textRows = opportunities.map(item => {
+  const textRows = opportunities.map((item, index) => {
     const brief = buildOpportunityBrief(item, lang);
     const contact = brief.contactDetails;
+    const detailsUrl = audience === "partner" ? ackUrl : siteUrl;
     const internal = audience === "internal" ? `\n${tr(lang, "内部评分", "Internal score")}${colon}${item.score}/100 · ${item.priority}\n${tr(lang, "负责人", "Owner")}${colon}${item.owner}` : "";
-    const enhancement = audience === "partner" ? enhancements.get(item.id) : undefined;
-    const insight = audience === "partner" ? (enhancement?.insight || partnerSafeInsight(item, lang)) : brief.insight;
-    const play = audience === "partner" ? (enhancement?.play || partnerSafePlay(item, lang)) : brief.strategy;
-    const nextActions = audience === "partner" && enhancement?.actions?.length ? enhancement.actions.join(lang === "zh" ? "；" : "; ") : brief.nextActions.join(lang === "zh" ? "；" : "; ");
-    const ackLine = audience === "partner" ? `\n${tr(lang, "确认链接", "Confirmation link")}${colon}${ackUrl}` : "";
-    return `${brief.title}\n${brief.meta}\n${tr(lang, "项目金额", "Project value")}${colon}${brief.value}\n${tr(lang, "关键节点", "Key milestone")}${colon}${brief.deadline}\n${tr(lang, "项目分析", "Project analysis")}${colon}${insight}\n${tr(lang, "关联华为产品 / 方案", "Related Huawei products / solutions")}${colon}${brief.solutions}\n${tr(lang, "项目打法", "Engagement play")}${colon}${play}\n${tr(lang, "风险与补齐项", "Risks / gaps")}${colon}${brief.risk}\n${tr(lang, "下一步动作", "Next actions")}${colon}${nextActions}\n${tr(lang, "联系人与采购入口", "Contact and procurement entry")}${colon}${contact.status}\n${tr(lang, "首选触达方式", "Preferred contact method")}${colon}${contact.preferredMethodLabel} · ${contact.preferredMethod}\n${tr(lang, "联系人完整度", "Contact completeness")}${colon}${contact.contactCompleteness}\n${tr(lang, "联系人", "Contact")}${colon}${contact.name} · ${contact.title} · ${contact.company}\n${tr(lang, "邮箱", "Email")}${colon}${contact.email}\n${tr(lang, "手机号", "Mobile")}${colon}${contact.phone}\n${tr(lang, "机构电话", "Institution phone")}${colon}${contact.companyPhone}\n${tr(lang, "采购入口", "Procurement entry")}${colon}${contact.procurementEntry}\n${tr(lang, "补齐动作", "Completion action")}${colon}${contact.completionAction}${ackLine}${internal}`;
+    return `${index + 1}. ${brief.title} [${item.id}]\n${brief.meta}\n${tr(lang, "项目金额", "Project value")}${colon}${brief.value} · ${tr(lang, "关键节点", "Key milestone")}${colon}${brief.deadline}\n${tr(lang, "项目背景", "Project background")}${colon}${cleanLocalizedText(lang, item.summary, "To be completed")}\n${tr(lang, "华为匹配方案", "Huawei solution fit")}${colon}${brief.solutions}\n${tr(lang, "联系人", "Contact")}${colon}${contact.name} · ${contact.email} · ${contact.phone}\n${tr(lang, "项目里程碑", "Project milestones")}${colon}${cleanLocalizedText(lang, item.keyProjectMilestones || item.deadline, "To be confirmed")}\n${tr(lang, "查看完整详情", "View full details")}${colon}${detailsUrl}${internal}`;
   });
   const text = `${subject}\n\n${textRows.join("\n\n")}\n\n${siteUrl}`;
   const sms = `${audience === "internal" ? tr(lang, "[MSSD内部]", "[MSSD Internal]") : tr(lang, "[MSSD伙伴]", "[MSSD Partner]")} ${opportunities.slice(0, 5).map(item => {
