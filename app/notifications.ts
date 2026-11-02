@@ -403,19 +403,28 @@ function outlookOpportunityCard(item: Opportunity, audience: Audience, lang: Lan
   const background = cleanLocalizedText(lang, item.summary, lang === "zh" ? "项目背景待补充。" : "Project background to be completed.");
   const news = cleanLocalizedText(lang, item.newsAndUpdates || "", lang === "zh" ? "暂无已记录的项目进展。" : "No project updates recorded.");
   const latestNews = cleanLocalizedText(lang, item.latestNews || "", lang === "zh" ? "暂无最新新闻。" : "No latest news recorded.");
-  const solutionRows = brief.solutionItems.length
-    ? brief.solutionItems.map(solution => `<tr><td width="22%" style="padding:9px;border:1px solid #e4eeea;background:#f7fbfa;font-size:12px;font-weight:bold;color:#0f827b">${escapeHtml(solution.domain)}</td><td width="32%" style="padding:9px;border:1px solid #e4eeea;font-size:13px;font-weight:bold;color:#143946">${escapeHtml(solution.name)}</td><td width="10%" align="center" style="padding:9px;border:1px solid #e4eeea;font-size:12px;font-weight:bold;color:#0f827b">${solution.fit}%</td><td style="padding:9px;border:1px solid #e4eeea;font-size:12px;line-height:19px;color:#526b72">${escapeHtml(solution.role)}</td></tr>`).join("")
+  // Prefer the saved opportunity analysis produced by the GPT analysis workflow.
+  const analysisSolutions = (item.opportunityAnalysis?.recommendedHuaweiSolutions ?? []).filter(Boolean);
+  const solutionSource = analysisSolutions.length
+    ? analysisSolutions.map(name => ({ domain: tr(lang, "AI分析匹配", "AI analysis match"), name, fit: item.opportunityAnalysis?.fitScore ?? 0, role: item.opportunityAnalysis?.scoreRationale || (lang === "zh" ? "基于该机会点已保存的GPT分析结果推荐。" : "Recommended from the saved GPT opportunity analysis.") }))
+    : brief.solutionItems;
+  const allContacts = (item.contacts?.length ? item.contacts : [{ role: contact.role, company: contact.company, companyPhone: contact.companyPhone, email: contact.email, name: contact.name, title: contact.title, phone: contact.phone, source: contact.source }]).filter(entry => [entry.name, entry.title, entry.company, entry.email, entry.phone, entry.companyPhone, entry.role].some(Boolean));
+  const solutionRows = solutionSource.length
+    ? solutionSource.map(solution => `<tr><td width="22%" style="padding:9px;border:1px solid #e4eeea;background:#f7fbfa;font-size:12px;font-weight:bold;color:#0f827b">${escapeHtml(solution.domain)}</td><td width="32%" style="padding:9px;border:1px solid #e4eeea;font-size:13px;font-weight:bold;color:#143946">${escapeHtml(solution.name)}</td><td width="10%" align="center" style="padding:9px;border:1px solid #e4eeea;font-size:12px;font-weight:bold;color:#0f827b">${solution.fit}%</td><td style="padding:9px;border:1px solid #e4eeea;font-size:12px;line-height:19px;color:#526b72">${escapeHtml(solution.role)}</td></tr>`).join("")
     : `<tr><td colspan="4" style="padding:10px;border:1px solid #e4eeea;color:#60777d">${tr(lang, "当前尚无明确方案匹配，需进一步核实项目技术范围。", "No confirmed solution mapping yet; validate the technical scope.")}</td></tr>`;
-  const contactRows = outlookKeyValueRows([
-    [tr(lang, "联系人", "Contact"), `${contact.name} · ${contact.title}`],
-    [tr(lang, "公司", "Company"), contact.company],
-    [tr(lang, "邮箱", "Email"), contact.email],
-    [tr(lang, "电话", "Phone"), contact.phone],
-    [tr(lang, "机构电话", "Organization phone"), contact.companyPhone],
-    [tr(lang, "采购入口", "Procurement entry"), contact.procurementEntry],
-    [tr(lang, "联系人状态", "Contact status"), contact.status],
-    [tr(lang, "补齐动作", "Completion action"), contact.completionAction],
-  ]);
+  const contactCards = allContacts.length ? allContacts.map((entry, index) => {
+    const lines = [
+      entry.role ? tr(lang, "角色", "Role") + colon + entry.role : "",
+      entry.company ? tr(lang, "公司", "Company") + colon + entry.company : "",
+      (entry.name || entry.title) ? tr(lang, "姓名 / 职位", "Name / title") + colon + [entry.name, entry.title].filter(Boolean).join(" · ") : "",
+      entry.email ? tr(lang, "邮箱", "Email") + colon + entry.email : "",
+      entry.phone ? tr(lang, "电话", "Phone") + colon + entry.phone : "",
+      entry.companyPhone ? tr(lang, "机构电话", "Organization phone") + colon + entry.companyPhone : "",
+      entry.source ? tr(lang, "来源", "Source") + colon + entry.source : "",
+    ].filter(Boolean).map(line => escapeHtml(line)).join("<br/>");
+    const heading = escapeHtml([entry.name, entry.title].filter(Boolean).join(" · ") || entry.company || tr(lang, "联系人", "Contact"));
+    return '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:separate;border-spacing:0;margin:0 0 10px;border:1px solid #dce9e5;background:#fbfdfc;border-radius:12px;overflow:hidden"><tr><td style="width:42px;background:#eef8f5;color:#0f827b;text-align:center;font-weight:bold;font-size:14px">' + (index + 1) + '</td><td style="padding:11px 13px"><div style="font-size:12px;font-weight:bold;color:#123f49;margin-bottom:5px">' + heading + '</div><div style="font-size:11px;line-height:1.65;color:#587078">' + lines + '</div></td></tr></table>';
+  }).join("") : outlookTextBlock(tr(lang, "暂无完整联系人信息，请通过项目来源继续补齐。", "No complete contact information is available; continue validation from project sources."));
   const internalRows = audience === "internal" ? `${outlookSectionTitle(tr(lang, "内部经营信息", "Internal sales information"))}<tr><td colspan="2" style="padding:0 18px 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse">${outlookKeyValueRows([
     [tr(lang, "内部评分", "Internal score"), `${item.score}/100 · ${item.priority} · ${tr(lang, "赢单判断", "Win assessment")} ${localTerm(lang, item.win)}`],
     [tr(lang, "机会Owner", "Opportunity owner"), item.owner],
@@ -426,8 +435,8 @@ function outlookOpportunityCard(item: Opportunity, audience: Audience, lang: Lan
   const partnerCta = audience === "partner" ? `<tr><td colspan="2" style="padding:14px 18px 18px"><a href="${escapeHtml(ackUrl)}" style="display:inline-block;padding:10px 16px;background:#0f827b;color:#fff;text-decoration:none;font-size:13px;font-weight:bold">${tr(lang, "打开详情并确认收到", "Open details and confirm receipt")}</a><span style="padding-left:10px;font-size:11px;color:#60777d">${tr(lang, "若邮箱不支持展开，请点击查看完整详情。", "If your email app does not support expand/collapse, open the full details here.")}</span></td></tr>` : `<tr><td colspan="2" style="padding:14px 18px 18px"><a href="${escapeHtml((runtimeEnv().MSSD_SITE_URL || "https://iraq-mtl.lihui9329.workers.dev/").trim())}" style="color:#8a1f1f;font-weight:bold">${tr(lang, "打开 MTL 平台查看完整机会详情", "Open MTL to view full opportunity details")}</a></td></tr>`;
   const detailSections = `
     ${outlookSectionTitle(tr(lang, "项目背景与介绍", "Project background and introduction"))}${outlookTextBlock(background)}
-    ${outlookSectionTitle(tr(lang, "匹配的华为方案", "Huawei solution fit"))}<tr><td colspan="2" style="padding:0 18px 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse"><tr><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "产品域", "Domain")}</td><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "推荐方案", "Recommended solution")}</td><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "匹配", "Fit")}</td><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "项目作用", "Project role")}</td></tr>${solutionRows}</table></td></tr>
-    ${outlookSectionTitle(tr(lang, "联系人信息与采购入口", "Contacts and procurement entry"))}<tr><td colspan="2" style="padding:0 18px 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse">${contactRows}</table></td></tr>
+    ${outlookSectionTitle(tr(lang, analysisSolutions.length ? "GPT分析后的华为方案匹配" : "华为方案匹配", analysisSolutions.length ? "Huawei solution match from GPT analysis" : "Huawei solution fit"))}<tr><td colspan="2" style="padding:0 18px 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse"><tr><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "产品域", "Domain")}</td><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "推荐方案", "Recommended solution")}</td><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "匹配", "Fit")}</td><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "项目作用", "Project role")}</td></tr>${solutionRows}</table></td></tr>
+    ${outlookSectionTitle(tr(lang, "联系人信息与采购入口", "Contacts and procurement entry"))}<tr><td colspan="2" style="padding:0 18px 14px">${contactCards}<div style="margin-top:8px;padding:10px 12px;background:#f6faf9;border:1px solid #e0eee9;border-radius:10px;font-size:11px;line-height:1.6;color:#587078"><b>${tr(lang, "采购入口", "Procurement entry")}${colon}</b>${escapeHtml(contact.procurementEntry)}<br/><b>${tr(lang, "联系人状态", "Contact status")}${colon}</b>${escapeHtml(contact.status)}<br/><b>${tr(lang, "补齐动作", "Completion action")}${colon}</b>${escapeHtml(contact.completionAction)}</div></td></tr>
     ${outlookSectionTitle(tr(lang, "项目进展与里程碑", "Project progress and milestones"))}${outlookTextBlock(milestone)}
     ${outlookSectionTitle(tr(lang, "新闻与进展更新", "News and progress updates"))}${outlookTextBlock(news)}
     ${outlookSectionTitle(tr(lang, "最新新闻", "Latest news"))}${outlookTextBlock(latestNews)}
