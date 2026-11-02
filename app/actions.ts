@@ -633,7 +633,7 @@ export type WeeklyReportSnapshot = {
   progressNotes?: string;
   nextSteps?: string;
   keyRisksHelp?: string;
-  topOpportunities: Array<{ id: string; title: string; country: string; industry: string; stage: string; summary: string; solution: string; coreJudgment: string; owner: string; priority?: string }>;
+  topOpportunities: Array<{ id: string; title: string; country: string; industry: string; stage: string; summary: string; solution: string; coreJudgment: string; owner: string; priority?: string; score?: number; value?: string; addressable?: string; deadline?: string; contactSummary?: string }>;
 };
 
 function assertWeeklyReportAccess(profile: Awaited<ReturnType<typeof currentIdentity>>["profile"]) {
@@ -708,6 +708,59 @@ export async function getWeeklyReportSnapshot(weekStart: string, weekEnd: string
       };
     }),
   };
+}
+
+function weeklyReportOpportunityView(item: Opportunity, language: "zh" | "en") {
+  const analysis = item.opportunityAnalysis;
+  const bilingual = analysis?.bilingualAnalysis?.[language];
+  const recommended = bilingual?.recommendedHuaweiSolutions?.length
+    ? bilingual.recommendedHuaweiSolutions
+    : analysis?.recommendedHuaweiSolutions || [];
+  const solution = recommended.length ? recommended.join("、") : item.solutions.map(value => value.name).join("、");
+  const coreJudgment = bilingual?.demandSummary || analysis?.demandSummary || item.summary || "";
+  const contactSummary = (item.contacts || []).map(contact => [
+    contact.name || "", contact.title || contact.role || "", contact.company || "",
+    contact.phone || "", contact.email || "", contact.companyPhone || "",
+  ].filter(Boolean).join(" · ")).filter(Boolean).join("；");
+  return {
+    id: item.id,
+    title: language === "en" ? (item.titleEn || item.title) : item.title,
+    country: item.country,
+    industry: item.industry,
+    stage: item.stage,
+    summary: item.summary || "",
+    solution,
+    coreJudgment,
+    owner: "",
+    priority: item.priority,
+    score: item.score,
+    value: item.value,
+    addressable: item.addressable,
+    deadline: item.deadline,
+    contactSummary,
+  };
+}
+
+export async function searchWeeklyReportOpportunities(query: string, audience: "internal" | "partner", language: "zh" | "en") {
+  const { profile, db } = await currentIdentity();
+  assertWeeklyReportAccess(profile);
+  const needle = query.trim().toLocaleLowerCase();
+  if (needle.length < 2) return [];
+  const [catalog, tracking, stored] = await Promise.all([
+    allAvailableOpportunities(db),
+    db.select().from(opportunityTracking),
+    audience === "partner" ? db.select().from(storedOpportunities) : Promise.resolve([]),
+  ]);
+  const archived = new Set(tracking.filter(row => row.status === "archived").map(row => row.opportunityId));
+  const visible = audience === "partner"
+    ? new Set(stored.filter(row => row.reviewStatus === "verified" && (row.sourceLicense === "partner-approved" || row.sourceLicense === "public")).map(row => row.id))
+    : null;
+  return catalog.filter(item => !archived.has(item.id) && (!visible || visible.has(item.id)))
+    .filter(item => [item.id, item.title, item.titleEn, item.country, item.city, item.industry, item.stage]
+      .some(value => String(value || "").toLocaleLowerCase().includes(needle)))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 12)
+    .map(item => weeklyReportOpportunityView(item, language));
 }
 
 export async function saveWeeklyReportSnapshot(input: { weekStart: string; weekEnd: string; audience: "internal" | "partner"; language: "zh" | "en"; content?: WeeklyReportSnapshot }) {
