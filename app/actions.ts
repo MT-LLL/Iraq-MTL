@@ -637,7 +637,7 @@ function assertWeeklyReportAccess(profile: Awaited<ReturnType<typeof currentIden
 }
 
 function validReportPeriod(start: string, end: string) {
-  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(start) || !/^\\d{4}-\\d{2}-\\d{2}$/.test(end) || start > end) throw new Error("INVALID_PERIOD");
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(start) || !/^\d{4}-\d{2}-\d{2}$/.test(end) || start > end) throw new Error("INVALID_PERIOD");
 }
 
 export async function getWeeklyReportSnapshot(weekStart: string, weekEnd: string, audience: "internal" | "partner"): Promise<WeeklyReportSnapshot> {
@@ -711,8 +711,8 @@ export async function getWeeklyReportHistory() {
 export async function sendWeeklyReport(input: { weekStart: string; weekEnd: string; audience: "internal" | "partner"; language: "zh" | "en"; recipients: string }) {
   const { profile, db } = await currentIdentity();
   assertWeeklyReportAccess(profile);
-  const recipients = input.recipients.split(/[,;\\n]+/).map(value => value.trim()).filter(Boolean);
-  if (!recipients.length || recipients.length > 20 || recipients.some(value => !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value))) throw new Error("INVALID_EMAIL_RECIPIENT");
+  const recipients = input.recipients.split(/[,;\n]+/).map(value => value.trim()).filter(Boolean);
+  if (!recipients.length || recipients.length > 20 || recipients.some(value => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))) throw new Error("INVALID_EMAIL_RECIPIENT");
   if (input.audience === "internal" && recipients.some(value => !value.toLowerCase().endsWith("@huawei.com"))) throw new Error("INTERNAL_RECIPIENT_FORBIDDEN");
   const snapshot = await getWeeklyReportSnapshot(input.weekStart, input.weekEnd, input.audience);
   const zh = input.language === "zh";
@@ -731,7 +731,7 @@ export async function sendWeeklyReport(input: { weekStart: string; weekEnd: stri
   const metricCells = metrics.map(([label, value]) => `<td style="padding:12px;border:1px solid #dce7e5;background:#f6faf9;font:12px Arial;color:#5b7078">${safe(label)}<br><strong style="font-size:22px;color:#123746">${value}</strong></td>`).join("");
   const projectRows = snapshot.topOpportunities.map(item => `<tr><td style="padding:12px;border-bottom:1px solid #e5ecea;font:14px Arial;color:#173c49"><strong>${safe(item.title)}</strong><br><span style="font-size:12px;color:#63777e">${safe(item.country)} · ${safe(item.industry)} · ${safe(item.stage)}</span><br><span style="font-size:13px">${safe(item.summary)}</span></td></tr>`).join("");
   const html = `<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:0;background:#f3f6f5;padding:24px"><table role="presentation" width="100%" style="max-width:760px;margin:auto;background:#fff;border-collapse:collapse"><tr><td style="padding:28px;background:#0b2738;color:#fff;font-family:Arial"><div style="font-size:11px;letter-spacing:2px;color:#8ddbd1">IRAQ MTL · WEEKLY OPERATIONS</div><h1 style="font-size:26px;margin:10px 0">${zh ? "伊拉克市场机会运营周报" : "Iraq Market Opportunity Weekly Report"}</h1><div style="font-size:13px;color:#d4e2e5">${safe(input.weekStart)} – ${safe(input.weekEnd)}</div></td></tr><tr><td style="padding:20px 22px 8px;font:14px Arial;color:#294b56">${zh ? "本周运营概览" : "Weekly Operations Overview"}</td></tr><tr><td style="padding:0 20px 18px"><table role="presentation" width="100%" cellspacing="6"><tr>${metricCells}</tr></table></td></tr><tr><td style="padding:18px 22px 8px;font:bold 13px Arial;color:#0f827b">${zh ? "本周重点机会" : "Key Opportunities This Week"}</td></tr>${projectRows}<tr><td style="padding:24px 22px;font:11px Arial;color:#71848a">IRAQ MTL · ${input.audience === "internal" ? "Confidential · Huawei Internal Use" : "Partner-safe edition"}</td></tr></table></body></html>`;
-  const textBody = metrics.map(([label, value]) => `${label}: ${value}`).join("\\n") + "\\n\\n" + snapshot.topOpportunities.map(item => `${item.title} — ${item.country}, ${item.industry}\\n${item.summary}`).join("\\n\\n");
+  const textBody = metrics.map(([label, value]) => `${label}: ${value}`).join("\n") + "\n\n" + snapshot.topOpportunities.map(item => `${item.title} — ${item.country}, ${item.industry}\n${item.summary}`).join("\n\n");
   const subject = zh ? `伊拉克市场机会运营周报｜${input.weekStart} – ${input.weekEnd}` : `Iraq Market Opportunity Weekly Report | ${input.weekStart} – ${input.weekEnd}`;
   const delivery = await deliverWeeklyReportEmail({ recipients: recipients.join(","), audience: input.audience, subject, language: input.language, html, text: textBody });
   const id = crypto.randomUUID();
