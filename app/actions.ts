@@ -124,6 +124,14 @@ export type PartnerPushConfirmationView = {
     funding: string;
     source: string;
     insight: string;
+    analysis: {
+      demandSummary: string;
+      recommendedHuaweiSolutions: string[];
+      scoreRationale: string;
+      risks: string[];
+      nextActions: string[];
+      factsVsInference: string;
+    };
     background: string;
     scope: string[];
     milestones: string;
@@ -614,6 +622,16 @@ export async function getManualOpportunities() {
   return allAvailableOpportunities(db);
 }
 
+export async function getInternalOpportunityDetail(opportunityId: string): Promise<Opportunity> {
+  const { profile, db } = await currentIdentity();
+  if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) throw new Error("FORBIDDEN");
+  const id = String(opportunityId || "").trim();
+  if (!id || id.length > 160) throw new Error("INVALID_OPPORTUNITY_ID");
+  const opportunity = (await allAvailableOpportunities(db)).find(item => item.id === id);
+  if (!opportunity) throw new Error("OPPORTUNITY_NOT_FOUND");
+  return opportunity;
+}
+
 export async function getPartnerShareableOpportunities(): Promise<Opportunity[]> {
   const { profile, db } = await currentIdentity();
   if (!profile || profile.status !== "approved" || profile.identityType !== "partner") return [];
@@ -1021,6 +1039,14 @@ export async function getPartnerPushConfirmation(input: { id: string; token: str
         funding: brief.funding,
         source: brief.source,
         insight: partnerSafeInsight(item, lang),
+        analysis: {
+          demandSummary: item.opportunityAnalysis?.bilingualAnalysis?.[lang]?.demandSummary || item.opportunityAnalysis?.demandSummary || "",
+          recommendedHuaweiSolutions: item.opportunityAnalysis?.bilingualAnalysis?.[lang]?.recommendedHuaweiSolutions || item.opportunityAnalysis?.recommendedHuaweiSolutions || [],
+          scoreRationale: item.opportunityAnalysis?.bilingualAnalysis?.[lang]?.scoreRationale || item.opportunityAnalysis?.scoreRationale || "",
+          risks: item.opportunityAnalysis?.bilingualAnalysis?.[lang]?.risks || item.opportunityAnalysis?.risks || [],
+          nextActions: item.opportunityAnalysis?.bilingualAnalysis?.[lang]?.nextActions || item.opportunityAnalysis?.nextActions || [],
+          factsVsInference: item.opportunityAnalysis?.bilingualAnalysis?.[lang]?.factsVsInference || item.opportunityAnalysis?.factsVsInference || "",
+        },
         background: item.summary || (lang === "zh" ? "项目背景待补充。" : "Project background to be completed."),
         scope: item.evidence.slice(0, 5).map(value => localText(lang, value, "Scope to be verified")),
         milestones: localText(lang, item.keyProjectMilestones || item.deadline, "Milestones to be confirmed"),
