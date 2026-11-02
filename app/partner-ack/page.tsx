@@ -112,7 +112,6 @@ export default async function PartnerAckPage({ searchParams }: { searchParams?: 
               <div><small>{tr(lang, "来源", "Source")}</small><strong>{item.source}</strong></div>
             </div>
             <section className="ack-block"><strong>{tr(lang, "项目背景与介绍", "Project background and introduction")}</strong><p>{item.background}</p></section>
-            <section className="ack-block"><strong>{tr(lang, "项目范围 / Scope", "Project scope")}</strong><ul>{item.scope.map((entry, scopeIndex) => <li key={scopeIndex}>{entry}</li>)}</ul></section>
             <section className="ack-block">
               <strong>{tr(lang, "匹配的华为方案", "Huawei solution fit")}</strong>
               <div className="ack-product-list">{item.solutions.map(solution => <div key={`${item.id}-${solution.name}`}>
