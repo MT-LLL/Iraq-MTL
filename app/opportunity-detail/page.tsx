@@ -1,4 +1,5 @@
 import { getInternalOpportunityDetail } from "../actions";
+import { contactDetails } from "../localization";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 type Lang = "zh" | "en";
@@ -26,6 +27,8 @@ export default async function OpportunityDetailPage({ searchParams }: { searchPa
     </section></main>;
   }
   const analysis = item.opportunityAnalysis;
+  const contact = contactDetails(item, lang);
+  const contacts = item.contacts ?? [];
   const localized = analysis?.bilingualAnalysis?.[lang];
   const demand = localized?.demandSummary || analysis?.demandSummary || tr(lang, "该机会点尚未保存GPT分析。", "No saved GPT analysis is available for this opportunity.");
   const solutions = localized?.recommendedHuaweiSolutions?.length ? localized.recommendedHuaweiSolutions : analysis?.recommendedHuaweiSolutions || [];
@@ -59,6 +62,28 @@ export default async function OpportunityDetailPage({ searchParams }: { searchPa
           <div><small>{tr(lang, "可服务空间", "Addressable scope")}</small><strong>{item.addressable}</strong></div>
           <div><small>{tr(lang, "关键时间窗口", "Key time window")}</small><strong>{item.deadline}</strong></div>
           <div><small>{tr(lang, "资金状态", "Funding status")}</small><strong>{item.funding}</strong></div>
+        </div>
+      </section>
+      <section style={sectionStyle}>
+        <h2>{tr(lang, "联系人与直接联系方式", "Contacts and direct contact details")}</h2>
+        <div style={{ ...textStyle, marginBottom: 12 }}>
+          <b>{tr(lang, "首选触达方式：", "Preferred contact method: ")}</b>
+          {contact.preferredMethodLabel}: {contact.preferredMethod}
+          <p>{contact.status}</p>
+        </div>
+        {contacts.length ? contacts.map((entry, index) => <div key={item.id + "-contact-" + index} style={{ border: "1px solid #e1ebe7", borderRadius: 9, padding: 12, marginBottom: 10 }}>
+          <strong style={{ display: "block", color: "#143946", marginBottom: 6 }}>{[entry.name, entry.title].filter(Boolean).join(" · ") || entry.company || tr(lang, "项目联系人", "Project contact")}</strong>
+          {entry.role ? <p style={textStyle}>{tr(lang, "角色：", "Role: ")}{entry.role}</p> : null}
+          {entry.company ? <p style={textStyle}>{tr(lang, "公司：", "Company: ")}{entry.company}</p> : null}
+          {entry.email ? <p style={textStyle}>{tr(lang, "邮箱：", "Email: ")}<a href={"mailto:" + entry.email}>{entry.email}</a></p> : null}
+          {entry.phone ? <p style={textStyle}>{tr(lang, "电话：", "Phone: ")}<a href={"tel:" + entry.phone}>{entry.phone}</a></p> : null}
+          {entry.companyPhone ? <p style={textStyle}>{tr(lang, "机构电话：", "Organization phone: ")}<a href={"tel:" + entry.companyPhone}>{entry.companyPhone}</a></p> : null}
+          {entry.source ? <p style={textStyle}>{tr(lang, "来源：", "Source: ")}{entry.source}</p> : null}
+        </div>) : <p style={textStyle}>{tr(lang, "目前没有关联到可直接联系的项目联系人记录。", "No directly contactable project contact is currently linked to this opportunity.")}</p>}
+        <div style={{ ...textStyle, padding: 12, background: "#f6faf9", borderRadius: 8 }}>
+          <b>{tr(lang, "采购/项目入口：", "Procurement / project entry: ")}</b>
+          {contact.procurementEntry}
+          <p>{contact.completionAction}</p>
         </div>
       </section>
       <section style={sectionStyle}>
