@@ -650,11 +650,12 @@ export async function getWeeklyReportSnapshot(weekStart: string, weekEnd: string
   validReportPeriod(weekStart, weekEnd);
   const start = new Date(weekStart + "T00:00:00+03:00").getTime();
   const end = new Date(weekEnd + "T23:59:59+03:00").getTime();
-  const [opportunities, tracking, pushes, distributions] = await Promise.all([
+  const [opportunities, tracking, pushes, distributions, catalog] = await Promise.all([
     db.select().from(storedOpportunities),
     db.select().from(opportunityTracking),
     db.select().from(pushJobs),
     db.select().from(leadDistributions),
+    allAvailableOpportunities(db),
   ]);
   const archivedIds = new Set(tracking.filter(row => row.status === "archived").map(row => row.opportunityId));
   const partnerVisibleIds = new Set(opportunities.filter(row => row.reviewStatus === "verified" && (row.sourceLicense === "partner-approved" || row.sourceLicense === "public")).map(row => row.id));
@@ -669,7 +670,7 @@ export async function getWeeklyReportSnapshot(weekStart: string, weekEnd: string
     catch { return row.status === "acknowledged"; }
   }).length;
   const returned = distributions.filter(row => row.requestedAt.getTime() >= start && row.requestedAt.getTime() <= end && row.status === "returned").length;
-  const displayRows = active;
+  const displayRows = catalog.filter(item => !archivedIds.has(item.id) && (audience !== "partner" || partnerVisibleIds.has(item.id)));
   return {
     weekStart, weekEnd,
     totalOpportunities: active.length,
@@ -685,28 +686,7 @@ export async function getWeeklyReportSnapshot(weekStart: string, weekEnd: string
     progressNotes: "",
     nextSteps: "",
     keyRisksHelp: "",
-    topOpportunities: [...displayRows].sort((a,b) => b.score-a.score).slice(0,5).map(row => {
-      const saved = parseJson<{
-        solutions?: Array<{ domain?: string; name?: string; solutionName?: string; solution?: string; title?: string } | string>;
-        opportunityAnalysis?: SavedOpportunityAnalysis;
-      } | null>(row.solutionMatches, null);
-      const analysis = saved?.opportunityAnalysis;
-      const bilingual = analysis?.bilingualAnalysis?.[language];
-      const recommended = bilingual?.recommendedHuaweiSolutions?.length
-        ? bilingual.recommendedHuaweiSolutions
-        : analysis?.recommendedHuaweiSolutions || [];
-      const legacySolutions = Array.isArray(saved?.solutions)
-        ? saved!.solutions!.map((item: any) => typeof item === "string" ? item : item?.solutionName || item?.solution || item?.name || item?.title || "").filter(Boolean)
-        : [];
-      const solution = recommended.length ? recommended.join("、") : legacySolutions.join("、");
-      const coreJudgment = bilingual?.demandSummary || analysis?.demandSummary || "";
-      return {
-        id: row.id, title: language === "en" ? (row.titleEn || row.title) : row.title,
-        country: row.country, industry: row.industry, stage: row.stage, summary: row.summary || "",
-        solution, coreJudgment, owner: "",
-        ...(audience === "internal" ? { priority: row.priority } : {}),
-      };
-    }),
+    topOpportunities: [...displayRows].sort((a, b) => b.score - a.score).slice(0, 5).map(row => weeklyReportOpportunityView(row, language)),
   };
 }
 
@@ -858,7 +838,7 @@ export async function sendWeeklyReport(input: { weekStart: string; weekEnd: stri
     ] : []),
   ];
   const metricCells = metrics.map(([label, value]) => `<td style="padding:12px;border:1px solid #dce7e5;background:#f6faf9;font:12px Arial;color:#5b7078">${safe(label)}<br><strong style="font-size:22px;color:#123746">${value}</strong></td>`).join("");
-  const projectRows = snapshot.topOpportunities.slice(0, 5).map((item, index) => `<tr><td style="padding:13px 14px;border-bottom:1px solid #e5ecea;font:14px Arial;color:#173c49"><strong>${index + 1}. ${safe(item.title)}</strong><br><span style="font-size:12px;color:#63777e">${safe(item.industry)}</span><br><span style="font-size:13px">${zh ? "华为匹配方案" : "Huawei solution"}: ${safe(item.solution || (zh ? "待补充" : "To be added"))}</span><br><span style="font-size:11px;color:#526b73">${zh ? "核心判断" : "Core judgment"}: ${safe(item.coreJudgment || (zh ? "待补充" : "To be added"))}</span><br><span style="font-size:13px">${zh ? "责任人" : "Owner"}: ${safe(item.owner || (zh ? "待指定" : "Unassigned"))}</span></td></tr>`).join("");
+  const projectRows = snapshot.topOpportunities.slice(0, 5).map((item, index) => `<tr><td style="padding:13px 14px;border-bottom:1px solid #e5ecea;font:14px Arial;color:#173c49"><strong>${index + 1}. ${safe(item.title)}</strong><br><span style="font-size:12px;color:#63777e">${safe(item.country)} · ${safe(item.industry)} · ${safe(item.stage)} · ${zh ? "评分" : "Score"} ${item.score ?? "—"}</span><br><span style="font-size:12px">${zh ? "项目金额" : "Project value"}: ${safe(item.value || "—")} · ${zh ? "可服务空间" : "Addressable value"}: ${safe(item.addressable || "—")} · ${zh ? "截止日期" : "Deadline"}: ${safe(item.deadline || "—")}</span><br><span style="font-size:13px">${zh ? "华为匹配方案" : "Huawei solution"}: ${safe(item.solution || (zh ? "待补充" : "To be added"))}</span><br><span style="font-size:11px;color:#526b73">${zh ? "核心判断" : "Core judgment"}: ${safe(item.coreJudgment || (zh ? "待补充" : "To be added"))}</span><br><span style="font-size:13px">${zh ? "责任人" : "Owner"}: ${safe(item.owner || (zh ? "待指定" : "Unassigned"))}</span></td></tr>`).join("");
   const progressBlock = input.audience === "internal" ? `<tr><td style="padding:18px 22px 6px;font:bold 16px Arial;color:#0f827b">${zh ? "本周关键进展" : "Key Progress This Week"}</td></tr><tr><td style="padding:0 22px 16px;font:13px/1.7 Arial;color:#294b56;white-space:pre-wrap">${safe(snapshot.keyProgress || (zh ? "暂无填写" : "Not provided"))}</td></tr><tr><td style="padding:12px 22px 6px;font:bold 16px Arial;color:#0f827b">${zh ? "下一步计划" : "Next Steps"}</td></tr><tr><td style="padding:0 22px 16px;font:13px/1.7 Arial;color:#294b56;white-space:pre-wrap">${safe(snapshot.nextSteps || (zh ? "暂无填写" : "Not provided"))}</td></tr><tr><td style="padding:12px 22px 6px;font:bold 16px Arial;color:#a65f2b">${zh ? "关键风险求助" : "Key Risks & Support Needed"}</td></tr><tr><td style="padding:0 22px 20px;font:13px/1.7 Arial;color:#294b56;white-space:pre-wrap">${safe(snapshot.keyRisksHelp || (zh ? "暂无填写" : "Not provided"))}</td></tr>` : "";
   const html = `<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:0;background:#f3f6f5;padding:24px"><table role="presentation" width="100%" style="max-width:760px;margin:auto;background:#fff;border-collapse:collapse"><tr><td style="padding:28px;background:#0b2738;color:#fff;font-family:Arial"><div style="font-size:11px;letter-spacing:2px;color:#8ddbd1">IRAQ MTL · WEEKLY OPERATIONS</div><h1 style="font-size:26px;margin:10px 0">${zh ? "伊拉克市场机会运营周报" : "Iraq Market Opportunity Weekly Report"}</h1><div style="font-size:13px;color:#d4e2e5">${safe(input.weekStart)} – ${safe(input.weekEnd)}</div></td></tr><tr><td style="padding:20px 22px 8px;font:14px Arial;color:#294b56">${zh ? "本周运营概览" : "Weekly Operations Overview"}</td></tr><tr><td style="padding:0 20px 18px"><table role="presentation" width="100%" cellspacing="6"><tr>${metricCells}</tr></table></td></tr><tr><td style="padding:18px 22px 8px;font:bold 13px Arial;color:#0f827b">${zh ? "本周重点机会" : "Key Opportunities This Week"}</td></tr>${projectRows}${progressBlock}<tr><td style="padding:24px 22px;font:11px Arial;color:#71848a">IRAQ MTL · ${input.audience === "internal" ? "Confidential · Huawei Internal Use" : "Partner-safe edition"}</td></tr></table></body></html>`;
   const textBody = metrics.map(([label, value]) => `${label}: ${value}`).join("\n") + "\n\n" + snapshot.topOpportunities.slice(0, 5).map((item, index) => `${index + 1}. ${item.title}\n${item.industry}\nHuawei solution: ${item.solution || ""}\nCore judgment: ${item.coreJudgment || ""}\nOwner: ${item.owner || ""}`).join("\n\n") + (input.audience === "internal" ? `\n\n${zh ? "下一步计划" : "Next Steps"}\n${snapshot.nextSteps || ""}` : "");
