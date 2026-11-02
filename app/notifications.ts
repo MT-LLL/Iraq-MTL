@@ -236,7 +236,7 @@ function outlookSolutionRows(solutionItems: Array<{ domain: string; name: string
   </tr>`).join("");
 }
 
-function outlookOpportunityCard(item: Opportunity, audience: Audience, lang: Lang, context: PushDeliveryContext, ackUrl: string, siteUrl: string) {
+function outlookOpportunityCard(item: Opportunity, audience: Audience, lang: Lang, ackUrl: string, siteUrl: string) {
   const brief = buildOpportunityBrief(item, lang);
   const contact = brief.contactDetails;
   const colon = lang === "zh" ? "：" : ": ";
@@ -260,7 +260,7 @@ function outlookOpportunityCard(item: Opportunity, audience: Audience, lang: Lan
     : brief.solutionItems;
   const allContacts = (item.contacts?.length ? item.contacts : [{ role: contact.role, company: contact.company, companyPhone: contact.companyPhone, email: contact.email, name: contact.name, title: contact.title, phone: contact.phone, source: contact.source }]).filter(entry => [entry.name, entry.title, entry.company, entry.email, entry.phone, entry.companyPhone, entry.role].some(Boolean));
   const solutionRows = solutionSource.length
-    ? solutionSource.map(solution => `<tr><td width="22%" style="padding:9px;border:1px solid #e4eeea;background:#f7fbfa;font-size:12px;font-weight:bold;color:#0f827b">${escapeHtml(solution.domain)}</td><td width="32%" style="padding:9px;border:1px solid #e4eeea;font-size:13px;font-weight:bold;color:#143946">${escapeHtml(solution.name)}</td><td width="10%" align="center" style="padding:9px;border:1px solid #e4eeea;font-size:12px;font-weight:bold;color:#0f827b">${solution.fit}%</td><td style="padding:9px;border:1px solid #e4eeea;font-size:12px;line-height:19px;color:#526b72">${escapeHtml(solution.role)}</td></tr>`).join("")
+    ? solutionSource.map(solution => `<tr><td width="22%" style="padding:9px;border:1px solid #e4eeea;background:#f7fbfa;font-size:12px;font-weight:bold;color:#0f827b">${escapeHtml(solution.domain)}</td><td width="32%" style="padding:9px;border:1px solid #e4eeea;font-size:13px;font-weight:bold;color:#143946">${escapeHtml(solution.name)}</td><td width="10%" align="center" style="padding:9px;border:1px solid #e4eeea;font-size:12px;font-weight:bold;color:#0f827b">${audience === "internal" ? `${solution.fit}%` : "—"}</td><td style="padding:9px;border:1px solid #e4eeea;font-size:12px;line-height:19px;color:#526b72">${escapeHtml(solution.role)}</td></tr>`).join("")
     : `<tr><td colspan="4" style="padding:10px;border:1px solid #e4eeea;color:#60777d">${tr(lang, "当前尚无明确方案匹配，需进一步核实项目技术范围。", "No confirmed solution mapping yet; validate the technical scope.")}</td></tr>`;
   const contactCards = allContacts.length ? allContacts.map((entry, index) => {
     const lines = [
@@ -336,7 +336,7 @@ export function buildContent(opportunities: Opportunity[], audience: Audience, a
     ].map(([label, value]) => fieldHtml(label, value)).join("");
     const productRows = brief.solutionItems.map(solution => `<li style="margin:0 0 6px"><b>${escapeHtml(solution.domain)} · ${escapeHtml(solution.name)} (${solution.fit}%)</b><br/><span style="color:#5d747a">${escapeHtml(solution.role)}</span></li>`).join("");
     const actionRows = brief.nextActions.map(action => `<li style="margin:0 0 4px">${escapeHtml(action)}</li>`).join("");
-    return outlookOpportunityCard(item, audience, lang, context, ackUrl, siteUrl);
+    return outlookOpportunityCard(item, audience, lang, ackUrl, siteUrl);
   }).join("");
   const partnerPackageStats = [
     [tr(lang, "机会点", "Opportunities"), String(opportunities.length)],
