@@ -873,3 +873,12 @@ body { font-size: 15px; line-height: 1.55; }
 
 .weekly-report-edit-field{display:flex;flex-direction:column;align-items:stretch!important;gap:5px!important;max-width:none!important;font-size:10px!important;color:#526b73!important}
 .weekly-report-edit-field textarea{width:100%;min-height:48px;resize:vertical;border:1px solid #d9e5e1;border-radius:7px;padding:7px 9px;background:#fbfdfc;color:#193c47;font:11px/1.55 inherit;font-size:11px;line-height:1.55}
+
+
+/* Weekly report section hierarchy and narrative cards */
+.weekly-report-paper>h3{margin:28px 0 14px;font-size:19px;font-weight:850;line-height:1.35;color:#123746;padding-bottom:9px;border-bottom:1px solid #dce8e4}
+.weekly-report-text-section{margin:2px 0 22px;padding:16px 18px 18px;border:1px solid #dce8e4;border-left:4px solid #0f827b;border-radius:11px;background:linear-gradient(110deg,#f6faf9,#fff)}
+.weekly-report-text-section h3{margin:0 0 12px!important;padding:0!important;border:0!important;font-size:19px!important;font-weight:850!important}
+.weekly-report-editor-compact{min-height:92px}
+.weekly-report-risk-title{margin-top:20px!important;color:#a65f2b!important}
+.weekly-report-risk-editor{border-color:#e7d8cb;background:#fffdfb}
