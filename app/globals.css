@@ -896,3 +896,5 @@ body { font-size: 15px; line-height: 1.55; }
 .weekly-report-clear-selection{justify-self:start;padding:5px 9px;border:1px solid #d7e2e3;border-radius:7px;background:#fff;color:#6a4a42;font-size:11px;cursor:pointer}
 .weekly-report-empty-slot{display:block;margin:12px 0;color:#84969b;font-size:12px}
 .weekly-report-opportunity-content>label input{width:100%;min-width:0}
+
+.weekly-report-owner-line{font-size:13px;font-weight:400;color:#38545d}
