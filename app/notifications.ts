@@ -7,7 +7,6 @@ type Channel = "email" | "sms";
 type Lang = "zh" | "en";
 type RuntimeEnv = Record<string, string | undefined>;
 type PushDeliveryContext = { pushId?: string; ackToken?: string; slaDueAt?: string };
-type AiEnhancement = { insight?: string; play?: string; actions?: string[] };
 type AiProvider = "kimi" | "zhipu" | "deepseek";
 
 export type NotificationConfiguration = { email: boolean; sms: boolean; ai: boolean; emailMissing: string[]; smsMissing: string[]; aiMissing: string[]; emailProvider?: "resend" | "gmail"; aiProvider?: AiProvider; aiModel?: string };
@@ -197,163 +196,6 @@ function partnerSafeInsight(item: Opportunity, lang: Lang) {
   );
 }
 
-function sanitizeAiText(value: unknown, maxLength: number) {
-  if (typeof value !== "string") return "";
-  return value.replace(/\s+/g, " ").trim().slice(0, maxLength);
-}
-
-function aiSystemPrompt(lang: Lang) {
-  return lang === "zh"
-    ? "你是华为伊拉克代表处MTL营销作战平台的伙伴安全版销售文案助手。只使用用户提供的公开项目字段，不能编造联系人、邮箱、电话、金额或日期。不要输出内部评分、赢单率、Owner、竞争对手、其他伙伴信息或华为可服务空间。返回严格JSON。"
-    : "You are a partner-safe sales copy assistant for Huawei Iraq MTL marketing war-room. Use only the public opportunity fields provided by the user. Do not invent contacts, emails, phone numbers, amounts, or dates. Do not output internal scores, win rate, owners, competitors, other partners, or Huawei addressable scope. Return strict JSON only.";
-}
-
-function safeAiOpportunityPayload(opportunities: Opportunity[], lang: Lang) {
-  return opportunities.slice(0, 12).map(item => {
-    const brief = buildOpportunityBrief(item, lang);
-    return {
-      id: item.id,
-      title: brief.title,
-      meta: brief.meta,
-      value: brief.value,
-      keyMilestone: brief.deadline,
-      funding: brief.funding,
-      source: brief.source,
-      procurementEntry: brief.contactDetails.procurementEntry,
-      preferredContactMethod: `${brief.contactDetails.preferredMethodLabel}: ${brief.contactDetails.preferredMethod}`,
-      contactStatus: brief.contactDetails.status,
-      solutions: brief.solutionItems.map(solution => ({ domain: solution.domain, name: solution.name, fit: solution.fit, role: solution.role })),
-    };
-  });
-}
-
-function aiCopyInstruction(lang: Lang) {
-  return lang === "zh"
-    ? "请为每个机会点生成伙伴可见的销售战报文案：insight 80-120字，play 70-110字，actions 3条每条不超过35字。语气专业、有行动感，强调公开项目范围、采购入口、伙伴本地交付动作和需要华为支持的方案澄清。只返回 {\"items\":[{\"id\":\"...\",\"insight\":\"...\",\"play\":\"...\",\"actions\":[\"...\",\"...\",\"...\"]}]}。"
-    : "For each opportunity, create partner-visible battlecard copy: insight 45-75 words, play 35-65 words, and 3 action items under 18 words each. Keep it professional and action-oriented. Focus on public scope, procurement entry, partner local delivery actions, and Huawei solution clarification support. Return only {\"items\":[{\"id\":\"...\",\"insight\":\"...\",\"play\":\"...\",\"actions\":[\"...\",\"...\",\"...\"]}]}";
-}
-
-function parseAiEnhancements(content: string, lang: Lang): Map<string, AiEnhancement> {
-  const parsed = JSON.parse(content) as { items?: Array<{ id?: string; insight?: unknown; play?: unknown; actions?: unknown }> };
-  const output = new Map<string, AiEnhancement>();
-  (parsed.items ?? []).forEach(item => {
-    if (!item.id) return;
-    const actions = Array.isArray(item.actions) ? item.actions.map(action => sanitizeAiText(action, 90)).filter(Boolean).slice(0, 3) : [];
-    output.set(item.id, {
-      insight: sanitizeAiText(item.insight, lang === "zh" ? 180 : 520),
-      play: sanitizeAiText(item.play, lang === "zh" ? 180 : 420),
-      actions,
-    });
-  });
-  return output;
-}
-
-async function buildKimiEnhancements(opportunities: Opportunity[], audience: Audience, lang: Lang): Promise<Map<string, AiEnhancement>> {
-  const config = runtimeEnv();
-  if (audience !== "partner" || !config.MOONSHOT_API_KEY) return new Map();
-  const safeItems = safeAiOpportunityPayload(opportunities, lang);
-  if (!safeItems.length) return new Map();
-  const baseUrl = (config.MOONSHOT_API_BASE_URL || "https://api.moonshot.cn/v1").replace(/\/$/, "");
-  try {
-    const response = await fetch(`${baseUrl}/chat/completions`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${config.MOONSHOT_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: config.MOONSHOT_MODEL || "kimi-k2.6",
-        messages: [
-          { role: "system", content: aiSystemPrompt(lang) },
-          { role: "user", content: `${aiCopyInstruction(lang)}\n\n${JSON.stringify({ opportunities: safeItems })}` }
-        ],
-        temperature: 0.4,
-        max_tokens: 1800,
-        stream: false
-      })
-    });
-    if (!response.ok) return new Map();
-    const result = await response.json().catch(() => ({})) as { choices?: Array<{ message?: { content?: string } }> };
-    const content = result.choices?.[0]?.message?.content;
-    if (!content) return new Map();
-    return parseAiEnhancements(content, lang);
-  } catch {
-    return new Map();
-  }
-}
-
-async function buildZhipuEnhancements(opportunities: Opportunity[], audience: Audience, lang: Lang): Promise<Map<string, AiEnhancement>> {
-  const config = runtimeEnv();
-  if (audience !== "partner" || !config.ZHIPU_API_KEY) return new Map();
-  const safeItems = safeAiOpportunityPayload(opportunities, lang);
-  if (!safeItems.length) return new Map();
-  const baseUrl = (config.ZHIPU_API_BASE_URL || "https://open.bigmodel.cn/api/paas/v4").replace(/\/$/, "");
-  try {
-    const response = await fetch(`${baseUrl}/chat/completions`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${config.ZHIPU_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: config.ZHIPU_MODEL || "glm-5.3",
-        messages: [
-          { role: "system", content: aiSystemPrompt(lang) },
-          { role: "user", content: `${aiCopyInstruction(lang)}\n\n${JSON.stringify({ opportunities: safeItems })}` },
-        ],
-        temperature: 0.4,
-        max_tokens: 1800,
-        stream: false,
-      }),
-    });
-    if (!response.ok) return new Map();
-    const result = await response.json().catch(() => ({})) as { choices?: Array<{ message?: { content?: string } }> };
-    const content = result.choices?.[0]?.message?.content;
-    if (!content) return new Map();
-    return parseAiEnhancements(content, lang);
-  } catch {
-    return new Map();
-  }
-}
-
-async function buildDeepSeekEnhancements(opportunities: Opportunity[], audience: Audience, lang: Lang): Promise<Map<string, AiEnhancement>> {
-  const config = runtimeEnv();
-  if (audience !== "partner" || !config.DEEPSEEK_API_KEY) return new Map();
-  const safeItems = safeAiOpportunityPayload(opportunities, lang);
-  if (!safeItems.length) return new Map();
-  try {
-    const response = await fetch("https://api.deepseek.com/chat/completions", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${config.DEEPSEEK_API_KEY}`, "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: config.DEEPSEEK_MODEL || "deepseek-v4-flash",
-        messages: [
-          { role: "system", content: aiSystemPrompt(lang) },
-          { role: "user", content: `${aiCopyInstruction(lang)}\n\n${JSON.stringify({ opportunities: safeItems })}` },
-        ],
-        response_format: { type: "json_object" },
-        max_tokens: 1800,
-        stream: false,
-      }),
-    });
-    if (!response.ok) return new Map();
-    const result = await response.json().catch(() => ({})) as { choices?: Array<{ message?: { content?: string } }> };
-    const content = result.choices?.[0]?.message?.content;
-    if (!content) return new Map();
-    return parseAiEnhancements(content, lang);
-  } catch {
-    return new Map();
-  }
-}
-
-async function buildAiEnhancements(opportunities: Opportunity[], audience: Audience, lang: Lang): Promise<Map<string, AiEnhancement>> {
-  const config = runtimeEnv();
-  if (audience !== "partner") return new Map();
-  if (config.MOONSHOT_API_KEY) {
-    const kimiEnhancements = await buildKimiEnhancements(opportunities, audience, lang);
-    if (kimiEnhancements.size) return kimiEnhancements;
-  }
-  if (config.ZHIPU_API_KEY) {
-    const zhipuEnhancements = await buildZhipuEnhancements(opportunities, audience, lang);
-    if (zhipuEnhancements.size) return zhipuEnhancements;
-  }
-  return buildDeepSeekEnhancements(opportunities, audience, lang);
-}
-
 function outlookSectionTitle(label: string) {
   return `<tr><td colspan="2" style="padding:16px 22px 7px;font-family:Arial,'Microsoft YaHei',sans-serif;font-size:12px;line-height:18px;font-weight:bold;color:#0f827b;letter-spacing:1px;text-transform:uppercase;border-top:1px solid #e4eeea">${escapeHtml(label)}</td></tr>`;
 }
@@ -394,7 +236,7 @@ function outlookSolutionRows(solutionItems: Array<{ domain: string; name: string
   </tr>`).join("");
 }
 
-function outlookOpportunityCard(item: Opportunity, audience: Audience, lang: Lang, context: PushDeliveryContext, ackUrl: string, enhancements: Map<string, AiEnhancement>) {
+function outlookOpportunityCard(item: Opportunity, audience: Audience, lang: Lang, context: PushDeliveryContext, ackUrl: string, siteUrl: string) {
   const brief = buildOpportunityBrief(item, lang);
   const contact = brief.contactDetails;
   const colon = lang === "zh" ? "：" : ": ";
@@ -403,10 +245,18 @@ function outlookOpportunityCard(item: Opportunity, audience: Audience, lang: Lan
   const background = cleanLocalizedText(lang, item.summary, lang === "zh" ? "项目背景待补充。" : "Project background to be completed.");
   const news = cleanLocalizedText(lang, item.newsAndUpdates || "", lang === "zh" ? "暂无已记录的项目进展。" : "No project updates recorded.");
   const latestNews = cleanLocalizedText(lang, item.latestNews || "", lang === "zh" ? "暂无最新新闻。" : "No latest news recorded.");
-  // Prefer the saved opportunity analysis produced by the GPT analysis workflow.
-  const analysisSolutions = (item.opportunityAnalysis?.recommendedHuaweiSolutions ?? []).filter(Boolean);
-  const solutionSource = analysisSolutions.length
-    ? analysisSolutions.map(name => ({ domain: tr(lang, "AI分析匹配", "AI analysis match"), name, fit: item.opportunityAnalysis?.fitScore ?? 0, role: item.opportunityAnalysis?.scoreRationale || (lang === "zh" ? "基于该机会点已保存的GPT分析结果推荐。" : "Recommended from the saved GPT opportunity analysis.") }))
+  // Use the bilingual GPT analysis already persisted in D1; email delivery never calls a model API.
+  const savedAnalysis = item.opportunityAnalysis;
+  const localizedAnalysis = savedAnalysis?.bilingualAnalysis?.[lang];
+  const analysisSummary = localizedAnalysis?.demandSummary || savedAnalysis?.demandSummary || "";
+  const analysisRationale = localizedAnalysis?.scoreRationale || savedAnalysis?.scoreRationale || "";
+  const analysisRisks = localizedAnalysis?.risks?.length ? localizedAnalysis.risks : savedAnalysis?.risks || [];
+  const analysisActions = localizedAnalysis?.nextActions?.length ? localizedAnalysis.nextActions : savedAnalysis?.nextActions || [];
+  const factsVsInference = localizedAnalysis?.factsVsInference || savedAnalysis?.factsVsInference || "";
+  const analysisSolutionNames = (localizedAnalysis?.recommendedHuaweiSolutions?.length ? localizedAnalysis.recommendedHuaweiSolutions : savedAnalysis?.recommendedHuaweiSolutions || []).filter(Boolean);
+  const analysisSolutions = analysisSolutionNames.length > 0;
+  const solutionSource = analysisSolutions
+    ? analysisSolutionNames.map(name => ({ domain: tr(lang, "GPT分析推荐", "GPT recommendation"), name, fit: audience === "internal" ? (savedAnalysis?.fitScore ?? 0) : 0, role: analysisRationale || tr(lang, "依据已保存的双语GPT分析推荐。", "Recommended from the saved bilingual GPT analysis.") }))
     : brief.solutionItems;
   const allContacts = (item.contacts?.length ? item.contacts : [{ role: contact.role, company: contact.company, companyPhone: contact.companyPhone, email: contact.email, name: contact.name, title: contact.title, phone: contact.phone, source: contact.source }]).filter(entry => [entry.name, entry.title, entry.company, entry.email, entry.phone, entry.companyPhone, entry.role].some(Boolean));
   const solutionRows = solutionSource.length
@@ -432,24 +282,27 @@ function outlookOpportunityCard(item: Opportunity, audience: Audience, lang: Lan
     [tr(lang, "风险与补齐项", "Risks / gaps"), brief.risk],
     [tr(lang, "下一步动作", "Next actions"), brief.nextActions.join(lang === "zh" ? "；" : "; ")],
   ])}</table></td></tr>` : "";
-  const partnerCta = audience === "partner" ? `<tr><td colspan="2" style="padding:14px 18px 18px"><a href="${escapeHtml(ackUrl)}" style="display:inline-block;padding:10px 16px;background:#0f827b;color:#fff;text-decoration:none;font-size:13px;font-weight:bold">${tr(lang, "打开详情并确认收到", "Open details and confirm receipt")}</a><span style="padding-left:10px;font-size:11px;color:#60777d">${tr(lang, "若邮箱不支持展开，请点击查看完整详情。", "If your email app does not support expand/collapse, open the full details here.")}</span></td></tr>` : `<tr><td colspan="2" style="padding:14px 18px 18px"><a href="${escapeHtml((runtimeEnv().MSSD_SITE_URL || "https://iraq-mtl.lihui9329.workers.dev/").trim())}" style="color:#8a1f1f;font-weight:bold">${tr(lang, "打开 MTL 平台查看完整机会详情", "Open MTL to view full opportunity details")}</a></td></tr>`;
+  const partnerCta = audience === "partner" ? `<tr><td colspan="2" style="padding:14px 18px 18px"><a href="${escapeHtml(ackUrl)}" style="display:inline-block;padding:10px 16px;background:#0f827b;color:#fff;text-decoration:none;font-size:13px;font-weight:bold">${tr(lang, "打开详情并确认收到", "Open details and confirm receipt")}</a></td></tr>` : `<tr><td colspan="2" style="padding:14px 18px 18px"><a href="${escapeHtml(`${siteUrl}/opportunity-detail?id=${encodeURIComponent(item.id)}&lang=${lang}`)}" style="color:#8a1f1f;font-weight:bold">${tr(lang, "打开该机会点独立详情", "Open this opportunity detail")}</a></td></tr>`;
   const detailSections = `
-    ${outlookSectionTitle(tr(lang, "项目背景与介绍", "Project background and introduction"))}${outlookTextBlock(background)}
-    ${outlookSectionTitle(tr(lang, analysisSolutions.length ? "GPT分析后的华为方案匹配" : "华为方案匹配", analysisSolutions.length ? "Huawei solution match from GPT analysis" : "Huawei solution fit"))}<tr><td colspan="2" style="padding:0 18px 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse"><tr><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "产品域", "Domain")}</td><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "推荐方案", "Recommended solution")}</td><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "匹配", "Fit")}</td><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "项目作用", "Project role")}</td></tr>${solutionRows}</table></td></tr>
+    ${outlookSectionTitle(tr(lang, "GPT核心推断", "GPT core assessment"))}${outlookTextBlock(analysisSummary || tr(lang, "该机会点尚未保存完整的双语GPT分析。", "A complete bilingual GPT analysis has not yet been saved for this opportunity."))}
+    ${analysisRationale ? outlookSectionTitle(tr(lang, "评分依据与匹配逻辑", "Scoring rationale and fit logic")) + outlookTextBlock(analysisRationale) : ""}
+    ${outlookSectionTitle(tr(lang, analysisSolutions ? "GPT推荐的华为方案" : "华为方案匹配", analysisSolutions ? "Huawei solutions recommended by GPT" : "Huawei solution fit"))}<tr><td colspan="2" style="padding:0 18px 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse"><tr><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "方案来源", "Source")}</td><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "推荐方案", "Recommended solution")}</td><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "匹配", "Fit")}</td><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "项目作用 / 依据", "Project role / rationale")}</td></tr>${solutionRows}</table></td></tr>
+    ${factsVsInference ? outlookSectionTitle(tr(lang, "事实与推断", "Facts vs. inference")) + outlookTextBlock(factsVsInference) : ""}
+    ${analysisRisks.length ? outlookSectionTitle(tr(lang, "风险与待核实事项", "Risks and items to verify")) + outlookBulletRows(analysisRisks) : ""}
     ${outlookSectionTitle(tr(lang, "联系人信息与采购入口", "Contacts and procurement entry"))}<tr><td colspan="2" style="padding:0 18px 14px">${contactCards}<div style="margin-top:8px;padding:10px 12px;background:#f6faf9;border:1px solid #e0eee9;border-radius:10px;font-size:11px;line-height:1.6;color:#587078"><b>${tr(lang, "采购入口", "Procurement entry")}${colon}</b>${escapeHtml(contact.procurementEntry)}<br/><b>${tr(lang, "联系人状态", "Contact status")}${colon}</b>${escapeHtml(contact.status)}<br/><b>${tr(lang, "补齐动作", "Completion action")}${colon}</b>${escapeHtml(contact.completionAction)}</div></td></tr>
     ${outlookSectionTitle(tr(lang, "项目进展与里程碑", "Project progress and milestones"))}${outlookTextBlock(milestone)}
     ${outlookSectionTitle(tr(lang, "新闻与进展更新", "News and progress updates"))}${outlookTextBlock(news)}
     ${outlookSectionTitle(tr(lang, "最新新闻", "Latest news"))}${outlookTextBlock(latestNews)}
-    ${outlookSectionTitle(tr(lang, "下一步动作", "Next actions"))}${outlookBulletRows(audience === "partner" ? (enhancements.get(item.id)?.actions?.length ? enhancements.get(item.id)!.actions! : [tr(lang, "确认客户入口、投标资格与本地交付资源。", "Confirm customer access, bid eligibility and local delivery resources."), tr(lang, "核实独立ICT工作包和技术接口。", "Verify standalone ICT packages and technical interfaces.")]) : brief.nextActions)}
+    ${outlookSectionTitle(tr(lang, "下一步动作", "Next actions"))}${outlookBulletRows(analysisActions.length ? analysisActions : brief.nextActions)}
     ${internalRows}${partnerCta}`;
   const summary = `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;background:#fff;border:1px solid #d8e6e2"><tr><td width="34" style="padding:12px 8px;text-align:center;font-size:12px;color:#0f827b;font-weight:bold">${escapeHtml(item.priority)}</td><td style="padding:12px 8px;font-size:13px;line-height:19px;color:#143946"><b>${escapeHtml(title)}</b><br/><span style="font-size:11px;color:#637a80">${escapeHtml(brief.meta)} · ${tr(lang, "金额", "Value")}: ${escapeHtml(brief.value)} · ${tr(lang, "节点", "Milestone")}: ${escapeHtml(brief.deadline)}</span></td><td width="86" style="padding:12px 8px;text-align:right;font-size:11px;color:#0f827b;font-weight:bold">${tr(lang, "展开详情", "Expand")}&nbsp;⌄</td></tr></table>`;
-  const detailUrl = audience === "partner" ? `${ackUrl}#opportunity-${encodeURIComponent(item.id)}` : `${(runtimeEnv().MSSD_SITE_URL || "https://iraq-mtl.lihui9329.workers.dev/").trim().replace(/\/+$/, "")}#opportunity-${encodeURIComponent(item.id)}`;
+  const detailUrl = audience === "partner" ? `${ackUrl}&opportunity=${encodeURIComponent(item.id)}` : `${siteUrl}/opportunity-detail?id=${encodeURIComponent(item.id)}&lang=${lang}`;
   return `<a href="${escapeHtml(detailUrl)}" style="display:block;margin:0 0 8px;padding:12px 14px;border:1px solid #d8e6e2;background:#fff;color:#143946;text-decoration:none"><span style="display:inline-block;width:30px;color:#0f827b;font-weight:bold">${escapeHtml(item.priority)}</span><b>${escapeHtml(title)}</b><br/><span style="padding-left:30px;font-size:11px;line-height:18px;color:#637a80">${escapeHtml(brief.meta)} · ${tr(lang, "金额", "Value")}: ${escapeHtml(brief.value)} · ${tr(lang, "节点", "Milestone")}: ${escapeHtml(brief.deadline)} · ${tr(lang, "点击查看详情", "Click to view details")} ›</span></a>`;
 }
 
-export function buildContent(opportunities: Opportunity[], audience: Audience, actorName: string, lang: Lang, context: PushDeliveryContext = {}, enhancements: Map<string, AiEnhancement> = new Map()) {
+export function buildContent(opportunities: Opportunity[], audience: Audience, actorName: string, lang: Lang, context: PushDeliveryContext = {}) {
   const config = runtimeEnv();
-  const siteUrl = (config.MSSD_SITE_URL || "https://opportunity-compass-levant.foggy-dill-4470.chatgpt.site").trim().replace(/\/+$/, "");
+  const siteUrl = (config.MSSD_SITE_URL || "https://iraq-mtl.lihui9329.workers.dev").trim().replace(/\/+$/, "");
   const platformZh = "伊拉克代表处面向伙伴MTL营销作战平台";
   const platformEn = "Iraq Partner MTL Marketing War-room";
   const ackUrl = audience === "partner" && context.pushId && context.ackToken ? `${siteUrl}/partner-ack?push=${encodeURIComponent(context.pushId)}&token=${encodeURIComponent(context.ackToken)}&lang=${lang}` : siteUrl;
@@ -483,7 +336,7 @@ export function buildContent(opportunities: Opportunity[], audience: Audience, a
     ].map(([label, value]) => fieldHtml(label, value)).join("");
     const productRows = brief.solutionItems.map(solution => `<li style="margin:0 0 6px"><b>${escapeHtml(solution.domain)} · ${escapeHtml(solution.name)} (${solution.fit}%)</b><br/><span style="color:#5d747a">${escapeHtml(solution.role)}</span></li>`).join("");
     const actionRows = brief.nextActions.map(action => `<li style="margin:0 0 4px">${escapeHtml(action)}</li>`).join("");
-    return outlookOpportunityCard(item, audience, lang, context, ackUrl, enhancements);
+    return outlookOpportunityCard(item, audience, lang, context, ackUrl, siteUrl);
   }).join("");
   const partnerPackageStats = [
     [tr(lang, "机会点", "Opportunities"), String(opportunities.length)],
@@ -634,7 +487,7 @@ async function sendSms(recipientValue: string, content: ReturnType<typeof buildC
 export async function deliverNotification(input: { channel: Channel; recipient: string; opportunities: Opportunity[]; audience: Audience; actorName: string; lang?: Lang; context?: PushDeliveryContext }): Promise<DeliveryResult> {
   if (!input.opportunities.length) throw new NotificationError("OPPORTUNITY_REQUIRED", "No valid opportunities were selected.");
   const lang = input.lang ?? "zh";
-  const enhancements = input.channel === "email" ? await buildAiEnhancements(input.opportunities, input.audience, lang) : new Map<string, AiEnhancement>();
-  const content = buildContent(input.opportunities, input.audience, input.actorName, lang, input.context, enhancements);
+  // GPT analysis is produced in ChatGPT and persisted to D1; email delivery never calls a model API.
+  const content = buildContent(input.opportunities, input.audience, input.actorName, lang, input.context);
   return input.channel === "email" ? sendEmail(input.recipient, content, input.audience) : sendSms(input.recipient, content);
 }
