@@ -393,9 +393,13 @@ export function buildContent(opportunities: Opportunity[], audience: Audience, a
   const textRows = opportunities.map((item, index) => {
     const brief = buildOpportunityBrief(item, lang);
     const contact = brief.contactDetails;
+    const saved = item.opportunityAnalysis;
+    const localized = saved?.bilingualAnalysis?.[lang];
+    const demand = localized?.demandSummary || saved?.demandSummary || tr(lang, "尚无已保存的GPT分析。", "No saved GPT analysis yet.");
+    const recommended = localized?.recommendedHuaweiSolutions?.length ? localized.recommendedHuaweiSolutions : saved?.recommendedHuaweiSolutions || [];
     const detailsUrl = audience === "partner" ? `${ackUrl}&opportunity=${encodeURIComponent(item.id)}#opportunity-${encodeURIComponent(item.id)}` : `${siteUrl}/opportunity-detail?id=${encodeURIComponent(item.id)}&lang=${lang}`;
     const internal = audience === "internal" ? `\n${tr(lang, "内部评分", "Internal score")}${colon}${item.score}/100 · ${item.priority}\n${tr(lang, "负责人", "Owner")}${colon}${item.owner}` : "";
-    return `${index + 1}. ${brief.title} [${item.id}]\n${brief.meta}\n${tr(lang, "项目金额", "Project value")}${colon}${brief.value} · ${tr(lang, "关键节点", "Key milestone")}${colon}${brief.deadline}\n${tr(lang, "项目背景", "Project background")}${colon}${cleanLocalizedText(lang, item.summary, "To be completed")}\n${tr(lang, "华为匹配方案", "Huawei solution fit")}${colon}${brief.solutions}\n${tr(lang, "联系人", "Contact")}${colon}${contact.name} · ${contact.email} · ${contact.phone}\n${tr(lang, "项目里程碑", "Project milestones")}${colon}${cleanLocalizedText(lang, item.keyProjectMilestones || item.deadline, "To be confirmed")}\n${tr(lang, "查看完整详情", "View full details")}${colon}${detailsUrl}${internal}`;
+    return `${index + 1}. ${brief.title} [${item.id}]\n${brief.meta}\n${tr(lang, "项目金额", "Project value")}${colon}${brief.value} · ${tr(lang, "关键节点", "Key milestone")}${colon}${brief.deadline}\n${tr(lang, "项目背景", "Project background")}${colon}${cleanLocalizedText(lang, item.summary, "To be completed")}\n${tr(lang, "GPT核心推断", "GPT core assessment")}${colon}${demand}\n${tr(lang, "GPT推荐华为方案", "Huawei solutions recommended by GPT")}${colon}${recommended.length ? recommended.join(lang === "zh" ? "；" : "; ") : brief.solutions}\n${tr(lang, "联系人", "Contact")}${colon}${contact.name} · ${contact.email} · ${contact.phone}\n${tr(lang, "项目里程碑", "Project milestones")}${colon}${cleanLocalizedText(lang, item.keyProjectMilestones || item.deadline, "To be confirmed")}\n${tr(lang, "查看完整详情", "View full details")}${colon}${detailsUrl}${internal}`;
   });
   const text = `${subject}\n\n${textRows.join("\n\n")}\n\n${siteUrl}`;
   const sms = `${audience === "internal" ? tr(lang, "[MSSD内部]", "[MSSD Internal]") : tr(lang, "[MSSD伙伴]", "[MSSD Partner]")} ${opportunities.slice(0, 5).map(item => {
