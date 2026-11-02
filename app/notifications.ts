@@ -443,7 +443,8 @@ function outlookOpportunityCard(item: Opportunity, audience: Audience, lang: Lan
     ${outlookSectionTitle(tr(lang, "下一步动作", "Next actions"))}${outlookBulletRows(audience === "partner" ? (enhancements.get(item.id)?.actions?.length ? enhancements.get(item.id)!.actions! : [tr(lang, "确认客户入口、投标资格与本地交付资源。", "Confirm customer access, bid eligibility and local delivery resources."), tr(lang, "核实独立ICT工作包和技术接口。", "Verify standalone ICT packages and technical interfaces.")]) : brief.nextActions)}
     ${internalRows}${partnerCta}`;
   const summary = `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;background:#fff;border:1px solid #d8e6e2"><tr><td width="34" style="padding:12px 8px;text-align:center;font-size:12px;color:#0f827b;font-weight:bold">${escapeHtml(item.priority)}</td><td style="padding:12px 8px;font-size:13px;line-height:19px;color:#143946"><b>${escapeHtml(title)}</b><br/><span style="font-size:11px;color:#637a80">${escapeHtml(brief.meta)} · ${tr(lang, "金额", "Value")}: ${escapeHtml(brief.value)} · ${tr(lang, "节点", "Milestone")}: ${escapeHtml(brief.deadline)}</span></td><td width="86" style="padding:12px 8px;text-align:right;font-size:11px;color:#0f827b;font-weight:bold">${tr(lang, "展开详情", "Expand")}&nbsp;⌄</td></tr></table>`;
-  return `<details style="margin:0 0 9px;border:1px solid #d8e6e2;background:#fff"><summary style="list-style:none;cursor:pointer">${summary}</summary><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;background:#fff">${detailSections}</table></details>`;
+  const detailUrl = audience === "partner" ? `${ackUrl}#opportunity-${encodeURIComponent(item.id)}` : `${(runtimeEnv().MSSD_SITE_URL || "https://iraq-mtl.lihui9329.workers.dev/").trim().replace(/\\/+$/, "")}#opportunity-${encodeURIComponent(item.id)}`;
+  return `<a href="${escapeHtml(detailUrl)}" style="display:block;margin:0 0 8px;padding:12px 14px;border:1px solid #d8e6e2;background:#fff;color:#143946;text-decoration:none"><span style="display:inline-block;width:30px;color:#0f827b;font-weight:bold">${escapeHtml(item.priority)}</span><b>${escapeHtml(title)}</b><br/><span style="padding-left:30px;font-size:11px;line-height:18px;color:#637a80">${escapeHtml(brief.meta)} · ${tr(lang, "金额", "Value")}: ${escapeHtml(brief.value)} · ${tr(lang, "节点", "Milestone")}: ${escapeHtml(brief.deadline)} · ${tr(lang, "点击查看详情", "Click to view details")} ›</span></a>`;
 }
 
 export function buildContent(opportunities: Opportunity[], audience: Audience, actorName: string, lang: Lang, context: PushDeliveryContext = {}, enhancements: Map<string, AiEnhancement> = new Map()) {
@@ -483,86 +484,6 @@ export function buildContent(opportunities: Opportunity[], audience: Audience, a
     const productRows = brief.solutionItems.map(solution => `<li style="margin:0 0 6px"><b>${escapeHtml(solution.domain)} · ${escapeHtml(solution.name)} (${solution.fit}%)</b><br/><span style="color:#5d747a">${escapeHtml(solution.role)}</span></li>`).join("");
     const actionRows = brief.nextActions.map(action => `<li style="margin:0 0 4px">${escapeHtml(action)}</li>`).join("");
     return outlookOpportunityCard(item, audience, lang, context, ackUrl, enhancements);
-    if (audience === "partner") {
-      const enhancement = enhancements.get(item.id);
-      const partnerInsight = enhancement?.insight || partnerSafeInsight(item, lang);
-      const partnerPlay = enhancement?.play || partnerSafePlay(item, lang);
-      const partnerFactCells = [
-        [tr(lang, "项目金额", "Project value"), brief.value],
-        [tr(lang, "关键节点", "Key milestone"), brief.deadline],
-        [tr(lang, "资金状态", "Funding"), brief.funding],
-      ].map(([label, value]) => `<td style="width:33.33%;padding:0 5px;vertical-align:top"><div style="background:#f7fbfa;border:1px solid #dcebe7;border-radius:13px;padding:12px 13px;min-height:58px"><div style="font-size:10px;color:#6c8389;text-transform:uppercase;letter-spacing:.08em;font-weight:800">${escapeHtml(label)}</div><div style="font-size:16px;font-weight:900;color:#123541;margin-top:6px;line-height:1.25">${escapeHtml(value)}</div></div></td>`).join("");
-      const partnerProductRows = brief.solutionItems.map((solution, index) => `<tr>
-        <td style="padding:12px 0;border-top:${index === 0 ? "0" : "1px solid #edf3f0"};width:118px;vertical-align:top"><span style="display:inline-block;background:#eef8f5;color:#0f7f78;border:1px solid #d4eee8;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:900">${escapeHtml(solution.domain)}</span></td>
-        <td style="padding:12px 0;border-top:${index === 0 ? "0" : "1px solid #edf3f0"};vertical-align:top"><div style="font-size:15px;font-weight:900;color:#102f3a;line-height:1.35">${escapeHtml(solution.name)}</div><div style="font-size:12px;color:#60777d;line-height:1.55;margin-top:5px">${escapeHtml(solution.role)}</div></td>
-        <td style="padding:12px 0;border-top:${index === 0 ? "0" : "1px solid #edf3f0"};width:72px;text-align:right;vertical-align:top"><span style="display:inline-block;background:#0f827b;color:#fff;border-radius:999px;padding:6px 9px;font-size:11px;font-weight:900">${solution.fit}%</span></td>
-      </tr>`).join("");
-      const defaultPartnerActions = [
-        tr(lang, "7天内回复参与意向、客户入口和资源投入。", "Reply within 7 days with participation intent, customer access and resource commitment."),
-        tr(lang, "确认是否具备投标资质、本地交付与售后能力。", "Confirm bid qualification, local delivery and service capability."),
-        tr(lang, "列出需要华为澄清的产品、技术或商务问题。", "List product, technical or commercial clarifications required from Huawei."),
-      ];
-      const partnerActionTexts = enhancement?.actions?.length ? enhancement.actions : defaultPartnerActions;
-      const partnerActions = partnerActionTexts.map((action, index) => `<tr><td style="width:34px;vertical-align:top;padding:0 10px 10px 0"><span style="display:block;width:26px;height:26px;line-height:26px;text-align:center;border-radius:50%;background:#0f827b;color:#fff;font-size:12px;font-weight:900">${index + 1}</span></td><td style="padding:2px 0 10px;color:#36545c;font-size:13px;line-height:1.55">${escapeHtml(action)}</td></tr>`).join("");
-      return `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:separate;border-spacing:0;margin:0 0 22px;background:#ffffff;border:1px solid #dbe9e5;border-radius:22px;overflow:hidden;box-shadow:0 18px 42px rgba(25,68,76,.10)">
-        <tr><td style="padding:0">
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;background:#ffffff">
-            <tr>
-              <td style="width:7px;background:#0f827b"></td>
-              <td style="padding:22px 24px 18px">
-                <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
-                  <tr>
-                    <td style="vertical-align:top">
-                      <div style="display:inline-block;background:#e7f6f2;color:#0f7f78;border:1px solid #cdeee7;border-radius:999px;padding:7px 11px;font-size:11px;font-weight:900;letter-spacing:.08em">${escapeHtml(partnerSafeBanner)} · ${escapeHtml(item.id)}</div>
-                      <h2 style="margin:13px 0 6px;font-size:23px;line-height:1.25;color:#0e303b;letter-spacing:-.01em">${escapeHtml(brief.title)}</h2>
-                      <div style="font-size:13px;color:#61787e;line-height:1.5">${escapeHtml(brief.meta)}</div>
-                    </td>
-                    <td style="width:88px;text-align:right;vertical-align:top"><div style="display:inline-block;background:#102f3a;color:#fff;border-radius:16px;padding:10px 12px;text-align:center"><div style="font-size:10px;color:#a8d8d2;text-transform:uppercase;letter-spacing:.08em">SAFE</div><div style="font-size:18px;font-weight:900;line-height:1.1">MTL</div></div></td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
-        </td></tr>
-        <tr><td style="padding:0 19px 4px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:separate;border-spacing:0"><tr>${partnerFactCells}</tr></table></td></tr>
-        <tr><td style="padding:14px 24px 0">
-          ${context.slaDueAt ? `<div style="display:inline-block;background:#fff7e8;border:1px solid #f2d39a;color:#8a5b0e;border-radius:999px;padding:7px 12px;font-size:12px;font-weight:900;margin:0 0 14px">${tr(lang, "反馈SLA", "Feedback SLA")}${colon}${escapeHtml(new Date(context.slaDueAt).toLocaleString(lang === "zh" ? "zh-CN" : "en-US"))}</div>` : ""}
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;background:#f6faf9;border:1px solid #e0eee9;border-radius:16px;overflow:hidden"><tr><td style="width:5px;background:#15a096"></td><td style="padding:15px 16px"><div style="font-size:11px;font-weight:900;color:#0e6d67;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px">${tr(lang, "项目摘要", "Project summary")}</div><div style="font-size:14px;line-height:1.7;color:#294d55">${escapeHtml(partnerInsight)}</div></td></tr></table>
-        </td></tr>
-        <tr><td style="padding:16px 24px 0">
-          <div style="font-size:12px;font-weight:900;color:#17454f;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">${tr(lang, "匹配华为方案", "Matched Huawei solutions")}</div>
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;background:#ffffff;border:1px solid #e1ece8;border-radius:16px;overflow:hidden"><tr><td style="padding:4px 16px">${partnerProductRows}</td></tr></table>
-        </td></tr>
-        <tr><td style="padding:16px 24px 0">
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse">
-            <tr>
-              <td style="width:50%;padding:0 7px 0 0;vertical-align:top"><div style="background:#fff8ec;border:1px solid #f1debd;border-radius:16px;padding:15px;min-height:132px"><div style="font-size:11px;font-weight:900;color:#8a5c12;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">${tr(lang, "伙伴协同打法", "Partner engagement play")}</div><div style="font-size:13px;line-height:1.65;color:#634a25">${escapeHtml(partnerPlay)}</div></div></td>
-              <td style="width:50%;padding:0 0 0 7px;vertical-align:top"><div style="background:#eef8f5;border:1px solid #d1ede6;border-radius:16px;padding:15px;min-height:132px"><div style="font-size:11px;font-weight:900;color:#0e6d67;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px">${tr(lang, "采购入口", "Procurement entry")}</div><div style="font-size:15px;font-weight:900;color:#123f49;line-height:1.35">${escapeHtml(contact.preferredMethodLabel)} · ${escapeHtml(contact.preferredMethod)}</div><div style="font-size:12px;color:#60777d;line-height:1.55;margin-top:7px">${escapeHtml(contact.contactCompleteness)}</div></div></td>
-            </tr>
-          </table>
-        </td></tr>
-        <tr><td style="padding:16px 24px 0">
-          <div style="font-size:12px;font-weight:900;color:#17454f;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">${tr(lang, "联系人与入口", "Contact and entry")}</div>
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;background:#fbfdfc;border:1px solid #e1ece8;border-radius:16px;overflow:hidden">
-            <tr><td style="padding:12px 15px;color:#6c8389;width:28%;border-bottom:1px solid #edf3f0">${tr(lang, "联系人", "Contact")}</td><td style="padding:12px 15px;color:#173b46;font-weight:900;border-bottom:1px solid #edf3f0">${escapeHtml(contact.name)} · ${escapeHtml(contact.title)}</td></tr>
-            <tr><td style="padding:12px 15px;color:#6c8389;border-bottom:1px solid #edf3f0">${tr(lang, "公司", "Company")}</td><td style="padding:12px 15px;color:#173b46;border-bottom:1px solid #edf3f0">${escapeHtml(contact.company)}</td></tr>
-            <tr><td style="padding:12px 15px;color:#6c8389;border-bottom:1px solid #edf3f0">${tr(lang, "邮箱 / 电话", "Email / phone")}</td><td style="padding:12px 15px;color:#173b46;border-bottom:1px solid #edf3f0">${escapeHtml(contact.email)} · ${escapeHtml(contact.phone)} · ${escapeHtml(contact.companyPhone)}</td></tr>
-            <tr><td style="padding:12px 15px;color:#6c8389">${tr(lang, "来源状态", "Source status")}</td><td style="padding:12px 15px;color:#60777d;line-height:1.55">${escapeHtml(contact.status)}<br/><b>${tr(lang, "补齐动作", "Completion action")}${colon}</b>${escapeHtml(contact.completionAction)}</td></tr>
-          </table>
-        </td></tr>
-        <tr><td style="padding:16px 24px 22px">
-          <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;background:#f8fbfa;border:1px solid #dcebe7;border-radius:16px;overflow:hidden">
-            <tr>
-              <td style="padding:16px 17px;vertical-align:top"><div style="font-size:11px;font-weight:900;color:#0e6d67;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px">${tr(lang, "请伙伴确认", "Partner confirmation requested")}</div><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse">${partnerActions}</table></td>
-              <td style="width:190px;padding:16px 17px;text-align:right;vertical-align:middle"><a href="${escapeHtml(ackUrl)}" style="display:inline-block;background:#0f827b;color:#fff;text-decoration:none;padding:13px 18px;border-radius:999px;font-size:13px;font-weight:900;box-shadow:0 10px 24px rgba(15,130,123,.22)">${tr(lang, "确认收到", "Confirm receipt")}</a></td>
-            </tr>
-          </table>
-        </td></tr>
-      </table>`;
-    }
-    const common = `<h3 style="margin:0 0 8px;color:#143946">${escapeHtml(brief.title)}</h3><p style="margin:0 0 10px;color:#587078">${escapeHtml(brief.meta)}</p><p style="margin:0 0 10px;line-height:1.55;color:#314f57">${escapeHtml(brief.insight)}</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:0 14px;margin:0 0 10px">${factRows}</div><div style="border-top:1px solid #e4ece8;padding-top:10px;margin-top:8px;background:#f7fbfa;border-radius:8px;padding:10px"><p style="margin:0 0 8px;color:#134a52"><b>${tr(lang, "联系人与采购入口", "Contact and procurement entry")}${colon}</b>${escapeHtml(contact.status)}</p><p style="margin:0 0 8px;color:#134a52"><b>${tr(lang, "首选触达方式", "Preferred contact method")}${colon}</b>${escapeHtml(contact.preferredMethodLabel)} · ${escapeHtml(contact.preferredMethod)}</p><p style="margin:0 0 8px;color:#5b747a">${escapeHtml(contact.contactCompleteness)}</p><div style="display:grid;grid-template-columns:1fr 1fr;gap:0 14px">${contactRows}</div><p style="margin:8px 0 0;color:#5b747a"><b>${tr(lang, "补齐动作", "Completion action")}${colon}</b>${escapeHtml(contact.completionAction)}</p></div><div style="border-top:1px solid #e4ece8;padding-top:10px;margin-top:8px"><p style="margin:0 0 6px"><b>${tr(lang, "关联华为产品 / 方案", "Related Huawei products / solutions")}${colon}</b></p><ul style="margin:0;padding-left:18px">${productRows}</ul></div><div style="border-top:1px solid #e4ece8;padding-top:10px;margin-top:8px"><p style="margin:0 0 6px"><b>${tr(lang, "项目打法", "Engagement play")}${colon}</b>${escapeHtml(brief.strategy)}</p><p style="margin:0 0 6px"><b>${tr(lang, "风险与补齐项", "Risks / gaps")}${colon}</b>${escapeHtml(brief.risk)}</p><p style="margin:0 0 6px"><b>${tr(lang, "下一步动作", "Next actions")}${colon}</b></p><ul style="margin:0;padding-left:18px">${actionRows}</ul></div>`;
-    const internal = `<div style="border-top:1px solid #e4ece8;padding-top:10px;margin-top:8px"><p style="margin:0 0 6px"><b>${tr(lang, "内部评分", "Internal score")}${colon}</b>${item.score}/100 · ${escapeHtml(item.priority)} · ${tr(lang, "赢单判断", "Win assessment")} ${escapeHtml(localTerm(lang, item.win))}</p><p style="margin:0 0 6px"><b>${tr(lang, "负责人", "Owner")}${colon}</b>${escapeHtml(item.owner)}</p><p style="margin:0"><b>${tr(lang, "竞争态势", "Competitive landscape")}${colon}</b>${escapeHtml(item.competitors.map(competitor => lang === "zh" ? `${competitor.name}（${competitor.note}）` : `${cleanLocalizedText(lang, competitor.name, "Potential competitor")} (${cleanLocalizedText(lang, competitor.type, "Potential type")}${competitor.note ? `: ${cleanLocalizedText(lang, competitor.note, "details to be verified")}` : ""})`).join(lang === "zh" ? "；" : "; "))}</p></div>`;
-    return `<section style="padding:16px;border:1px solid #dce6e2;border-radius:10px;margin:0 0 12px;background:#fff">${common}${internal}</section>`;
   }).join("");
   const partnerPackageStats = [
     [tr(lang, "机会点", "Opportunities"), String(opportunities.length)],
