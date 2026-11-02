@@ -609,7 +609,8 @@ async function loginAndDownload(targetUrl = projectSearchUrl, artifactPrefix = "
 }
 
 async function main() {
-  const runId = `MEED-GHA-${Date.now().toString(36).toUpperCase()}`;
+  const runId = `MEED-GHA-${Date.now().toString(36).toUpperCase()}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+  let ingestPostAttempted = false;
   try {
     const { filePath, browser } = await loginAndDownload(projectSearchUrl, "meed-projects");
     const buffer = await (await import("node:fs/promises")).readFile(filePath);
@@ -662,6 +663,7 @@ async function main() {
       records: promoted,
     };
     await writeFile(join(artifactDir, "meed-ingest-payload.json"), JSON.stringify(payload, null, 2));
+    ingestPostAttempted = true;
     await postPayload(payload);
     await browser.close();
   } catch (error) {
@@ -678,9 +680,16 @@ async function main() {
     };
     await mkdir(artifactDir, { recursive: true });
     await writeFile(join(artifactDir, "meed-ingest-failure.json"), JSON.stringify(payload, null, 2));
-    await postPayload(payload).catch((postError) => {
-      console.error(postError instanceof Error ? postError.message : String(postError));
-    });
+    if (!ingestPostAttempted) {
+      // Only report a failed collection when the ingest endpoint has not already
+      // received the completed payload. Never repost a false "failed" run after
+      // an HTTP error from the completed-payload submission.
+      await postPayload(payload).catch((postError) => {
+        console.error(postError instanceof Error ? postError.message : String(postError));
+      });
+    } else {
+      console.error("MEED payload submission failed; not sending a second failure payload for the same run.");
+    }
     console.error(message);
     process.exit(1);
   }
