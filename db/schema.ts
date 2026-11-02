@@ -151,6 +151,20 @@ export const opportunityTracking = sqliteTable("opportunity_tracking", {
   updatedAt: integer("updated_at", { mode: "timestamp_ms" }).notNull(),
 });
 
+export const weeklyReports = sqliteTable("weekly_reports", {
+  id: text("id").primaryKey(),
+  weekStart: text("week_start").notNull(),
+  weekEnd: text("week_end").notNull(),
+  audience: text("audience").notNull(),
+  language: text("language").notNull().default("en"),
+  reportData: text("report_data").notNull(),
+  sendStatus: text("send_status").notNull().default("draft"),
+  recipients: text("recipients").notNull().default("[]"),
+  providerMessageIds: text("provider_message_ids").notNull().default("[]"),
+  createdBy: text("created_by").notNull(),
+  createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+});
+
 export const savedViews = sqliteTable("saved_views", {
   id: text("id").primaryKey(),
   ownerId: text("owner_id").notNull(),

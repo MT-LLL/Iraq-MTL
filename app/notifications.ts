@@ -496,6 +496,19 @@ async function sendSms(recipientValue: string, content: ReturnType<typeof buildC
   return { provider: "twilio", messageIds, recipientCount: recipients.length };
 }
 
+
+export async function deliverWeeklyReportEmail(input: {
+  recipients: string;
+  audience: Audience;
+  subject: string;
+  language: Lang;
+  html: string;
+  text: string;
+}): Promise<DeliveryResult> {
+  const content = { subject: input.subject, html: input.html, text: input.text };
+  return sendEmail(input.recipients, content as ReturnType<typeof buildContent>, input.audience);
+}
+
 export async function deliverNotification(input: { channel: Channel; recipient: string; opportunities: Opportunity[]; audience: Audience; actorName: string; lang?: Lang; context?: PushDeliveryContext }): Promise<DeliveryResult> {
   if (!input.opportunities.length) throw new NotificationError("OPPORTUNITY_REQUIRED", "No valid opportunities were selected.");
   const lang = input.lang ?? "zh";

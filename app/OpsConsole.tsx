@@ -7,8 +7,9 @@ import type { AppProfile } from "./AccountGate";
 import { LogoutButton } from "./LogoutButton";
 import { FIXED_RESPONSE_TACTIC_CODE, MAX_RESPONSE_TEMPLATE_ROWS, createResponseTemplateXlsx, defaultResponseTemplateContext, inferPreferredProducts, inferTemplateIndustry, responseTemplateColumns, responseTemplateDropdowns, validateResponseTemplateRows, type ResponseTemplateContext } from "./response-import-template";
 import { localText, opportunityBrief as pushOpportunityBrief } from "./localization";
+import { WeeklyReportView } from "./WeeklyReportView";
 
-type View = "command" | "radar" | "updates" | "mtl" | "dispatch" | "partners" | "email" | "approvals" | "imports";
+type View = "command" | "radar" | "updates" | "mtl" | "dispatch" | "partners" | "email" | "approvals" | "imports" | "weekly-report";
 type Lang = "zh" | "en";
 type DeliveryStatus = { email: boolean; sms: boolean; ai?: boolean; emailMissing?: string[]; smsMissing?: string[]; aiMissing?: string[]; emailProvider?: "resend" | "gmail"; aiProvider?: "kimi" | "zhipu" | "deepseek"; aiModel?: string };
 const PLATFORM_ZH = "伊拉克代表处面向伙伴MTL营销作战平台";
@@ -22,6 +23,7 @@ const navItems: { id: View; zh: string; en: string; glyph: string; badge?: strin
   { id: "dispatch", zh: "线索分发", en: "Lead Dispatch", glyph: "⇄", badge: "0" },
   { id: "partners", zh: "伙伴协同", en: "Partner Collaboration", glyph: "◇", badge: "3" },
   { id: "email", zh: "邮件推送", en: "Email Push", glyph: "✉" },
+  { id: "weekly-report", zh: "运营周报", en: "Weekly Report", glyph: "▥" },
   { id: "approvals", zh: "账户审批", en: "Account Approval", glyph: "✓" },
   { id: "imports", zh: "数据与导入", en: "Data & Imports", glyph: "↥" },
 ];
@@ -1626,6 +1628,7 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
         {canInternal && view==='email'&&<EmailPushView lang={lang} items={allOpportunities} canInternal={canInternal} deliveryStatus={deliveryStatus} pushJobs={pushJobs} onConfigure={()=>setSettingsOpen(true)} onSend={sendEmailPackage}/>}
         {view==='approvals'&&<ApprovalsView lang={lang} queue={pendingAccounts} onQueueChange={setPendingAccounts} onRefresh={refreshApprovals} refreshing={refreshingApprovals} onToast={showToast}/>}
         {canInternal && view==='imports'&&<ImportsView lang={lang} scanRuns={sourceScanRuns} onScanNow={scanNow} onManualImport={()=>setManualImportOpen(true)} onTemplateExport={openExport}/>}
+        {canInternal && view==='weekly-report'&&<WeeklyReportView lang={lang} emailReady={deliveryStatus.email} onToast={showToast}/>}
       </div>
     </main>
     {canInternal && view==='radar'&&<button className="floating-export" onClick={openExport}>⇩ {tr(lang,"自定义导出","Custom export")}</button>}
