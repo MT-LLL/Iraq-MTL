@@ -39,82 +39,39 @@ export default async function OpportunityDetailPage({ searchParams }: { searchPa
   const factsVsInference = localized?.factsVsInference || analysis?.factsVsInference || "";
   const textStyle = { lineHeight: 1.75, color: "#405b62", fontSize: 14, whiteSpace: "pre-wrap" as const };
   const sectionStyle = { background: "#fff", border: "1px solid #dce7e3", borderRadius: 12, padding: "18px 20px", marginBottom: 14 };
-  return <main className="partner-ack-page">
-    <section className="partner-ack-shell">
-      <header className="partner-ack-hero">
-        <div>
-          <span className="section-kicker">IRAQ MTL · INTERNAL OPPORTUNITY BRIEF</span>
-          <h1>{lang === "zh" ? item.title : item.titleEn}</h1>
-          <p>{item.country} · {item.city} · {item.industry} · {item.stage}</p>
-        </div>
-        <div className="ack-status-card">
-          <small>{tr(lang, "GPT匹配评分", "GPT fit score")}</small>
-          <strong>{analysis?.fitScore ?? item.score}/100</strong>
-          <span>{analysis?.priority || item.priority}</span>
-          <small>{tr(lang, "更新时间", "Updated")}: {item.updated}</small>
+  return <main style={{ minHeight: "100vh", background: "linear-gradient(135deg,#f3f8f7,#edf4f5 48%,#f8faf9)", padding: "32px 18px", color: "#15313a" }}>
+    <div style={{ maxWidth: 1180, margin: "0 auto" }}>
+      <header style={{ position: "relative", overflow: "hidden", borderRadius: 22, padding: "34px 38px", marginBottom: 20, color: "#fff", background: "linear-gradient(125deg,#102f3a,#075f64 58%,#0c8b83)", boxShadow: "0 18px 50px rgba(15,70,75,.22)" }}>
+        <div style={{ position: "absolute", right: -80, top: -110, width: 330, height: 330, borderRadius: "50%", border: "1px solid rgba(255,255,255,.14)" }} />
+        <div style={{ position: "relative", display: "flex", gap: 28, justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap" }}>
+          <div style={{ maxWidth: 790 }}>
+            <span style={{ display: "inline-block", padding: "6px 10px", borderRadius: 999, background: "rgba(255,255,255,.12)", fontSize: 11, letterSpacing: 1.2, fontWeight: 700 }}>IRAQ MTL · OPPORTUNITY INTELLIGENCE</span>
+            <h1 style={{ fontSize: "clamp(28px,4vw,46px)", lineHeight: 1.16, margin: "18px 0 12px", letterSpacing: "-.03em" }}>{lang === "zh" ? item.title : item.titleEn}</h1>
+            <p style={{ margin: 0, color: "#d9f0ee", fontSize: 15 }}>{item.country} · {item.city || tr(lang, "城市待确认", "City TBC")} · {item.industry || tr(lang, "行业待确认", "Industry TBC")} · {item.stage}</p>
+          </div>
+          <div style={{ minWidth: 190, padding: "18px 20px", borderRadius: 16, background: "rgba(3,24,29,.28)", border: "1px solid rgba(255,255,255,.16)" }}>
+            <div style={{ fontSize: 11, color: "#bce5e1", letterSpacing: 1 }}>{tr(lang, "GPT 综合评分", "GPT OPPORTUNITY SCORE")}</div>
+            <div style={{ fontSize: 48, fontWeight: 800, lineHeight: 1, margin: "8px 0" }}>{analysis?.fitScore ?? item.score}<span style={{ fontSize: 16 }}>/100</span></div>
+            <div style={{ display: "inline-block", padding: "5px 9px", borderRadius: 999, background: "rgba(255,255,255,.12)", fontSize: 12 }}>{analysis?.priority || item.priority}</div>
+          </div>
         </div>
       </header>
-      <section style={sectionStyle}>
-        <h2>{tr(lang, "项目背景", "Project background")}</h2>
-        <p style={textStyle}>{item.summary}</p>
-        <div className="ack-facts">
-          <div><small>{tr(lang, "项目金额", "Project value")}</small><strong>{item.value}</strong></div>
-          <div><small>{tr(lang, "可服务空间", "Addressable scope")}</small><strong>{item.addressable}</strong></div>
-          <div><small>{tr(lang, "关键时间窗口", "Key time window")}</small><strong>{item.deadline}</strong></div>
-          <div><small>{tr(lang, "资金状态", "Funding status")}</small><strong>{item.funding}</strong></div>
+      <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))", gap: 14, marginBottom: 20 }}>
+        {[[tr(lang,"项目金额","PROJECT VALUE"), item.value, "◆"],[tr(lang,"可服务空间","ADDRESSABLE SPACE"), item.addressable, "◈"],[tr(lang,"关键时间窗口","TIME WINDOW"), item.deadline, "◷"],[tr(lang,"资金状态","FUNDING STATUS"), item.funding, "●"]].map(([label,value,icon]) => <div key={String(label)} style={{ background: "#fff", border: "1px solid #dce9e6", borderRadius: 16, padding: "18px 19px", boxShadow: "0 8px 24px rgba(29,68,72,.06)" }}><div style={{ display: "flex", justifyContent: "space-between", color: "#628087", fontSize: 11, letterSpacing: .7 }}><span>{label}</span><span style={{ color: "#0b8a82" }}>{icon}</span></div><strong style={{ display: "block", marginTop: 10, fontSize: 19, lineHeight: 1.3, color: "#183940" }}>{String(value || "—")}</strong></div>)}
+      </section>
+      <section style={{ display: "grid", gridTemplateColumns: "minmax(0,1.65fr) minmax(300px,.85fr)", gap: 18, alignItems: "start" }}>
+        <div>
+          <section style={{ background: "#fff", border: "1px solid #dce9e6", borderRadius: 18, padding: "24px 26px", marginBottom: 16 }}><div style={{ color: "#0b837c", fontSize: 12, fontWeight: 800, letterSpacing: 1 }}>{tr(lang,"01 · GPT 核心推断","01 · GPT CORE ASSESSMENT")}</div><p style={{ ...textStyle, margin: "14px 0 0", fontSize: 16, color: "#25474e" }}>{demand}</p>{factsVsInference ? <div style={{ marginTop: 18, padding: "15px 17px", borderLeft: "4px solid #0b8a82", background: "#f2f8f7" }}><b>{tr(lang,"事实与推断","FACTS VS. INFERENCE")}</b><p style={{ ...textStyle, margin: "8px 0 0" }}>{factsVsInference}</p></div> : null}</section>
+          <section style={{ background: "#fff", border: "1px solid #dce9e6", borderRadius: 18, padding: "24px 26px", marginBottom: 16 }}><div style={{ color: "#0b837c", fontSize: 12, fontWeight: 800, letterSpacing: 1 }}>{tr(lang,"02 · 华为方案推荐","02 · HUAWEI SOLUTION RECOMMENDATION")}</div>{solutions.length ? <div style={{ display: "grid", gap: 10, marginTop: 16 }}>{solutions.map((solution,index) => <div key={index} style={{ display: "flex", gap: 14, padding: "15px 16px", borderRadius: 12, background: "linear-gradient(90deg,#f1f8f7,#fff)", border: "1px solid #d8e9e6" }}><span style={{ flex: "0 0 28px", height: 28, borderRadius: "50%", display: "grid", placeItems: "center", background: "#0b837c", color: "#fff", fontWeight: 800 }}>{index+1}</span><div style={{ fontWeight: 700, lineHeight: 1.55 }}>{solution}</div></div>)}</div> : <p style={textStyle}>{tr(lang,"尚无已保存的 GPT 方案推荐。","No saved GPT solution recommendations yet.")}</p>}{rationale ? <div style={{ marginTop: 18, paddingTop: 16, borderTop: "1px solid #e5efec" }}><b>{tr(lang,"评分依据与匹配逻辑","SCORING RATIONALE & FIT LOGIC")}</b><p style={{ ...textStyle, margin: "8px 0 0" }}>{rationale}</p></div> : null}</section>
+          <section style={{ background: "#fff", border: "1px solid #dce9e6", borderRadius: 18, padding: "24px 26px", marginBottom: 16 }}><div style={{ color: "#0b837c", fontSize: 12, fontWeight: 800, letterSpacing: 1 }}>{tr(lang,"03 · 项目背景","03 · PROJECT BACKGROUND")}</div><p style={{ ...textStyle, margin: "14px 0 0" }}>{item.summary}</p></section>
+          <section style={{ background: "#fff", border: "1px solid #dce9e6", borderRadius: 18, padding: "24px 26px" }}><div style={{ color: "#0b837c", fontSize: 12, fontWeight: 800, letterSpacing: 1 }}>{tr(lang,"04 · 项目里程碑与进展","04 · MILESTONES & UPDATES")}</div>{[item.keyProjectMilestones || item.deadline,item.newsAndUpdates,item.latestNews].filter(Boolean).map((entry,index)=><div key={index} style={{ display: "flex", gap: 14, marginTop: 18 }}><span style={{ width: 10, height: 10, borderRadius: "50%", background: "#0b8a82", marginTop: 7, flex: "0 0 auto" }} /><p style={{ ...textStyle, margin: 0 }}>{entry}</p></div>)}</section>
         </div>
+        <aside>
+          <section style={{ background: "#102f3a", color: "#fff", borderRadius: 18, padding: "22px", marginBottom: 16 }}><div style={{ color: "#80d8d1", fontSize: 11, letterSpacing: 1, fontWeight: 800 }}>{tr(lang,"风险雷达","RISK RADAR")}</div><h2 style={{ fontSize: 20, margin: "10px 0 14px" }}>{tr(lang,"风险与待核实事项","RISKS & ITEMS TO VERIFY")}</h2>{risks.length ? <ol style={{ paddingLeft: 20, margin: 0, color: "#d7e8e7", lineHeight: 1.75 }}>{risks.map((risk,index)=><li key={index} style={{ marginBottom: 9 }}>{risk}</li>)}</ol> : <p style={{ color:"#c5d9d8" }}>{tr(lang,"暂无单独记录的风险项。","No separately recorded risk items.")}</p>}</section>
+          <section style={{ background: "#fff", border: "1px solid #dce9e6", borderRadius: 18, padding: "22px" }}><div style={{ color: "#0b837c", fontSize: 11, letterSpacing: 1, fontWeight: 800 }}>{tr(lang,"行动建议","NEXT ACTIONS")}</div>{actions.length ? <ol style={{ paddingLeft: 22, lineHeight: 1.75, color:"#315158", marginBottom:0 }}>{actions.map((action,index)=><li key={index} style={{ marginTop: 10 }}>{action}</li>)}</ol> : <p style={textStyle}>—</p>}</section>
+        </aside>
       </section>
-      <section style={sectionStyle}>
-        <h2>{tr(lang, "联系人与直接联系方式", "Contacts and direct contact details")}</h2>
-        <div style={{ ...textStyle, marginBottom: 12 }}>
-          <b>{tr(lang, "首选触达方式：", "Preferred contact method: ")}</b>
-          {contact.preferredMethodLabel}: {contact.preferredMethod}
-          <p>{contact.status}</p>
-        </div>
-        {contacts.length ? contacts.map((entry, index) => <div key={item.id + "-contact-" + index} style={{ border: "1px solid #e1ebe7", borderRadius: 9, padding: 12, marginBottom: 10 }}>
-          <strong style={{ display: "block", color: "#143946", marginBottom: 6 }}>{[entry.name, entry.title].filter(Boolean).join(" · ") || entry.company || tr(lang, "项目联系人", "Project contact")}</strong>
-          {entry.role ? <p style={textStyle}>{tr(lang, "角色：", "Role: ")}{entry.role}</p> : null}
-          {entry.company ? <p style={textStyle}>{tr(lang, "公司：", "Company: ")}{entry.company}</p> : null}
-          {entry.email ? <p style={textStyle}>{tr(lang, "邮箱：", "Email: ")}<a href={"mailto:" + entry.email}>{entry.email}</a></p> : null}
-          {entry.phone ? <p style={textStyle}>{tr(lang, "电话：", "Phone: ")}<a href={"tel:" + entry.phone}>{entry.phone}</a></p> : null}
-          {entry.companyPhone ? <p style={textStyle}>{tr(lang, "机构电话：", "Organization phone: ")}<a href={"tel:" + entry.companyPhone}>{entry.companyPhone}</a></p> : null}
-          {entry.source ? <p style={textStyle}>{tr(lang, "来源：", "Source: ")}{entry.source}</p> : null}
-        </div>) : <p style={textStyle}>{tr(lang, "目前没有关联到可直接联系的项目联系人记录。", "No directly contactable project contact is currently linked to this opportunity.")}</p>}
-        <div style={{ ...textStyle, padding: 12, background: "#f6faf9", borderRadius: 8 }}>
-          <b>{tr(lang, "采购/项目入口：", "Procurement / project entry: ")}</b>
-          {contact.procurementEntry}
-          <p>{contact.completionAction}</p>
-        </div>
-      </section>
-      <section style={sectionStyle}>
-        <h2>{tr(lang, "GPT核心推断", "GPT core assessment")}</h2>
-        <p style={textStyle}>{demand}</p>
-        {factsVsInference ? <><h3>{tr(lang, "事实与推断", "Facts vs. inference")}</h3><p style={textStyle}>{factsVsInference}</p></> : null}
-        {rationale ? <><h3>{tr(lang, "评分依据与匹配逻辑", "Scoring rationale and fit logic")}</h3><p style={textStyle}>{rationale}</p></> : null}
-      </section>
-      <section style={sectionStyle}>
-        <h2>{tr(lang, "GPT推荐的华为方案", "Huawei solutions recommended by GPT")}</h2>
-        {solutions.length ? <ul style={textStyle}>{solutions.map((solution, index) => <li key={index}>{solution}</li>)}</ul> : <p style={textStyle}>{tr(lang, "尚无已保存的GPT方案推荐。", "No saved GPT solution recommendations yet.")}</p>}
-      </section>
-      <section style={sectionStyle}>
-        <h2>{tr(lang, "风险与待核实事项", "Risks and items to verify")}</h2>
-        {risks.length ? <ul style={textStyle}>{risks.map((risk, index) => <li key={index}>{risk}</li>)}</ul> : <p style={textStyle}>{tr(lang, "暂无单独记录的风险项。", "No separately recorded risk items.")}</p>}
-        <h3>{tr(lang, "建议下一步", "Recommended next actions")}</h3>
-        {actions.length ? <ol style={textStyle}>{actions.map((action, index) => <li key={index}>{action}</li>)}</ol> : null}
-      </section>
-      <section style={sectionStyle}>
-        <h2>{tr(lang, "项目里程碑与最新进展", "Milestones and latest updates")}</h2>
-        <p style={textStyle}>{item.keyProjectMilestones || item.deadline}</p>
-        <p style={textStyle}>{item.newsAndUpdates || tr(lang, "暂无已记录的进展更新。", "No progress updates recorded.")}</p>
-        <p style={textStyle}>{item.latestNews || tr(lang, "暂无最新新闻。", "No latest news recorded.")}</p>
-      </section>
-      {evidence.length ? <section style={sectionStyle}>
-        <h2>{tr(lang, "分析证据", "Analysis evidence")}</h2>
-        <ul style={textStyle}>{evidence.map((entry, index) => <li key={index}>{entry}</li>)}</ul>
-      </section> : null}
-      <footer style={{ color: "#72858a", fontSize: 12, padding: "8px 2px" }}>
-        {tr(lang, "内部经营资料，仅供获授权的华为内部人员使用。", "Internal sales information for authorized Huawei personnel only.")}
-      </footer>
-    </section>
+      <footer style={{ marginTop: 22, padding: "16px 2px", color: "#71868b", fontSize: 12, borderTop: "1px solid #d8e4e1" }}>{tr(lang, "IRAQ MTL Opportunity Intelligence · 内部经营资料，仅供获授权的华为内部人员使用。", "IRAQ MTL Opportunity Intelligence · Internal sales information for authorized Huawei personnel only.")}</footer>
+    </div>
   </main>;
 }
