@@ -763,6 +763,26 @@ export async function searchWeeklyReportOpportunities(query: string, audience: "
     .map(item => weeklyReportOpportunityView(item, language));
 }
 
+async function resolveWeeklyReportTopOpportunities(db: ReturnType<typeof getDb>, audience: "internal" | "partner", language: "zh" | "en", editedItems: WeeklyReportSnapshot["topOpportunities"] | undefined, fallbackItems: WeeklyReportSnapshot["topOpportunities"]) {
+  const requested = editedItems ?? fallbackItems;
+  const ids = [...new Set(requested.map(item => item.id).filter(Boolean))].slice(0, 5);
+  if (!ids.length) return [];
+  const [catalog, tracking, stored] = await Promise.all([
+    allAvailableOpportunities(db), db.select().from(opportunityTracking),
+    audience === "partner" ? db.select().from(storedOpportunities) : Promise.resolve([]),
+  ]);
+  const archived = new Set(tracking.filter(row => row.status === "archived").map(row => row.opportunityId));
+  const visible = audience === "partner" ? new Set(stored.filter(row => row.reviewStatus === "verified" && (row.sourceLicense === "partner-approved" || row.sourceLicense === "public")).map(row => row.id)) : null;
+  const byId = new Map(catalog.filter(item => !archived.has(item.id) && (!visible || visible.has(item.id))).map(item => [item.id, item]));
+  return ids.flatMap(id => {
+    const liveItem = byId.get(id);
+    if (!liveItem) return [];
+    const base = weeklyReportOpportunityView(liveItem, language);
+    const custom = requested.find(item => item.id === id);
+    return [{ ...base, owner: String(custom?.owner || "").slice(0, 160), solution: String(custom?.solution ?? base.solution).slice(0, 2000), coreJudgment: String(custom?.coreJudgment ?? base.coreJudgment).slice(0, 2000) }];
+  });
+}
+
 export async function saveWeeklyReportSnapshot(input: { weekStart: string; weekEnd: string; audience: "internal" | "partner"; language: "zh" | "en"; content?: WeeklyReportSnapshot }) {
   const { profile, db } = await currentIdentity();
   assertWeeklyReportAccess(profile);
@@ -774,10 +794,7 @@ export async function saveWeeklyReportSnapshot(input: { weekStart: string; weekE
     progressNotes: String(edited.progressNotes || "").slice(0, 12000),
     nextSteps: String(edited.nextSteps || "").slice(0, 12000),
     keyRisksHelp: String(edited.keyRisksHelp || "").slice(0, 12000),
-    topOpportunities: live.topOpportunities.map(item => {
-      const custom = edited.topOpportunities?.find(x => x.id === item.id);
-      return { ...item, owner: String(custom?.owner || "").slice(0, 160), solution: String(custom?.solution ?? item.solution).slice(0, 2000), coreJudgment: String(custom?.coreJudgment ?? item.coreJudgment).slice(0, 2000) };
-    }),
+    topOpportunities: await resolveWeeklyReportTopOpportunities(db, input.audience, input.language, edited.topOpportunities, live.topOpportunities),
   } : live;
   const id = crypto.randomUUID();
   await db.insert(weeklyReports).values({
@@ -825,15 +842,7 @@ export async function sendWeeklyReport(input: { weekStart: string; weekEnd: stri
     progressNotes: String(edited.progressNotes || "").slice(0, 12000),
     nextSteps: String(edited.nextSteps || "").slice(0, 12000),
     keyRisksHelp: String(edited.keyRisksHelp || "").slice(0, 12000),
-    topOpportunities: live.topOpportunities.map(item => {
-      const custom = edited.topOpportunities?.find(x => x.id === item.id);
-      return {
-        ...item,
-        owner: String(custom?.owner || "").slice(0, 160),
-        solution: String(custom?.solution ?? item.solution).slice(0, 2000),
-        coreJudgment: String(custom?.coreJudgment ?? item.coreJudgment).slice(0, 2000),
-      };
-    }),
+    topOpportunities: await resolveWeeklyReportTopOpportunities(db, input.audience, input.language, edited.topOpportunities, live.topOpportunities),
   } : live;
   const zh = input.language === "zh";
   const safe = (value: string) => value.replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[c] || c);
@@ -850,9 +859,9 @@ export async function sendWeeklyReport(input: { weekStart: string; weekEnd: stri
   ];
   const metricCells = metrics.map(([label, value]) => `<td style="padding:12px;border:1px solid #dce7e5;background:#f6faf9;font:12px Arial;color:#5b7078">${safe(label)}<br><strong style="font-size:22px;color:#123746">${value}</strong></td>`).join("");
   const projectRows = snapshot.topOpportunities.slice(0, 5).map((item, index) => `<tr><td style="padding:13px 14px;border-bottom:1px solid #e5ecea;font:14px Arial;color:#173c49"><strong>${index + 1}. ${safe(item.title)}</strong><br><span style="font-size:12px;color:#63777e">${safe(item.industry)}</span><br><span style="font-size:13px">${zh ? "华为匹配方案" : "Huawei solution"}: ${safe(item.solution || (zh ? "待补充" : "To be added"))}</span><br><span style="font-size:11px;color:#526b73">${zh ? "核心判断" : "Core judgment"}: ${safe(item.coreJudgment || (zh ? "待补充" : "To be added"))}</span><br><span style="font-size:13px">${zh ? "责任人" : "Owner"}: ${safe(item.owner || (zh ? "待指定" : "Unassigned"))}</span></td></tr>`).join("");
-  const progressBlock = input.audience === "internal" ? `<tr><td style="padding:18px 22px 6px;font:bold 16px Arial;color:#0f827b">${zh ? "本周关键进展" : "Key Progress This Week"}</td></tr><tr><td style="padding:0 22px 16px;font:13px/1.7 Arial;color:#294b56;white-space:pre-wrap">${safe(snapshot.keyProgress || (zh ? "暂无填写" : "Not provided"))}</td></tr><tr><td style="padding:12px 22px 6px;font:bold 16px Arial;color:#0f827b">${zh ? "本周进展补充" : "Additional Weekly Notes"}</td></tr><tr><td style="padding:0 22px 16px;font:13px/1.7 Arial;color:#294b56;white-space:pre-wrap">${safe(snapshot.progressNotes || (zh ? "暂无填写" : "Not provided"))}</td></tr><tr><td style="padding:12px 22px 6px;font:bold 16px Arial;color:#0f827b">${zh ? "下一步计划" : "Next Steps"}</td></tr><tr><td style="padding:0 22px 16px;font:13px/1.7 Arial;color:#294b56;white-space:pre-wrap">${safe(snapshot.nextSteps || (zh ? "暂无填写" : "Not provided"))}</td></tr><tr><td style="padding:12px 22px 6px;font:bold 16px Arial;color:#a65f2b">${zh ? "关键风险求助" : "Key Risks & Support Needed"}</td></tr><tr><td style="padding:0 22px 20px;font:13px/1.7 Arial;color:#294b56;white-space:pre-wrap">${safe(snapshot.keyRisksHelp || (zh ? "暂无填写" : "Not provided"))}</td></tr>` : "";
+  const progressBlock = input.audience === "internal" ? `<tr><td style="padding:18px 22px 6px;font:bold 16px Arial;color:#0f827b">${zh ? "本周关键进展" : "Key Progress This Week"}</td></tr><tr><td style="padding:0 22px 16px;font:13px/1.7 Arial;color:#294b56;white-space:pre-wrap">${safe(snapshot.keyProgress || (zh ? "暂无填写" : "Not provided"))}</td></tr><tr><td style="padding:12px 22px 6px;font:bold 16px Arial;color:#0f827b">${zh ? "下一步计划" : "Next Steps"}</td></tr><tr><td style="padding:0 22px 16px;font:13px/1.7 Arial;color:#294b56;white-space:pre-wrap">${safe(snapshot.nextSteps || (zh ? "暂无填写" : "Not provided"))}</td></tr><tr><td style="padding:12px 22px 6px;font:bold 16px Arial;color:#a65f2b">${zh ? "关键风险求助" : "Key Risks & Support Needed"}</td></tr><tr><td style="padding:0 22px 20px;font:13px/1.7 Arial;color:#294b56;white-space:pre-wrap">${safe(snapshot.keyRisksHelp || (zh ? "暂无填写" : "Not provided"))}</td></tr>` : "";
   const html = `<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:0;background:#f3f6f5;padding:24px"><table role="presentation" width="100%" style="max-width:760px;margin:auto;background:#fff;border-collapse:collapse"><tr><td style="padding:28px;background:#0b2738;color:#fff;font-family:Arial"><div style="font-size:11px;letter-spacing:2px;color:#8ddbd1">IRAQ MTL · WEEKLY OPERATIONS</div><h1 style="font-size:26px;margin:10px 0">${zh ? "伊拉克市场机会运营周报" : "Iraq Market Opportunity Weekly Report"}</h1><div style="font-size:13px;color:#d4e2e5">${safe(input.weekStart)} – ${safe(input.weekEnd)}</div></td></tr><tr><td style="padding:20px 22px 8px;font:14px Arial;color:#294b56">${zh ? "本周运营概览" : "Weekly Operations Overview"}</td></tr><tr><td style="padding:0 20px 18px"><table role="presentation" width="100%" cellspacing="6"><tr>${metricCells}</tr></table></td></tr><tr><td style="padding:18px 22px 8px;font:bold 13px Arial;color:#0f827b">${zh ? "本周重点机会" : "Key Opportunities This Week"}</td></tr>${projectRows}${progressBlock}<tr><td style="padding:24px 22px;font:11px Arial;color:#71848a">IRAQ MTL · ${input.audience === "internal" ? "Confidential · Huawei Internal Use" : "Partner-safe edition"}</td></tr></table></body></html>`;
-  const textBody = metrics.map(([label, value]) => `${label}: ${value}`).join("\n") + "\n\n" + snapshot.topOpportunities.slice(0, 5).map((item, index) => `${index + 1}. ${item.title}\n${item.industry}\nHuawei solution: ${item.solution || ""}\nCore judgment: ${item.coreJudgment || ""}\nOwner: ${item.owner || ""}`).join("\n\n") + (input.audience === "internal" ? `\n\n${zh ? "本周进展" : "Weekly Progress"}\n${snapshot.progressNotes || ""}\n\n${zh ? "下一步计划" : "Next Steps"}\n${snapshot.nextSteps || ""}` : "");
+  const textBody = metrics.map(([label, value]) => `${label}: ${value}`).join("\n") + "\n\n" + snapshot.topOpportunities.slice(0, 5).map((item, index) => `${index + 1}. ${item.title}\n${item.industry}\nHuawei solution: ${item.solution || ""}\nCore judgment: ${item.coreJudgment || ""}\nOwner: ${item.owner || ""}`).join("\n\n") + (input.audience === "internal" ? `\n\n${zh ? "下一步计划" : "Next Steps"}\n${snapshot.nextSteps || ""}` : "");
   const subject = zh ? `伊拉克市场机会运营周报｜${input.weekStart} – ${input.weekEnd}` : `Iraq Market Opportunity Weekly Report | ${input.weekStart} – ${input.weekEnd}`;
   const delivery = await deliverWeeklyReportEmail({ recipients: recipients.join(","), audience: input.audience, subject, language: input.language, html, text: textBody });
   const id = crypto.randomUUID();
