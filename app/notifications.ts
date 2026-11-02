@@ -264,14 +264,14 @@ function outlookOpportunityCard(item: Opportunity, audience: Audience, lang: Lan
     : `<tr><td colspan="4" style="padding:10px;border:1px solid #e4eeea;color:#60777d">${tr(lang, "当前尚无明确方案匹配，需进一步核实项目技术范围。", "No confirmed solution mapping yet; validate the technical scope.")}</td></tr>`;
   const contactCards = allContacts.length ? allContacts.map((entry, index) => {
     const lines = [
-      entry.role ? tr(lang, "角色", "Role") + colon + entry.role : "",
-      entry.company ? tr(lang, "公司", "Company") + colon + entry.company : "",
-      (entry.name || entry.title) ? tr(lang, "姓名 / 职位", "Name / title") + colon + [entry.name, entry.title].filter(Boolean).join(" · ") : "",
-      entry.email ? tr(lang, "邮箱", "Email") + colon + entry.email : "",
-      entry.phone ? tr(lang, "电话", "Phone") + colon + entry.phone : "",
-      entry.companyPhone ? tr(lang, "机构电话", "Organization phone") + colon + entry.companyPhone : "",
-      entry.source ? tr(lang, "来源", "Source") + colon + entry.source : "",
-    ].filter(Boolean).map(line => escapeHtml(line)).join("<br/>");
+      entry.role ? escapeHtml(tr(lang, "角色", "Role") + colon + entry.role) : "",
+      entry.company ? escapeHtml(tr(lang, "公司", "Company") + colon + entry.company) : "",
+      (entry.name || entry.title) ? escapeHtml(tr(lang, "姓名 / 职位", "Name / title") + colon + [entry.name, entry.title].filter(Boolean).join(" · ")) : "",
+      entry.email ? escapeHtml(tr(lang, "邮箱", "Email") + colon) + `<a href="mailto:${escapeHtml(entry.email)}" style="color:#0f827b">${escapeHtml(entry.email)}</a>` : "",
+      entry.phone ? escapeHtml(tr(lang, "电话", "Phone") + colon) + `<a href="tel:${escapeHtml(entry.phone)}" style="color:#0f827b">${escapeHtml(entry.phone)}</a>` : "",
+      entry.companyPhone ? escapeHtml(tr(lang, "机构电话", "Organization phone") + colon) + `<a href="tel:${escapeHtml(entry.companyPhone)}" style="color:#0f827b">${escapeHtml(entry.companyPhone)}</a>` : "",
+      entry.source ? escapeHtml(tr(lang, "来源", "Source") + colon + entry.source) : "",
+    ].filter(Boolean).join("<br/>");
     const heading = escapeHtml([entry.name, entry.title].filter(Boolean).join(" · ") || entry.company || tr(lang, "联系人", "Contact"));
     return '<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:separate;border-spacing:0;margin:0 0 10px;border:1px solid #dce9e5;background:#fbfdfc;border-radius:12px;overflow:hidden"><tr><td style="width:42px;background:#eef8f5;color:#0f827b;text-align:center;font-weight:bold;font-size:14px">' + (index + 1) + '</td><td style="padding:11px 13px"><div style="font-size:12px;font-weight:bold;color:#123f49;margin-bottom:5px">' + heading + '</div><div style="font-size:11px;line-height:1.65;color:#587078">' + lines + '</div></td></tr></table>';
   }).join("") : outlookTextBlock(tr(lang, "暂无完整联系人信息，请通过项目来源继续补齐。", "No complete contact information is available; continue validation from project sources."));
@@ -393,6 +393,14 @@ export function buildContent(opportunities: Opportunity[], audience: Audience, a
   const textRows = opportunities.map((item, index) => {
     const brief = buildOpportunityBrief(item, lang);
     const contact = brief.contactDetails;
+    const contactLines = (item.contacts?.length ? item.contacts : []).map(entry => [
+      [entry.name, entry.title].filter(Boolean).join(" · "),
+      entry.company,
+      entry.email ? tr(lang, "邮箱", "Email") + colon + entry.email : "",
+      entry.phone ? tr(lang, "电话", "Phone") + colon + entry.phone : "",
+      entry.companyPhone ? tr(lang, "机构电话", "Organization phone") + colon + entry.companyPhone : "",
+    ].filter(Boolean).join(" | "));
+    const contactSummary = contactLines.length ? contactLines.join(lang === "zh" ? "；" : "; ") : [contact.name, contact.email, contact.phone, contact.companyPhone].filter(Boolean).join(" · ");
     const saved = item.opportunityAnalysis;
     const localized = saved?.bilingualAnalysis?.[lang];
     const demand = localized?.demandSummary || saved?.demandSummary || tr(lang, "尚无已保存的GPT分析。", "No saved GPT analysis yet.");
