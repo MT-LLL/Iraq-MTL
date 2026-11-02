@@ -712,12 +712,10 @@ function weeklyReportOpportunityView(item: Opportunity, language: "zh" | "en", a
     solution,
     coreJudgment,
     owner: "",
-    priority: item.priority,
-    score: item.score,
+    ...(audience === "internal" ? { priority: item.priority, score: item.score, contactSummary } : {}),
     value: item.value,
     addressable: item.addressable,
     deadline: item.deadline,
-    contactSummary,
   };
 }
 
