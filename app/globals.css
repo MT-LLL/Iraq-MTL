@@ -912,3 +912,12 @@ body { font-size: 15px; line-height: 1.55; }
 .weekly-report-selected-opportunity>b{font-weight:700}
 .weekly-report-owner-line{font-weight:400}
 @media(max-width:540px){.weekly-report-key-meta{gap:6px}.weekly-report-analysis-block{padding:9px 10px}.weekly-report-analysis-block>p{font-size:11px;line-height:1.65}}
+
+
+/* Editable analysis fields in the weekly report Top 5 editor. */
+.weekly-report-analysis-block>label{display:block;margin:0 0 6px;color:#6b8582;font-size:11px;font-weight:600}
+.weekly-report-analysis-block.judgment>label{color:#8a795a}
+.weekly-report-analysis-editor{display:block;width:100%;min-height:104px;resize:vertical;box-sizing:border-box;padding:9px 10px;border:1px solid #dce7e3;border-radius:6px;background:rgba(255,255,255,.82);color:#38545d;font:400 12px/1.7 inherit;white-space:pre-wrap;overflow-wrap:anywhere}
+.weekly-report-analysis-editor:focus{outline:2px solid rgba(15,130,123,.2);border-color:#83b8ad}
+.weekly-report-analysis-editor::placeholder{color:#9aa9a8}
+@media(max-width:540px){.weekly-report-analysis-editor{min-height:120px;font-size:12px}}
