@@ -75,10 +75,60 @@ const worker = {
 
   async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
     ctx.waitUntil(recordScheduledSourceScan(env, event.scheduledTime));
+    ctx.waitUntil(recordScheduledWeeklyReports(env, event.scheduledTime));
   },
 };
 
 type ScheduledEvent = { scheduledTime: number; cron: string };
+
+
+async function recordScheduledWeeklyReports(env: Env, scheduledTime: number): Promise<void> {
+  // The configured weekly cron runs Monday at 04:00 UTC (07:00 Baghdad).
+  // Create four draft snapshots (two audiences × two languages); never auto-email.
+  try {
+    const baghdad = new Date(scheduledTime + 3 * 60 * 60 * 1000);
+    const mondayThisWeek = new Date(Date.UTC(baghdad.getUTCFullYear(), baghdad.getUTCMonth(), baghdad.getUTCDate()));
+    mondayThisWeek.setUTCDate(mondayThisWeek.getUTCDate() - ((mondayThisWeek.getUTCDay() + 6) % 7));
+    const weekStartDate = new Date(mondayThisWeek); weekStartDate.setUTCDate(weekStartDate.getUTCDate() - 7);
+    const weekEndDate = new Date(mondayThisWeek); weekEndDate.setUTCDate(weekEndDate.getUTCDate() - 1);
+    const fmt = (d: Date) => `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,"0")}-${String(d.getUTCDate()).padStart(2,"0")}`;
+    const weekStart = fmt(weekStartDate), weekEnd = fmt(weekEndDate);
+    const startMs = Date.UTC(weekStartDate.getUTCFullYear(),weekStartDate.getUTCMonth(),weekStartDate.getUTCDate()) - 3*60*60*1000;
+    const endMs = Date.UTC(weekEndDate.getUTCFullYear(),weekEndDate.getUTCMonth(),weekEndDate.getUTCDate()+1) - 3*60*60*1000 - 1;
+    const total = await env.DB.prepare("SELECT COUNT(*) AS n FROM opportunities o LEFT JOIN opportunity_tracking t ON t.opportunity_id=o.id AND t.status='archived' WHERE t.opportunity_id IS NULL").first<{n:number}>();
+    const added = await env.DB.prepare("SELECT COUNT(*) AS n FROM opportunities WHERE created_at BETWEEN ? AND ?").bind(startMs,endMs).first<{n:number}>();
+    const key = await env.DB.prepare("SELECT COUNT(*) AS n FROM opportunities WHERE created_at BETWEEN ? AND ? AND UPPER(priority) IN ('P0','P1','HIGH','CRITICAL')").bind(startMs,endMs).first<{n:number}>();
+    const pushes = await env.DB.prepare("SELECT COUNT(*) AS n FROM push_jobs WHERE created_at BETWEEN ? AND ? AND channel='email'").bind(startMs,endMs).first<{n:number}>();
+    const sent = await env.DB.prepare("SELECT COUNT(*) AS n FROM push_jobs WHERE created_at BETWEEN ? AND ? AND channel='email' AND status='sent'").bind(startMs,endMs).first<{n:number}>();
+    const partner = await env.DB.prepare("SELECT COUNT(*) AS n FROM push_jobs WHERE created_at BETWEEN ? AND ? AND channel='email' AND audience='partner'").bind(startMs,endMs).first<{n:number}>();
+    const returned = await env.DB.prepare("SELECT COUNT(*) AS n FROM lead_distributions WHERE requested_at BETWEEN ? AND ? AND status='returned'").bind(startMs,endMs).first<{n:number}>();
+    const rows = await env.DB.prepare("SELECT id,title,title_en,country,industry,stage,summary,priority,score,review_status,source_license FROM opportunities WHERE created_at BETWEEN ? AND ? ORDER BY score DESC LIMIT 20").bind(startMs,endMs).all<Record<string,unknown>>();
+    const allProjects = rows.results ?? [];
+    const safeProjects = allProjects.filter(row => row.review_status === "verified" && (row.source_license === "partner-approved" || row.source_license === "public"));
+    const base = {
+      weekStart, weekEnd, totalOpportunities: Number(total?.n ?? 0), newOpportunities: Number(added?.n ?? 0),
+      newKeyOpportunities: Number(key?.n ?? 0), emailPushes: Number(pushes?.n ?? 0), emailSent: Number(sent?.n ?? 0),
+      partnerPushes: Number(partner?.n ?? 0), partnerAcknowledged: 0, partnerPending: Number(partner?.n ?? 0),
+      partnerReturned: Number(returned?.n ?? 0),
+    };
+    for (const audience of ["internal","partner"] as const) {
+      const projects = (audience === "internal" ? allProjects : safeProjects).slice(0,8).map(row => ({
+        id: String(row.id ?? ""), title: String(row.title_en || row.title || ""), country: String(row.country || ""),
+        industry: String(row.industry || ""), stage: String(row.stage || ""), summary: String(row.summary || ""),
+        ...(audience === "internal" ? { priority: String(row.priority || "") } : {}),
+      }));
+      const snapshot = JSON.stringify({ ...base, topOpportunities: projects });
+      for (const language of ["zh","en"] as const) {
+        const exists = await env.DB.prepare("SELECT id FROM weekly_reports WHERE week_start=? AND week_end=? AND audience=? AND language=? AND send_status='scheduled' LIMIT 1").bind(weekStart,weekEnd,audience,language).first();
+        if (exists) continue;
+        await env.DB.prepare("INSERT INTO weekly_reports (id,week_start,week_end,audience,language,report_data,send_status,recipients,provider_message_ids,created_by,created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
+          .bind(crypto.randomUUID(),weekStart,weekEnd,audience,language,snapshot,"scheduled","[]","[]","cloudflare-cron",scheduledTime).run();
+      }
+    }
+  } catch (error) {
+    console.error("[MTL] Weekly report snapshot generation failed:", error);
+  }
+}
 
 const scheduledSources = [
   "MEED Projects",
