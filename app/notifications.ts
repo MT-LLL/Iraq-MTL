@@ -398,83 +398,45 @@ function outlookOpportunityCard(item: Opportunity, audience: Audience, lang: Lan
   const brief = buildOpportunityBrief(item, lang);
   const contact = brief.contactDetails;
   const colon = lang === "zh" ? "：" : ": ";
-  const enhancement = audience === "partner" ? enhancements.get(item.id) : undefined;
-  const partnerInsight = enhancement?.insight || partnerSafeInsight(item, lang);
-  const partnerPlay = enhancement?.play || partnerSafePlay(item, lang);
-  const defaultPartnerActions = [
-    tr(lang, "7天内回复参与意向、客户入口和资源投入。", "Reply within 7 days with participation intent, customer access and resource commitment."),
-    tr(lang, "确认是否具备投标资质、本地交付与售后能力。", "Confirm bid qualification, local delivery and service capability."),
-    tr(lang, "列出需要华为澄清的产品、技术或商务问题。", "List product, technical or commercial clarifications required from Huawei."),
-  ];
-  const actions = audience === "partner"
-    ? (enhancement?.actions?.length ? enhancement.actions : defaultPartnerActions)
-    : brief.nextActions;
-  const engagementPlay = audience === "partner" ? partnerPlay : brief.strategy;
-  const analysisText = audience === "partner" ? partnerInsight : brief.insight;
-  const evidenceRows = outlookBulletRows(item.evidence.map(evidence => cleanLocalizedText(lang, evidence, "Evidence to be verified")));
-  const actionRows = outlookBulletRows(actions);
-  const partnerProjectContext = audience === "partner"
-    ? `${outlookSectionTitle(tr(lang, "项目背景", "Project background"))}${outlookTextBlock(cleanLocalizedText(lang, item.summary, lang === "zh" ? "项目背景待核实。" : "Project background to be verified."))}${outlookSectionTitle(tr(lang, "项目范围 / Scope（公开信息）", "Project scope (public information)"))}${outlookTextBlock(item.evidence.length ? item.evidence.map(entry => cleanLocalizedText(lang, entry, lang === "zh" ? "范围线索待核实" : "Scope clue to be verified")).join(lang === "zh" ? "；" : "; ") : tr(lang, "当前记录未包含可核验的Scope描述，请以业主公告或招标文件补齐。", "No verifiable scope description is recorded; confirm it from the owner's announcement or tender documents."))}`
-    : "";
-  const metrics = outlookMetricTable([
-    [tr(lang, "项目金额", "Project value"), brief.value],
-    [tr(lang, "关键节点", "Key milestone"), brief.deadline],
-    [tr(lang, "资金状态", "Funding"), brief.funding],
-    [tr(lang, "来源", "Source"), brief.source],
-  ]);
-  const contactTable = `<tr><td colspan="2" style="padding:0 22px 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse">${outlookKeyValueRows([
-    [tr(lang, "首选触达方式", "Preferred contact method"), `${contact.preferredMethodLabel}${colon}${contact.preferredMethod}`],
-    [tr(lang, "联系人状态", "Contact status"), contact.status],
+  const title = brief.title;
+  const milestone = cleanLocalizedText(lang, item.keyProjectMilestones || item.deadline, lang === "zh" ? "项目里程碑待确认。" : "Project milestones to be confirmed.");
+  const background = cleanLocalizedText(lang, item.summary, lang === "zh" ? "项目背景待补充。" : "Project background to be completed.");
+  const scope = item.evidence.slice(0, 5).map(value => cleanLocalizedText(lang, value, "Scope to be verified"));
+  const news = cleanLocalizedText(lang, item.newsAndUpdates || "", lang === "zh" ? "暂无已记录的项目进展。" : "No project updates recorded.");
+  const latestNews = cleanLocalizedText(lang, item.latestNews || "", lang === "zh" ? "暂无最新新闻。" : "No latest news recorded.");
+  const solutionRows = brief.solutionItems.length
+    ? brief.solutionItems.map(solution => `<tr><td width="22%" style="padding:9px;border:1px solid #e4eeea;background:#f7fbfa;font-size:12px;font-weight:bold;color:#0f827b">${escapeHtml(solution.domain)}</td><td width="32%" style="padding:9px;border:1px solid #e4eeea;font-size:13px;font-weight:bold;color:#143946">${escapeHtml(solution.name)}</td><td width="10%" align="center" style="padding:9px;border:1px solid #e4eeea;font-size:12px;font-weight:bold;color:#0f827b">${solution.fit}%</td><td style="padding:9px;border:1px solid #e4eeea;font-size:12px;line-height:19px;color:#526b72">${escapeHtml(solution.role)}</td></tr>`).join("")
+    : `<tr><td colspan="4" style="padding:10px;border:1px solid #e4eeea;color:#60777d">${tr(lang, "当前尚无明确方案匹配，需进一步核实项目技术范围。", "No confirmed solution mapping yet; validate the technical scope.")}</td></tr>`;
+  const contactRows = outlookKeyValueRows([
     [tr(lang, "联系人", "Contact"), `${contact.name} · ${contact.title}`],
     [tr(lang, "公司", "Company"), contact.company],
-    [tr(lang, "邮箱 / 手机 / 机构电话", "Email / mobile / institution phone"), `${contact.email} · ${contact.phone} · ${contact.companyPhone}`],
+    [tr(lang, "邮箱", "Email"), contact.email],
+    [tr(lang, "电话", "Phone"), contact.phone],
+    [tr(lang, "机构电话", "Organization phone"), contact.companyPhone],
     [tr(lang, "采购入口", "Procurement entry"), contact.procurementEntry],
+    [tr(lang, "联系人状态", "Contact status"), contact.status],
     [tr(lang, "补齐动作", "Completion action"), contact.completionAction],
-  ])}</table></td></tr>`;
-  const solutionTable = `<tr><td colspan="2" style="padding:0 22px 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse">
-    <tr>
-      <td style="padding:8px 10px;border:1px solid #d4e4df;background-color:#eef8f5;font-family:Arial,'Microsoft YaHei',sans-serif;font-size:12px;font-weight:bold;color:#0f827b">${tr(lang, "产品域", "Domain")}</td>
-      <td style="padding:8px 10px;border:1px solid #d4e4df;background-color:#eef8f5;font-family:Arial,'Microsoft YaHei',sans-serif;font-size:12px;font-weight:bold;color:#0f827b">${tr(lang, "推荐方案", "Recommended solution")}</td>
-      <td align="center" style="padding:8px 10px;border:1px solid #d4e4df;background-color:#eef8f5;font-family:Arial,'Microsoft YaHei',sans-serif;font-size:12px;font-weight:bold;color:#0f827b">${tr(lang, "匹配", "Fit")}</td>
-      <td style="padding:8px 10px;border:1px solid #d4e4df;background-color:#eef8f5;font-family:Arial,'Microsoft YaHei',sans-serif;font-size:12px;font-weight:bold;color:#0f827b">${tr(lang, "项目作用", "Role in project")}</td>
-    </tr>${outlookSolutionRows(brief.solutionItems)}
-  </table></td></tr>`;
-  const internalRows = audience === "internal" ? `${outlookSectionTitle(tr(lang, "内部经营研判", "Internal sales assessment"))}<tr><td colspan="2" style="padding:0 22px 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse">${outlookKeyValueRows([
+  ]);
+  const internalRows = audience === "internal" ? `${outlookSectionTitle(tr(lang, "内部经营信息", "Internal sales information"))}<tr><td colspan="2" style="padding:0 18px 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse">${outlookKeyValueRows([
     [tr(lang, "内部评分", "Internal score"), `${item.score}/100 · ${item.priority} · ${tr(lang, "赢单判断", "Win assessment")} ${localTerm(lang, item.win)}`],
     [tr(lang, "机会Owner", "Opportunity owner"), item.owner],
     [tr(lang, "竞争态势", "Competitive landscape"), item.competitors.map(competitor => lang === "zh" ? `${competitor.name}（${competitor.note}）` : `${cleanLocalizedText(lang, competitor.name, "Potential competitor")} (${cleanLocalizedText(lang, competitor.type, "Potential type")}${competitor.note ? `: ${cleanLocalizedText(lang, competitor.note, "details to be verified")}` : ""})`).join(lang === "zh" ? "；" : "; ")],
     [tr(lang, "风险与补齐项", "Risks / gaps"), brief.risk],
+    [tr(lang, "下一步动作", "Next actions"), brief.nextActions.join(lang === "zh" ? "；" : "; ")],
   ])}</table></td></tr>` : "";
-  const partnerCta = audience === "partner" ? `<tr><td colspan="2" style="padding:0 22px 22px"><table role="presentation" cellspacing="0" cellpadding="0" style="border-collapse:collapse"><tr>
-    <td bgcolor="#0f827b" style="padding:12px 18px;font-family:Arial,'Microsoft YaHei',sans-serif;font-size:14px;line-height:18px;font-weight:bold"><a href="${escapeHtml(ackUrl)}" style="color:#ffffff;text-decoration:none">${tr(lang, "确认收到并反馈", "Confirm receipt and respond")}</a></td>
-    <td style="padding-left:12px;font-family:Arial,'Microsoft YaHei',sans-serif;font-size:12px;line-height:18px;color:#6b8389">${context.slaDueAt ? `${tr(lang, "反馈SLA", "Feedback SLA")}${colon}${escapeHtml(new Date(context.slaDueAt).toLocaleString(lang === "zh" ? "zh-CN" : "en-US"))}` : tr(lang, "请在7天内确认参与意向。", "Please confirm participation intent within 7 days.")}</td>
-  </tr></table></td></tr>` : "";
-  return `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;background-color:#ffffff;border:1px solid #d8e6e2;margin:0 0 18px">
-    <tr>
-      <td bgcolor="${audience === "internal" ? "#8a1f1f" : "#0f827b"}" width="8" style="font-size:1px;line-height:1px">&nbsp;</td>
-      <td style="padding:20px 22px 14px;font-family:Arial,'Microsoft YaHei',sans-serif">
-        <p style="margin:0 0 8px;font-size:11px;line-height:15px;font-weight:bold;color:${audience === "internal" ? "#8a1f1f" : "#0f827b"};letter-spacing:1px">${escapeHtml(audience === "internal" ? tr(lang, "内部经营版", "Internal sales view") : tr(lang, "伙伴安全版", "Partner-safe view"))} · ${escapeHtml(item.id)}</p>
-        <h2 style="margin:0 0 8px;font-size:22px;line-height:29px;color:#143946">${escapeHtml(brief.title)}</h2>
-        <p style="margin:0;font-size:13px;line-height:20px;color:#637a80">${escapeHtml(brief.meta)}</p>
-      </td>
-    </tr>
-    ${metrics}
-    ${partnerProjectContext}
-    ${outlookSectionTitle(tr(lang, "线索与机会点分析", "Lead and opportunity analysis"))}
-    ${outlookTextBlock(analysisText)}
-    ${outlookSectionTitle(tr(lang, "公开证据与判断依据", "Public evidence and rationale"))}
-    ${evidenceRows}
-    ${outlookSectionTitle(tr(lang, "匹配华为产品与解决方案", "Matched Huawei products and solutions"))}
-    ${solutionTable}
-    ${outlookSectionTitle(tr(lang, "项目运作打法", "Engagement play"))}
-    ${outlookTextBlock(engagementPlay)}
-    ${outlookSectionTitle(tr(lang, "联系人与采购入口", "Contact and procurement entry"))}
-    ${contactTable}
-    ${outlookSectionTitle(tr(lang, "下一步动作", "Next actions"))}
-    ${actionRows}
-    ${internalRows}
-    ${partnerCta}
-  </table>`;
+  const partnerCta = audience === "partner" ? `<tr><td colspan="2" style="padding:14px 18px 18px"><a href="${escapeHtml(ackUrl)}" style="display:inline-block;padding:10px 16px;background:#0f827b;color:#fff;text-decoration:none;font-size:13px;font-weight:bold">${tr(lang, "打开详情并确认收到", "Open details and confirm receipt")}</a><span style="padding-left:10px;font-size:11px;color:#60777d">${tr(lang, "若邮箱不支持展开，请点击查看完整详情。", "If your email app does not support expand/collapse, open the full details here.")}</span></td></tr>` : `<tr><td colspan="2" style="padding:14px 18px 18px"><a href="${escapeHtml((runtimeEnv().MSSD_SITE_URL || "https://iraq-mtl.lihui9329.workers.dev/").trim())}" style="color:#8a1f1f;font-weight:bold">${tr(lang, "打开 MTL 平台查看完整机会详情", "Open MTL to view full opportunity details")}</a></td></tr>`;
+  const detailSections = `
+    ${outlookSectionTitle(tr(lang, "项目背景与介绍", "Project background and introduction"))}${outlookTextBlock(background)}
+    ${outlookSectionTitle(tr(lang, "项目范围 / Scope", "Project scope"))}${outlookBulletRows(scope.length ? scope : [tr(lang, "当前记录未包含可核验的Scope描述，请以业主公告或招标文件补齐。", "No verifiable scope is recorded; confirm it from the owner's notice or tender documents.")])}
+    ${outlookSectionTitle(tr(lang, "匹配的华为方案", "Huawei solution fit"))}<tr><td colspan="2" style="padding:0 18px 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse"><tr><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "产品域", "Domain")}</td><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "推荐方案", "Recommended solution")}</td><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "匹配", "Fit")}</td><td style="padding:8px;border:1px solid #d4e4df;background:#eef8f5;font-size:11px;font-weight:bold;color:#0f827b">${tr(lang, "项目作用", "Project role")}</td></tr>${solutionRows}</table></td></tr>
+    ${outlookSectionTitle(tr(lang, "联系人信息与采购入口", "Contacts and procurement entry"))}<tr><td colspan="2" style="padding:0 18px 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse">${contactRows}</table></td></tr>
+    ${outlookSectionTitle(tr(lang, "项目进展与里程碑", "Project progress and milestones"))}${outlookTextBlock(milestone)}
+    ${outlookSectionTitle(tr(lang, "新闻与进展更新", "News and progress updates"))}${outlookTextBlock(news)}
+    ${outlookSectionTitle(tr(lang, "最新新闻", "Latest news"))}${outlookTextBlock(latestNews)}
+    ${outlookSectionTitle(tr(lang, "下一步动作", "Next actions"))}${outlookBulletRows(audience === "partner" ? (enhancements.get(item.id)?.actions?.length ? enhancements.get(item.id)!.actions! : [tr(lang, "确认客户入口、投标资格与本地交付资源。", "Confirm customer access, bid eligibility and local delivery resources."), tr(lang, "核实独立ICT工作包和技术接口。", "Verify standalone ICT packages and technical interfaces.")]) : brief.nextActions)}
+    ${internalRows}${partnerCta}`;
+  const summary = `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;background:#fff;border:1px solid #d8e6e2"><tr><td width="34" style="padding:12px 8px;text-align:center;font-size:12px;color:#0f827b;font-weight:bold">${escapeHtml(item.priority)}</td><td style="padding:12px 8px;font-size:13px;line-height:19px;color:#143946"><b>${escapeHtml(title)}</b><br/><span style="font-size:11px;color:#637a80">${escapeHtml(brief.meta)} · ${tr(lang, "金额", "Value")}: ${escapeHtml(brief.value)} · ${tr(lang, "节点", "Milestone")}: ${escapeHtml(brief.deadline)}</span></td><td width="86" style="padding:12px 8px;text-align:right;font-size:11px;color:#0f827b;font-weight:bold">${tr(lang, "展开详情", "Expand")}&nbsp;⌄</td></tr></table>`;
+  return `<details style="margin:0 0 9px;border:1px solid #d8e6e2;background:#fff"><summary style="list-style:none;cursor:pointer">${summary}</summary><table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;background:#fff">${detailSections}</table></details>`;
 }
 
 export function buildContent(opportunities: Opportunity[], audience: Audience, actorName: string, lang: Lang, context: PushDeliveryContext = {}, enhancements: Map<string, AiEnhancement> = new Map()) {
