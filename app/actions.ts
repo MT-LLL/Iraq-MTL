@@ -653,7 +653,9 @@ export async function getWeeklyReportSnapshot(weekStart: string, weekEnd: string
     db.select().from(leadDistributions),
   ]);
   const archivedIds = new Set(tracking.filter(row => row.status === "archived").map(row => row.opportunityId));
-  const active = opportunities.filter(row => !archivedIds.has(row.id));
+  const partnerVisibleIds = new Set(opportunities.filter(row => row.reviewStatus === "verified" && (row.sourceLicense === "partner-approved" || row.sourceLicense === "public")).map(row => row.id));
+  const activeAll = opportunities.filter(row => !archivedIds.has(row.id));
+  const active = audience === "partner" ? activeAll.filter(row => partnerVisibleIds.has(row.id)) : activeAll;
   const added = active.filter(row => row.createdAt.getTime() >= start && row.createdAt.getTime() <= end);
   const newKey = added.filter(row => ["P0", "P1", "HIGH", "CRITICAL"].includes(String(row.priority).toUpperCase()));
   const weeklyPushes = pushes.filter(row => row.createdAt.getTime() >= start && row.createdAt.getTime() <= end && row.channel === "email");
@@ -663,8 +665,7 @@ export async function getWeeklyReportSnapshot(weekStart: string, weekEnd: string
     catch { return row.status === "acknowledged"; }
   }).length;
   const returned = distributions.filter(row => row.requestedAt.getTime() >= start && row.requestedAt.getTime() <= end && row.status === "returned").length;
-  const partnerSafe = added.filter(row => row.reviewStatus === "verified" && (row.sourceLicense === "partner-approved" || row.sourceLicense === "public"));
-  const displayRows = audience === "partner" ? partnerSafe : added;
+  const displayRows = added;
   return {
     weekStart, weekEnd,
     totalOpportunities: active.length,
