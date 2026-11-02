@@ -11,7 +11,7 @@ import { scoreOpportunity } from "./opportunity-scoring";
 import { meedContactDirectory } from "./meed-contacts";
 import { getChatGPTUser } from "./chatgpt-auth";
 import { deliverNotification, NotificationError } from "./notifications";
-import { opportunityBrief } from "./localization";
+import { opportunityBrief, localText } from "./localization";
 import { verifyAdminLinkCookie } from "./admin-link";
 
 type IdentityType = "partner" | "huawei_cn" | "huawei_local" | "huawei_admin";
