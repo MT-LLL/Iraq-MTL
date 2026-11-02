@@ -1054,6 +1054,7 @@ export async function getPartnerPushConfirmation(input: { id: string; token: str
         latestNews: localText(lang, item.latestNews || "", lang === "zh" ? "暂无最新新闻。" : "No latest news recorded."),
         solutions: brief.solutionItems,
         contact: brief.contactDetails,
+        contacts: item.contacts ?? [],
         strategy: brief.strategy,
         risk: brief.risk,
       };
