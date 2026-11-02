@@ -686,11 +686,11 @@ export async function getWeeklyReportSnapshot(weekStart: string, weekEnd: string
     progressNotes: "",
     nextSteps: "",
     keyRisksHelp: "",
-    topOpportunities: [...displayRows].sort((a, b) => b.score - a.score).slice(0, 5).map(row => weeklyReportOpportunityView(row, language)),
+    topOpportunities: [...displayRows].sort((a, b) => b.score - a.score).slice(0, 5).map(row => weeklyReportOpportunityView(row, language, audience)),
   };
 }
 
-function weeklyReportOpportunityView(item: Opportunity, language: "zh" | "en") {
+function weeklyReportOpportunityView(item: Opportunity, language: "zh" | "en", audience: "internal" | "partner" = "internal") {
   const analysis = item.opportunityAnalysis;
   const bilingual = analysis?.bilingualAnalysis?.[language];
   const recommended = bilingual?.recommendedHuaweiSolutions?.length
@@ -740,7 +740,7 @@ export async function searchWeeklyReportOpportunities(query: string, audience: "
       .some(value => String(value || "").toLocaleLowerCase().includes(needle)))
     .sort((a, b) => b.score - a.score)
     .slice(0, 12)
-    .map(item => weeklyReportOpportunityView(item, language));
+    .map(item => weeklyReportOpportunityView(item, language, audience));
 }
 
 async function resolveWeeklyReportTopOpportunities(db: ReturnType<typeof getDb>, audience: "internal" | "partner", language: "zh" | "en", editedItems: WeeklyReportSnapshot["topOpportunities"] | undefined, fallbackItems: WeeklyReportSnapshot["topOpportunities"]) {
@@ -757,7 +757,7 @@ async function resolveWeeklyReportTopOpportunities(db: ReturnType<typeof getDb>,
   return ids.flatMap(id => {
     const liveItem = byId.get(id);
     if (!liveItem) return [];
-    const base = weeklyReportOpportunityView(liveItem, language);
+    const base = weeklyReportOpportunityView(liveItem, language, audience);
     const custom = requested.find(item => item.id === id);
     return [{ ...base, owner: String(custom?.owner || "").slice(0, 160), solution: String(custom?.solution ?? base.solution).slice(0, 2000), coreJudgment: String(custom?.coreJudgment ?? base.coreJudgment).slice(0, 2000) }];
   });
