@@ -239,7 +239,11 @@ function toClientOpportunity(row: StoredOpportunity, ownerName = "Manual Import"
     priority: opportunityAnalysis && ["P0", "P1", "P2", "WATCH"].includes(opportunityAnalysis.priority)
       ? opportunityAnalysis.priority
       : scoring.priority,
-    score: scoring.score,
+    // GPT fitScore is the only authoritative numeric score after analysis is saved.
+    // Legacy scoreOpportunity is provisional and applies only to records not yet analyzed.
+    score: opportunityAnalysis && Number.isInteger(opportunityAnalysis.fitScore) && opportunityAnalysis.fitScore >= 0 && opportunityAnalysis.fitScore <= 100
+      ? opportunityAnalysis.fitScore
+      : scoring.score,
     confidence: scoring.confidence,
     value: row.projectValue == null ? "未披露" : `${row.currency || "USD"} ${row.projectValue.toLocaleString()}M`,
     addressable: row.addressableValue == null ? "待拆分ICT工作包" : `${row.currency || "USD"} ${row.addressableValue.toLocaleString()}M`,
