@@ -1,3 +1,432 @@
 {
-  "mode": "fetch"
+  "mode": "writeback",
+  "analyses": [
+    {
+      "opportunityId": "MEED-JO-582816",
+      "priority": "P2",
+      "fitScore": 63,
+      "demandSummary": "南约旦地下铜矿及选矿设施属于大型、分散式工业园区场景。潜在 ICT 需求集中在矿区地面园区网络、生产与管理系统的数据承载、关键区域无线覆盖、视频安防、边缘计算及本地数据存储。地下巷道无线覆盖和生产控制系统是否纳入本项目尚无证据，不能直接视为已确认采购范围。",
+      "recommendedHuaweiSolutions": [
+        "矿区园区 IP 承载网与光纤骨干",
+        "5G 专网或无线覆盖（须先验证地下巷道覆盖及许可条件）",
+        "边缘计算与本地数据中心/存储",
+        "视频监控、物联网接入及网络安全"
+      ],
+      "scoreRationale": "项目规模大、生命周期长，矿山与选矿厂具有多站点连接、工业网络、视频和数据汇聚等潜在需求，华为在网络、无线、计算存储和安全方面具备组合适配空间。当前项目资料仅确认地下采矿和选矿建设，没有列出 ICT/通信/自动化采购包，因此评分反映潜在 ICT 适配度，而非已确认合同机会。",
+      "risks": [
+        "MEED 摘要未列出通信、数据中心、工业网络或网络安全的明确采购范围",
+        "地下矿井无线覆盖受巷道结构、频段许可和安全认证约束",
+        "矿山 SCADA、DCS、PLC、调度及安全系统通常由专业 OT 厂商负责，不能假设由华为替代",
+        "项目仍处于研究阶段，技术方案、融资和 EPC 分工尚待确认"
+      ],
+      "nextActions": [
+        "确认矿山业主、项目管理顾问及潜在 EPC/矿山设计院",
+        "获取可研/FEED 中的通信、矿山调度、视频、数据中心和 OT 网络章节",
+        "核实地面园区与地下巷道是否分别招标，以及无线覆盖标准",
+        "优先从园区网络、光纤骨干、视频安防和边缘计算开展需求交流"
+      ],
+      "evidence": [
+        "MEED 项目摘要：南约旦多个山谷区域的地下铜矿及选矿设施建设",
+        "MEED 摘要：矿区约 78 平方公里，目标铜矿资源约 4,500 万吨",
+        "MEED 最新进展：初步研究已完成，技术、经济和环境研究预计启动",
+        "MEED 里程碑：主合同招标预计 2027-12-29 发布，合同授予预计 2028-04-25"
+      ],
+      "factsVsInference": "事实：项目位于约旦南部，涉及地下铜矿开采和选矿设施；初步研究已完成，后续技术、经济和环境研究预计启动。推断：大范围矿区和选矿设施可能需要园区通信、工业数据承载、视频安防、无线覆盖及本地计算存储。未知：地下无线方案、SCADA/自动化范围、ICT 预算、EPC、采购包和供应商名单。",
+      "english": {
+        "demandSummary": "This is a large, distributed underground copper mining and processing development. Potential ICT demand is likely to center on the surface-site backbone, connectivity for production and enterprise systems, wireless coverage in critical areas, video security, edge computing and local data storage. There is no evidence yet that underground radio coverage or process-control systems are included in the project procurement scope.",
+        "recommendedHuaweiSolutions": [
+          "Mine-site IP campus network and fiber backbone",
+          "5G private network or wireless coverage, subject to underground propagation and licensing validation",
+          "Edge computing and local data-center/storage infrastructure",
+          "Video surveillance, IoT connectivity and cybersecurity"
+        ],
+        "scoreRationale": "The scale and lifecycle of the mine create plausible demand for multi-site connectivity, industrial networking, video and data aggregation. Huawei has relevant networking, wireless, compute/storage and security capabilities. However, the available profile confirms mining and processing construction only; it does not identify an ICT, telecom or automation package. The score therefore reflects potential ICT fit, not a confirmed contract opportunity.",
+        "risks": [
+          "The MEED summary does not identify a telecom, data-center, industrial-network or cybersecurity package",
+          "Underground wireless coverage is constrained by tunnel geometry, spectrum licensing and mining safety certification",
+          "SCADA, DCS, PLC, dispatch and safety systems are typically supplied by specialist OT vendors; Huawei should not be assumed to replace them",
+          "The project remains at study stage; design, financing and EPC responsibilities are not yet confirmed"
+        ],
+        "nextActions": [
+          "Identify the mine owner, project-management consultant and prospective EPC/mining design partners",
+          "Obtain feasibility/FEED sections covering telecom, mine dispatch, video, data center and OT networking",
+          "Clarify whether surface facilities and underground tunnels are procured separately and identify wireless requirements",
+          "Start engagement around the surface backbone, fiber, video security and edge-computing use cases"
+        ],
+        "evidence": [
+          "MEED profile: underground copper mine and processing facilities across several valleys in southern Jordan",
+          "MEED summary: approximately 78 square kilometres and a target resource of about 45 million tonnes of copper ore",
+          "MEED latest update: preliminary studies completed; technical, economic and environmental studies expected to commence",
+          "MEED milestones: main-contract tender currently forecast for 29 December 2027 and award for 25 April 2028"
+        ],
+        "factsVsInference": "Facts: The project is an underground copper mine and processing development in southern Jordan. Preliminary studies are complete and technical, economic and environmental studies are expected next. Inference: The large mine footprint may require campus connectivity, industrial data transport, video security, wireless coverage and local compute/storage. Unknown: underground radio design, SCADA/automation scope, ICT budget, EPC structure, procurement packages and vendor list."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-383237",
+      "priority": "P2",
+      "fitScore": 49,
+      "demandSummary": "约旦穆吉布大坝 450MW 抽水蓄能项目属于电力基础设施建设。华为可关注电站及相关站点的通信承载、光传输、视频安防、数据中心/边缘计算和网络安全；但抽水蓄能机组、保护控制、励磁、调速和电力自动化并非可直接归入华为 ICT 供货范围。",
+      "recommendedHuaweiSolutions": [
+        "电站及调度相关站点 IP 承载网络",
+        "光传输及站点通信回传",
+        "视频监控与园区安防",
+        "数据中心/边缘计算及网络安全"
+      ],
+      "scoreRationale": "项目容量明确、已进入主合同资格预审阶段，且电力设施通常存在通信和数字化配套需求。项目摘要提及国家水资源总体规划的制度化和数字化，但未说明这部分是否属于抽水蓄能项目合同范围。华为适配点主要在 ICT 基础设施，而非电站核心机电设备，故评分中等。",
+      "risks": [
+        "项目摘要未给出电站通信、调度、自动化或数据中心的技术规范",
+        "国家水资源总体规划数字化可能是另一独立项目或不同采购包",
+        "主机、保护继电、SCADA/DCS 和电力控制系统的供应商边界不明",
+        "PPP 项目融资、开发商和 EPC 责任分工可能影响采购决策"
+      ],
+      "nextActions": [
+        "确认项目开发商、PPP 中标/意向方、顾问和主 EPC",
+        "核对预资格文件是否包含通信系统、光传输、网络安全、视频及数据中心",
+        "将电站 ICT 网络与机组控制/保护系统划清责任边界",
+        "关注 2027 年预资格短名单及后续招标文件发布"
+      ],
+      "evidence": [
+        "MEED 项目摘要：约旦能源与矿产资源部推进穆吉布大坝 450MW 抽水蓄能项目",
+        "MEED 摘要：项目属于约旦发电规划和扩容计划，并采用 PPP 模式",
+        "MEED 最新进展：资格预审已发布，提交截止日期为 2027-01-18",
+        "MEED 里程碑：主合同授予预计 2027-08-10"
+      ],
+      "factsVsInference": "事实：项目为约旦 450MW 抽水蓄能设施，采用 PPP 模式；资格预审已发布，提交截止日期为 2027-01-18。摘要还提到国家水资源总体规划的制度化和数字化。推断：电站和相关站点可能需要通信、光传输、视频、计算存储和网络安全。未知：上述 ICT 是否属于本项目合同、具体技术标准、开发商/EPC 和设备供应商边界。",
+      "english": {
+        "demandSummary": "The 450MW Al-Mujib pumped-hydro project is a power-infrastructure development. Huawei may be relevant for plant and remote-site communications, optical transport, video security, data-center/edge infrastructure and cybersecurity. The pumped-hydro units, protection and control, excitation, governors and core power automation should not be treated as Huawei ICT scope.",
+        "recommendedHuaweiSolutions": [
+          "IP transport network for the plant and associated dispatch sites",
+          "Optical transport and site backhaul",
+          "Video surveillance and site security",
+          "Data-center/edge infrastructure and cybersecurity"
+        ],
+        "scoreRationale": "The capacity is defined and the project has reached main-contract prequalification, while power facilities commonly require supporting communications and digital infrastructure. The profile also mentions institutionalization and digitalization of the National Water Master Plan, but does not establish whether that work belongs to this pumped-hydro contract. Huawei's fit is primarily in ICT infrastructure rather than core electromechanical equipment, resulting in a moderate score.",
+        "risks": [
+          "No technical specification is provided for plant communications, dispatch, automation or data-center systems",
+          "The National Water Master Plan digitalization reference may relate to a separate project or procurement package",
+          "Supplier boundaries for turbines, protection relays, SCADA/DCS and power controls are unknown",
+          "PPP financing, developer and EPC responsibilities may shape procurement decisions"
+        ],
+        "nextActions": [
+          "Identify the project developer, PPP sponsor/consortium, consultants and main EPC",
+          "Check prequalification documents for telecom, optical transport, cybersecurity, video and data-center packages",
+          "Separate plant ICT networking from turbine control and protection responsibilities",
+          "Track the prequalification shortlist in February 2027 and subsequent tender documents"
+        ],
+        "evidence": [
+          "MEED profile: Jordan Ministry of Energy and Mineral Resources' 450MW Al-Mujib pumped-hydro project",
+          "MEED summary: part of Jordan's generation expansion planning and structured as a PPP",
+          "MEED latest update: RFQ issued with submissions due 18 January 2027",
+          "MEED milestone: main-contract award forecast for 10 August 2027"
+        ],
+        "factsVsInference": "Facts: The project is a 450MW pumped-hydro facility in Jordan under a PPP model; the RFQ has been issued with a 18 January 2027 submission deadline. The profile also refers to digitalization of the National Water Master Plan. Inference: The plant and remote sites may need communications, optical transport, video, compute/storage and cybersecurity. Unknown: whether these ICT elements are within this contract, their specifications, the developer/EPC and the equipment-vendor boundaries."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-357815",
+      "priority": "WATCH",
+      "fitScore": 42,
+      "demandSummary": "Wadi Fefa 和 Wadi Al-Jurm 两座水坝项目以水坝、拦河设施、渠道、供水及灌溉分配网络等土建和水利工程为主。华为的潜在切入点是远程站点通信回传、水利遥测、视频安防和集中监控平台的 ICT 底座；当前资料没有证明这些系统已纳入采购。",
+      "recommendedHuaweiSolutions": [
+        "水坝及远程站点 IP/光纤/无线回传网络",
+        "遥测传感器接入和物联网通信",
+        "视频监控与集中管理平台的网络及存储",
+        "调度中心数据中心和网络安全"
+      ],
+      "scoreRationale": "水利设施分布广、远程站点多，存在遥测、通信和安防的潜在数字化需求。但现有项目描述重点是水坝、渠道和供水分配设施，没有给出水利自动化、监测、调度或 ICT 包件，且最新进展信息有限，因此应作为低优先级观察机会。",
+      "risks": [
+        "项目摘要主要描述土建和水利工程，ICT 采购范围未确认",
+        "遥测、闸门控制、水文监测和调度平台可能由水利专业系统集成商承接",
+        "MEED 表示未获得进一步项目更新，时间表仍可能调整",
+        "项目业主、融资、顾问和 EPC 信息不足"
+      ],
+      "nextActions": [
+        "向 Jordan Valley Authority 核实项目当前状态和实施范围",
+        "确认是否有大坝安全监测、水文遥测、闸门远控、视频及调度中心子系统",
+        "识别水利自动化集成商和土建 EPC，寻找通信网络分包机会",
+        "在正式招标文件出现 ICT/SCADA 条款前维持 WATCH"
+      ],
+      "evidence": [
+        "MEED 项目摘要：JVA 计划建设 Wadi Fefa 与 Wadi Al-Jurm 两座水坝",
+        "MEED 摘要：范围涉及水坝、拦河设施、渠道、供水网络、分配系统、道路和配套设施",
+        "MEED 最新进展：暂未获得更多项目更新，关键日期已调整",
+        "MEED 里程碑：主合同招标预计 2027-06-05 发布"
+      ],
+      "factsVsInference": "事实：JVA 计划建设两座水坝，工程范围包括水坝结构、拦河设施、渠道、供水和分配网络等。MEED 表示暂无进一步更新。推断：远程水利站点可能需要遥测通信、视频安防和集中监控网络。未知：水坝监测、闸门控制、SCADA、ICT 采购包、项目资金和 EPC。",
+      "english": {
+        "demandSummary": "The Wadi Fefa and Wadi Al-Jurm developments are primarily civil and water-infrastructure projects covering dams, a barrage, canals, water-supply and irrigation-distribution networks. Huawei's potential entry points are the ICT foundations for remote-site backhaul, water telemetry, video security and centralized monitoring. There is no current evidence that these systems are included in procurement.",
+        "recommendedHuaweiSolutions": [
+          "IP, fiber or wireless backhaul for dams and remote sites",
+          "IoT connectivity for telemetry sensors",
+          "Network and storage infrastructure for video surveillance and centralized management",
+          "Data-center and cybersecurity infrastructure for a control center"
+        ],
+        "scoreRationale": "Distributed water infrastructure can create demand for telemetry, communications and security. However, the available profile focuses on civil works and water distribution and does not identify water automation, monitoring, dispatch or ICT packages. MEED also reports limited recent information, so this should remain a low-priority watch item.",
+        "risks": [
+          "The project description is dominated by civil and water works; ICT scope is unconfirmed",
+          "Telemetry, gate control, hydrological monitoring and dispatch platforms may be supplied by specialist water-system integrators",
+          "MEED has not obtained further updates and the schedule may change",
+          "Owner, financing, consultant and EPC details are insufficient"
+        ],
+        "nextActions": [
+          "Verify current status and implementation scope with the Jordan Valley Authority",
+          "Check for dam-safety monitoring, hydrological telemetry, remote gate control, video and control-center subsystems",
+          "Identify water-automation integrators and civil EPCs for potential communications subcontracting",
+          "Keep the opportunity at WATCH until tender documents identify ICT or SCADA requirements"
+        ],
+        "evidence": [
+          "MEED profile: Jordan Valley Authority plans Wadi Fefa and Wadi Al-Jurm dams",
+          "MEED scope summary: dams, barrage, canals, water-supply and distribution networks, roads and supporting facilities",
+          "MEED latest update: no further project update obtained; milestone dates have been amended",
+          "MEED milestone: main-contract tender forecast for 5 June 2027"
+        ],
+        "factsVsInference": "Facts: JVA plans two dams with civil works, a barrage, canals, water-supply and distribution infrastructure. MEED reports no further update. Inference: Remote water sites may require telemetry communications, video security and centralized monitoring networks. Unknown: dam monitoring, gate control, SCADA, ICT procurement packages, funding and EPC."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-439441",
+      "priority": "WATCH",
+      "fitScore": 54,
+      "demandSummary": "约旦—埃及 550MW 海底电缆互联项目包含海底输电电缆、两岸接入设施、电气保护控制和电网接入。华为可关注跨站点通信承载、光传输、调度数据通信、网络安全及相关数据中心基础设施；海缆本体、换流/变电设备和继电保护装置不属于可直接确认的华为机会。",
+      "recommendedHuaweiSolutions": [
+        "电力站点间 IP/MPLS 承载和调度通信网络",
+        "光传输与两岸站点回传",
+        "OT/IT 网络分区及网络安全",
+        "调度/运维数据中心和存储"
+      ],
+      "scoreRationale": "跨境电力互联通常需要可靠的站点通信、调度数据和网络安全，华为网络与光传输能力具备潜在适配性。项目目前处于研究完成阶段，ICT 采购范围、两国电力公司分工及海缆/EPC 合同结构均未明确，因此保留 WATCH。",
+      "risks": [
+        "当前资料没有单独的通信或数字化采购包",
+        "跨境互联涉及约旦和埃及多方监管、运营商及电网接口标准",
+        "保护控制和电力自动化系统通常由专业电力设备供应商负责",
+        "项目仍处于研究阶段，投标时间表和资金安排存在不确定性"
+      ],
+      "nextActions": [
+        "确认 NEPCO、埃及侧电网/项目业主及项目开发商的职责分工",
+        "核实两岸站点通信、调度数据、光传输和网络安全是否纳入主合同",
+        "与电力 EPC 和电网通信集成商建立联系，识别通信分包",
+        "持续跟踪可研结论、项目融资及 2027 年招标文件"
+      ],
+      "evidence": [
+        "MEED 项目摘要：约旦与埃及之间建设 550MW 电力互联海底电缆",
+        "MEED 摘要：包含海底电缆、岸上连接设施、电气保护控制及电网接入",
+        "MEED 最新进展：研究工作已完成",
+        "MEED 里程碑：商业投标预计 2027-12-14，主合同授予预计 2028-03-10"
+      ],
+      "factsVsInference": "事实：项目拟通过 550MW 海底电缆连接约旦和埃及，范围包含海缆、岸上接入设施、电气保护控制和电网接入；研究工作已完成。推断：两岸站点和电网调度可能需要高可靠通信、光传输和网络安全。未知：是否包含华为可参与的通信包、两国接口标准、开发商/EPC 和采购分工。",
+      "english": {
+        "demandSummary": "The 550MW Jordan–Egypt submarine interconnector includes the submarine power cable, onshore connection facilities, electrical protection and control, and grid integration. Huawei may be relevant to inter-site communications, optical transport, dispatch data connectivity, cybersecurity and supporting data-center infrastructure. The cable itself, converter/substation equipment and protection relays are not confirmed Huawei opportunities.",
+        "recommendedHuaweiSolutions": [
+          "IP/MPLS transport and dispatch communications between power sites",
+          "Optical transport and onshore site backhaul",
+          "OT/IT segmentation and cybersecurity",
+          "Data-center and storage infrastructure for dispatch and operations"
+        ],
+        "scoreRationale": "Cross-border power interconnection normally requires resilient site communications, dispatch data and cybersecurity, areas where Huawei's networking and optical capabilities may fit. The project has only completed its study work; ICT packages, the division of responsibilities between the two national utilities and the cable/EPC contract structure remain unclear. It should therefore stay at WATCH.",
+        "risks": [
+          "No separate communications or digitalization package is identified",
+          "Cross-border delivery involves regulatory, utility and interface standards in both Jordan and Egypt",
+          "Protection/control and power automation are normally handled by specialist power-equipment suppliers",
+          "The project is at study stage, with uncertainty around schedule, financing and procurement"
+        ],
+        "nextActions": [
+          "Clarify the roles of NEPCO, the Egyptian-side utility/owner and the project developer",
+          "Verify whether onshore communications, dispatch data, optical transport and cybersecurity are included in the main contract",
+          "Engage power EPCs and grid-communications integrators to identify subcontracting opportunities",
+          "Track study conclusions, financing and the 2027 tender documentation"
+        ],
+        "evidence": [
+          "MEED profile: 550MW submarine electricity interconnection between Jordan and Egypt",
+          "MEED scope summary: submarine cable, onshore connection facilities, electrical protection/control and grid integration",
+          "MEED latest update: study works have been completed",
+          "MEED milestones: commercial bid forecast for 14 December 2027 and main-contract award for 10 March 2028"
+        ],
+        "factsVsInference": "Facts: The project proposes a 550MW submarine interconnector between Jordan and Egypt, including the cable, onshore facilities, electrical protection/control and grid integration. Study works are complete. Inference: The onshore sites and grid dispatch may require resilient communications, optical transport and cybersecurity. Unknown: whether a Huawei-addressable communications package exists, interface standards, developer/EPC and procurement split."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-353910",
+      "priority": "P2",
+      "fitScore": 66,
+      "demandSummary": "伊拉克安巴尔省七座玻璃及陶瓷工厂改造/新建项目，涉及多条生产线和多个厂区，是本批中较值得关注的工业数字化机会。潜在需求包括工厂园区网络、生产数据采集与边缘计算、工业无线、视频安防、本地计算存储和 OT 网络安全。具体自动化控制系统和生产设备供应商范围仍需确认。",
+      "recommendedHuaweiSolutions": [
+        "多厂区工业园区 IP 网络与光纤骨干",
+        "工业 5G 专网/无线连接及物联网接入",
+        "边缘计算、服务器和本地存储平台",
+        "OT/IT 分区、工业网络安全与视频安防"
+      ],
+      "scoreRationale": "七座工厂、多条生产线和分布式厂区形成较明确的网络连接、生产数据汇聚、安防及边缘计算场景。华为在园区网络、无线、计算存储和安全领域具备横向适配能力；但玻璃/陶瓷工艺设备、PLC、DCS 和生产线控制系统应由专业工业自动化厂商承担。ICT 采购尚未被 MEED 摘要确认，故维持 P2 而非 P0/P1。",
+      "risks": [
+        "项目摘要未列出 ICT、工业网络或数据中心采购清单",
+        "生产线 PLC/DCS、MES、工业控制和设备自动化供应商尚不明确",
+        "七个厂区的地理分布、建设顺序和统一 IT 架构未知",
+        "项目处于研究阶段，招标时间较远，资金与实施模式需核实"
+      ],
+      "nextActions": [
+        "联系伊拉克工业与矿产部、安巴尔省项目团队及潜在工厂运营方",
+        "获取七座工厂的厂区布局、生产线技术规范和自动化总体设计",
+        "确认是否建设统一运营中心、工厂数据平台、视频系统和工业网络",
+        "与生产线 EPC/自动化集成商合作，争取 ICT 网络、无线、服务器存储及安全分包"
+      ],
+      "evidence": [
+        "MEED 项目摘要：伊拉克工业与矿产部计划改造安巴尔省七座玻璃和陶瓷工厂",
+        "MEED 摘要列出玻璃板、医用瓶、瓶罐、浮法玻璃及墙地砖等生产设施",
+        "MEED 摘要项目总投资口径约 US$300 million；该金额不等于华为可寻址 ICT 金额",
+        "MEED 里程碑：主合同招标预计 2028-02-05 发布，合同授予预计 2028-06-05"
+      ],
+      "factsVsInference": "事实：伊拉克工业与矿产部计划在安巴尔省改造七座玻璃和陶瓷工厂，摘要列出多类生产设施，项目金额约 US$300 million。推断：多厂区、多生产线可能需要统一网络、生产数据采集、边缘计算、视频安防和工业网络安全。未知：厂区布局、自动化品牌、MES/ERP、ICT 预算、EPC 和项目资金状态。",
+      "english": {
+        "demandSummary": "The rehabilitation/development of seven glass and ceramic factories in Anbar is one of the more relevant industrial-digitalization opportunities in this batch. Potential requirements include factory-campus networking, production-data collection and edge computing, industrial wireless, video security, local compute/storage and OT cybersecurity. The scope of process automation and production-equipment vendors still needs confirmation.",
+        "recommendedHuaweiSolutions": [
+          "Industrial campus IP networks and fiber backbone across multiple factories",
+          "Industrial 5G/private wireless and IoT connectivity",
+          "Edge computing, servers and local storage platforms",
+          "OT/IT segmentation, industrial cybersecurity and video security"
+        ],
+        "scoreRationale": "Seven factories and multiple production lines create plausible requirements for connectivity, production-data aggregation, security and edge computing. Huawei has horizontal capabilities in campus networking, wireless, compute/storage and security. Glass/ceramic process equipment, PLC, DCS and production-line controls should remain with specialist automation vendors. Since MEED has not confirmed an ICT procurement list, the opportunity is P2 rather than P0/P1.",
+        "risks": [
+          "The MEED summary does not provide an ICT, industrial-network or data-center procurement list",
+          "PLC/DCS, MES, industrial control and production-line automation vendors are unknown",
+          "The geographic distribution, construction sequence and unified IT architecture of the seven sites are unclear",
+          "The project remains at study stage; tender timing is distant and financing/delivery model need validation"
+        ],
+        "nextActions": [
+          "Engage Iraq's Ministry of Industry and Minerals, the Anbar project team and prospective factory operators",
+          "Obtain site layouts, production-line specifications and the overall automation design for all seven factories",
+          "Check for a unified operations center, factory data platform, video system and industrial network",
+          "Partner with production-line EPCs/automation integrators to pursue ICT networking, wireless, server/storage and security packages"
+        ],
+        "evidence": [
+          "MEED profile: Iraq Ministry of Industry and Minerals plans rehabilitation of seven glass and ceramic factories in Anbar",
+          "MEED summary lists glass panels, medical bottles, bottles/jars, float glass and wall/floor tile facilities",
+          "MEED project value is approximately US$300 million; this is not Huawei's addressable ICT value",
+          "MEED milestones: main-contract tender forecast for 5 February 2028 and award for 5 June 2028"
+        ],
+        "factsVsInference": "Facts: Iraq's Ministry of Industry and Minerals plans to rehabilitate seven glass and ceramic factories in Anbar. The profile lists several production facilities and a project value of approximately US$300 million. Inference: Multiple factories and production lines may require unified networking, production-data collection, edge computing, video security and OT cybersecurity. Unknown: site layouts, automation brands, MES/ERP, ICT budget, EPC and financing status."
+      }
+    },
+    {
+      "opportunityId": "MEED-JO-419698",
+      "priority": "WATCH",
+      "fitScore": 50,
+      "demandSummary": "阿卡巴 City Gate Station/母站项目涉及天然气门站、压力调节、计量及国家管网连接，属于流程工业站点。华为的潜在机会是站点通信、园区网络、视频安防、边缘计算和网络安全；压力控制、计量仪表、SIS/SCADA 等关键工艺与安全控制系统应由专业供应商负责。",
+      "recommendedHuaweiSolutions": [
+        "门站 IP 网络与光纤/无线回传",
+        "视频监控、周界安防和门禁网络",
+        "边缘计算及本地服务器/存储",
+        "OT/IT 网络分区和网络安全"
+      ],
+      "scoreRationale": "天然气门站具有远程运维、计量数据传输、站点安防和可靠通信需求，ICT 基础设施存在潜在适配空间。但 MEED 摘要只描述工艺设施，没有确认通信或数字化招标包；且项目最新动态不足，因此保持 WATCH。",
+      "risks": [
+        "未确认站点通信、视频、数据中心和网络安全是否纳入主合同",
+        "SIS、SCADA、计量和压力调节控制涉及安全认证及专业行业标准",
+        "项目里程碑包含较早的预资格日期，需核实实际采购进度",
+        "运营商、国家管网接口、EPC 和系统集成商信息不完整"
+      ],
+      "nextActions": [
+        "确认 ADC、天然气运营方和国家管网相关业主的责任边界",
+        "获取门站仪表、SCADA/SIS、通信、安防和网络安全系统架构",
+        "核实项目是否已有预资格短名单、EPC 授标或重新排期",
+        "优先寻找站点通信、视频安防和 OT 网络安全分包机会"
+      ],
+      "evidence": [
+        "MEED 项目摘要：Aqaba Development Corporation 推进阿卡巴 City Gate Station/Mother Station",
+        "MEED 摘要：设施位于阿卡巴经济区南部工业区附近，距阿卡巴市约 20 公里",
+        "MEED 范围摘要：母站、压力降低、计量站、区域调压设施及国家管网连接",
+        "MEED 最新进展：暂未获得更多更新，关键日期已调整"
+      ],
+      "factsVsInference": "事实：项目为阿卡巴附近天然气 City Gate/Mother Station，涉及母站、压力调节、计量及国家管网连接。推断：站点可能需要远程通信、计量数据回传、视频安防和网络安全。未知：SCADA/SIS 供应商、通信范围、ICT 包件、EPC、运营方和当前招标状态。",
+      "english": {
+        "demandSummary": "The Aqaba City Gate/Mother Station is a process-industry site involving gas reception, pressure reduction, metering and connection to the national grid. Huawei's potential scope is site communications, campus networking, video security, edge computing and cybersecurity. Pressure control, metering instruments and critical SIS/SCADA process-safety systems should be delivered by specialist vendors.",
+        "recommendedHuaweiSolutions": [
+          "IP networking and fiber/wireless backhaul for the gas station",
+          "Video surveillance, perimeter security and access-control networking",
+          "Edge computing and local server/storage infrastructure",
+          "OT/IT segmentation and cybersecurity"
+        ],
+        "scoreRationale": "A gas gate station may require remote operations, metering-data transmission, site security and resilient communications, creating potential ICT fit. However, the MEED summary describes process facilities only and does not confirm a telecom or digitalization tender package. Recent project information is also limited, so the opportunity remains WATCH.",
+        "risks": [
+          "It is not confirmed whether site communications, video, data center or cybersecurity are part of the main contract",
+          "SIS, SCADA, metering and pressure-control systems have safety certification and specialist industry requirements",
+          "The milestone schedule includes an earlier prequalification date; actual procurement status needs verification",
+          "Utility interface, EPC and system-integrator information is incomplete"
+        ],
+        "nextActions": [
+          "Clarify responsibilities among ADC, the gas operator and national-grid stakeholders",
+          "Obtain the architecture for instrumentation, SCADA/SIS, communications, security and cybersecurity",
+          "Verify whether a prequalification shortlist or EPC award exists and whether the schedule has been revised",
+          "Focus on potential site-communications, video-security and OT-cybersecurity subcontract packages"
+        ],
+        "evidence": [
+          "MEED profile: Aqaba Development Corporation's Aqaba City Gate/Mother Station project",
+          "MEED summary: site is in the southern industrial area of Aqaba's economic zone, around 20km from Aqaba city",
+          "MEED scope summary: mother station, pressure reduction, metering station, district regulating facilities and national-grid connection",
+          "MEED latest update: no further update obtained; milestone dates have been amended"
+        ],
+        "factsVsInference": "Facts: The project is a gas City Gate/Mother Station near Aqaba, covering a mother station, pressure reduction, metering and national-grid connection. Inference: The site may need remote communications, metering-data backhaul, video security and cybersecurity. Unknown: SCADA/SIS vendors, communications scope, ICT package, EPC, operator and current tender status."
+      }
+    },
+    {
+      "opportunityId": "MEED-IQ-3630",
+      "priority": "WATCH",
+      "fitScore": 48,
+      "demandSummary": "伊拉克巴杜什水坝项目拟完成摩苏尔西北部未完工水坝的后续建设，属于大型水利/潜在水电基础设施。华为可关注水坝安全监测、远程站点通信、视频安防、数据汇聚及调度中心网络与存储；但水坝主体工程、水轮发电设备和水利自动化系统不能直接视为华为供货范围。",
+      "recommendedHuaweiSolutions": [
+        "水坝及远程监测点 IP/光纤/微波通信",
+        "水文/结构安全传感器数据回传与物联网接入",
+        "视频监控及周界安防",
+        "水利调度中心数据中心、存储和网络安全"
+      ],
+      "scoreRationale": "水坝项目可能需要远程监测、站点通信和安全系统，且伊拉克水资源与电力基础设施具有长期数字化需求。当前项目仍在研究/技术评估阶段，MEED 仅称业主已向上级申请评估既有工程，没有确认新建或续建范围、发电配置和 ICT 采购包，因此应保持 WATCH。",
+      "risks": [
+        "项目既有工程状态和剩余施工范围尚未明确",
+        "是否包含水电站、发电机组及其控制系统仍需核实",
+        "水坝安全监测、闸门控制、水文系统和 SCADA 可能由专业水利自动化供应商承接",
+        "项目审批、资金和后续招标时间不确定"
+      ],
+      "nextActions": [
+        "联系伊拉克水资源部及摩苏尔/尼尼微项目主管部门，核实既有工程评估结果",
+        "获取剩余工程范围、坝体安全监测、水文遥测、闸门控制和通信系统需求",
+        "确认是否包含水电发电设施及相关调度通信网络",
+        "在明确重启计划和 ICT 子包后，再提升机会优先级"
+      ],
+      "evidence": [
+        "MEED 项目摘要：伊拉克水资源部推进摩苏尔西北约 15 公里处的 Badush Dam",
+        "MEED 摘要：项目属于伊拉克大型水坝计划的一部分，部分工程此前已建设但尚未完成",
+        "MEED 最新进展：业主已向上级申请对既有工程开展技术评估并完成实施程序",
+        "MEED 里程碑：主合同招标预计 2027-05-05 发布"
+      ],
+      "factsVsInference": "事实：巴杜什水坝位于摩苏尔西北约 15 公里，属于伊拉克水坝建设计划；既有工程尚未完成，业主已向上级申请技术评估。推断：若项目恢复实施，可能涉及水坝监测、远程通信、视频安防和调度中心 ICT。未知：剩余工程量、水电配置、监测/控制系统、预算、审批结果和采购安排。",
+      "english": {
+        "demandSummary": "The Badush Dam project concerns completion of a previously unfinished dam northwest of Mosul and is a major water-infrastructure development with possible hydropower relevance. Huawei may be relevant to dam-safety monitoring connectivity, remote-site communications, video security, data aggregation and control-center networking/storage. The dam civil works, hydropower equipment and water-control automation are not confirmed Huawei supply scope.",
+        "recommendedHuaweiSolutions": [
+          "IP, fiber or microwave communications for the dam and remote monitoring sites",
+          "IoT connectivity and backhaul for hydrological/structural monitoring sensors",
+          "Video surveillance and perimeter security",
+          "Data-center, storage and cybersecurity infrastructure for a water-control center"
+        ],
+        "scoreRationale": "A dam may require remote monitoring, site communications and security systems, and Iraq has long-term digitalization needs across water and power infrastructure. The project remains at study/technical-assessment stage. MEED only reports that the owner has approached higher authorities to evaluate existing works; the remaining construction scope, hydropower configuration and ICT procurement package are not confirmed. It should remain WATCH.",
+        "risks": [
+          "The condition of existing works and remaining construction scope are unclear",
+          "Whether hydropower generation and associated control systems are included needs verification",
+          "Dam-safety monitoring, gate control, hydrological systems and SCADA may be supplied by specialist water-automation vendors",
+          "Approvals, funding and subsequent tender timing are uncertain"
+        ],
+        "nextActions": [
+          "Contact Iraq's Ministry of Water Resources and the Mosul/Nineveh project authorities for the result of the existing-works assessment",
+          "Obtain the remaining works scope and requirements for dam-safety monitoring, hydrological telemetry, gate control and communications",
+          "Confirm whether hydropower facilities and related dispatch communications are included",
+          "Raise the opportunity priority only after a restart plan and ICT package are confirmed"
+        ],
+        "evidence": [
+          "MEED profile: Iraq Ministry of Water Resources' Badush Dam, approximately 15km northwest of Mosul",
+          "MEED summary: part of Iraq's major dam program; previous works are incomplete",
+          "MEED latest update: the owner has approached higher authorities for a technical evaluation of existing works and implementation procedures",
+          "MEED milestone: main-contract tender forecast for 5 May 2027"
+        ],
+        "factsVsInference": "Facts: Badush Dam is northwest of Mosul and part of Iraq's dam program. Previous works remain incomplete, and the owner has requested a technical assessment from higher authorities. Inference: If the project restarts, it may require dam-monitoring connectivity, remote communications, video security and control-center ICT. Unknown: remaining works, hydropower configuration, monitoring/control systems, budget, approval outcome and procurement plan."
+      }
+    }
+  ]
 }
