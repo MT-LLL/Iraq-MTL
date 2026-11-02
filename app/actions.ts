@@ -726,10 +726,7 @@ export async function sendWeeklyReport(input: { weekStart: string; weekEnd: stri
       [zh ? "邮件发送成功" : "Emails sent", snapshot.emailSent] as [string, number],
       [zh ? "伙伴已确认" : "Partner acknowledged", snapshot.partnerAcknowledged] as [string, number],
       [zh ? "伙伴待响应" : "Partner pending", snapshot.partnerPending] as [string, number],
-    ] : [
-      [zh ? "伙伴推送" : "Partner updates", snapshot.partnerPushes] as [string, number],
-      [zh ? "伙伴已确认" : "Partner acknowledged", snapshot.partnerAcknowledged] as [string, number],
-    ]),
+    ] : []),
   ];
   const metricCells = metrics.map(([label, value]) => `<td style="padding:12px;border:1px solid #dce7e5;background:#f6faf9;font:12px Arial;color:#5b7078">${safe(label)}<br><strong style="font-size:22px;color:#123746">${value}</strong></td>`).join("");
   const projectRows = snapshot.topOpportunities.map(item => `<tr><td style="padding:12px;border-bottom:1px solid #e5ecea;font:14px Arial;color:#173c49"><strong>${safe(item.title)}</strong><br><span style="font-size:12px;color:#63777e">${safe(item.country)} · ${safe(item.industry)} · ${safe(item.stage)}</span><br><span style="font-size:13px">${safe(item.summary)}</span></td></tr>`).join("");
