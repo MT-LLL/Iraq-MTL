@@ -4,13 +4,13 @@ import { env } from "cloudflare:workers";
 import { and, count, desc, eq } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { getDb } from "../db";
-import { auditLogs, leadDistributions, opportunities as storedOpportunities, opportunityContacts, opportunityTracking, pushJobs, savedViews, sourceScanRuns, users } from "../db/schema";
+import { auditLogs, leadDistributions, opportunities as storedOpportunities, opportunityContacts, opportunityTracking, pushJobs, savedViews, sourceScanRuns, users, weeklyReports } from "../db/schema";
 import { huaweiOfficialSolutionCatalog, industryDispatchDirectory, partnerDirectory, sourceConnectorConfig, sourceCoverage, type Country, type Opportunity, type OpportunityContact, type Priority, type SavedOpportunityAnalysis } from "./data";
 import { analyzeOpportunitySolutions } from "./ai-solution-matching";
 import { scoreOpportunity } from "./opportunity-scoring";
 import { meedContactDirectory } from "./meed-contacts";
 import { getChatGPTUser } from "./chatgpt-auth";
-import { deliverNotification, NotificationError } from "./notifications";
+import { deliverNotification, deliverWeeklyReportEmail, NotificationError } from "./notifications";
 import { opportunityBrief, localText } from "./localization";
 import { verifyAdminLinkCookie } from "./admin-link";
 
@@ -614,6 +614,142 @@ export async function setOpportunityTracking(input: { opportunityIds: string[]; 
     await db.insert(auditLogs).values({ id: crypto.randomUUID(), actorId: profile.id, action: input.status === "archived" ? "opportunity.tracking.archived" : "opportunity.tracking.restored", entityType: "opportunity", entityId: opportunityId, metadata: JSON.stringify({ title: titleById.get(opportunityId), reason: input.status === "archived" ? reason : "", previousStatus: existing[0]?.status ?? "tracked", status: input.status }), createdAt: now });
   }
   return { ok: true as const, status: input.status, opportunityIds };
+}
+
+
+export type WeeklyReportSnapshot = {
+  weekStart: string;
+  weekEnd: string;
+  totalOpportunities: number;
+  newOpportunities: number;
+  newKeyOpportunities: number;
+  emailPushes: number;
+  emailSent: number;
+  partnerPushes: number;
+  partnerAcknowledged: number;
+  partnerPending: number;
+  partnerReturned: number;
+  topOpportunities: Array<{ id: string; title: string; country: string; industry: string; stage: string; summary: string; priority?: string }>;
+};
+
+function assertWeeklyReportAccess(profile: Awaited<ReturnType<typeof currentIdentity>>["profile"]) {
+  if (!profile || profile.status !== "approved" || !profile.identityType.startsWith("huawei_")) throw new Error("FORBIDDEN");
+}
+
+function validReportPeriod(start: string, end: string) {
+  if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(start) || !/^\\d{4}-\\d{2}-\\d{2}$/.test(end) || start > end) throw new Error("INVALID_PERIOD");
+}
+
+export async function getWeeklyReportSnapshot(weekStart: string, weekEnd: string, audience: "internal" | "partner"): Promise<WeeklyReportSnapshot> {
+  const { profile, db } = await currentIdentity();
+  assertWeeklyReportAccess(profile);
+  validReportPeriod(weekStart, weekEnd);
+  const start = new Date(weekStart + "T00:00:00+03:00").getTime();
+  const end = new Date(weekEnd + "T23:59:59+03:00").getTime();
+  const [opportunities, tracking, pushes, distributions] = await Promise.all([
+    db.select().from(storedOpportunities),
+    db.select().from(opportunityTracking),
+    db.select().from(pushJobs),
+    db.select().from(leadDistributions),
+  ]);
+  const archivedIds = new Set(tracking.filter(row => row.status === "archived").map(row => row.opportunityId));
+  const active = opportunities.filter(row => !archivedIds.has(row.id));
+  const added = active.filter(row => row.createdAt.getTime() >= start && row.createdAt.getTime() <= end);
+  const newKey = added.filter(row => ["P0", "P1", "HIGH", "CRITICAL"].includes(String(row.priority).toUpperCase()));
+  const weeklyPushes = pushes.filter(row => row.createdAt.getTime() >= start && row.createdAt.getTime() <= end && row.channel === "email");
+  const partnerPushes = weeklyPushes.filter(row => row.audience === "partner");
+  const acknowledged = partnerPushes.filter(row => {
+    try { const meta = JSON.parse(row.metadata || "{}") as Record<string, unknown>; return Boolean(meta.acknowledgedAt) || meta.ackStatus === "acknowledged" || row.status === "acknowledged"; }
+    catch { return row.status === "acknowledged"; }
+  }).length;
+  const returned = distributions.filter(row => row.requestedAt.getTime() >= start && row.requestedAt.getTime() <= end && row.status === "returned").length;
+  const partnerSafe = added.filter(row => row.reviewStatus === "verified" && (row.sourceLicense === "partner-approved" || row.sourceLicense === "public"));
+  const displayRows = audience === "partner" ? partnerSafe : added;
+  return {
+    weekStart, weekEnd,
+    totalOpportunities: active.length,
+    newOpportunities: added.length,
+    newKeyOpportunities: newKey.length,
+    emailPushes: weeklyPushes.length,
+    emailSent: weeklyPushes.filter(row => row.status === "sent").length,
+    partnerPushes: partnerPushes.length,
+    partnerAcknowledged: acknowledged,
+    partnerPending: Math.max(0, partnerPushes.length - acknowledged),
+    partnerReturned: returned,
+    topOpportunities: [...displayRows].sort((a,b) => b.score-a.score).slice(0,8).map(row => ({
+      id: row.id, title: row.titleEn || row.title, country: row.country, industry: row.industry,
+      stage: row.stage, summary: row.summary || "",
+      ...(audience === "internal" ? { priority: row.priority } : {}),
+    })),
+  };
+}
+
+export async function saveWeeklyReportSnapshot(input: { weekStart: string; weekEnd: string; audience: "internal" | "partner"; language: "zh" | "en" }) {
+  const { profile, db } = await currentIdentity();
+  assertWeeklyReportAccess(profile);
+  const snapshot = await getWeeklyReportSnapshot(input.weekStart, input.weekEnd, input.audience);
+  const id = crypto.randomUUID();
+  await db.insert(weeklyReports).values({
+    id, weekStart: input.weekStart, weekEnd: input.weekEnd, audience: input.audience,
+    language: input.language, reportData: JSON.stringify(snapshot), sendStatus: "draft",
+    createdBy: profile!.id, createdAt: new Date(),
+  });
+  return { ok: true as const, id };
+}
+
+export async function getWeeklyReportHistory() {
+  const { profile, db } = await currentIdentity();
+  assertWeeklyReportAccess(profile);
+  const rows = await db.select().from(weeklyReports).orderBy(desc(weeklyReports.createdAt)).limit(40);
+  return rows.map(row => ({
+    id: row.id, weekStart: row.weekStart, weekEnd: row.weekEnd, audience: row.audience,
+    language: row.language, sendStatus: row.sendStatus, createdAt: row.createdAt.toISOString(),
+  }));
+}
+
+export async function sendWeeklyReport(input: { weekStart: string; weekEnd: string; audience: "internal" | "partner"; language: "zh" | "en"; recipients: string }) {
+  const { profile, db } = await currentIdentity();
+  assertWeeklyReportAccess(profile);
+  const recipients = input.recipients.split(/[,;\\n]+/).map(value => value.trim()).filter(Boolean);
+  if (!recipients.length || recipients.length > 20 || recipients.some(value => !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(value))) throw new Error("INVALID_EMAIL_RECIPIENT");
+  if (input.audience === "internal" && recipients.some(value => !value.toLowerCase().endsWith("@huawei.com"))) throw new Error("INTERNAL_RECIPIENT_FORBIDDEN");
+  const snapshot = await getWeeklyReportSnapshot(input.weekStart, input.weekEnd, input.audience);
+  const zh = input.language === "zh";
+  const safe = (value: string) => value.replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[c] || c);
+  const metrics: Array<[string, number]> = [
+    [zh ? "机会库总数" : "Active opportunities", snapshot.totalOpportunities],
+    [zh ? "本周新增" : "New this week", snapshot.newOpportunities],
+    [zh ? "新增关键机会" : "New key opportunities", snapshot.newKeyOpportunities],
+    ...(input.audience === "internal" ? [
+      [zh ? "邮件推送" : "Email pushes", snapshot.emailPushes] as [string, number],
+      [zh ? "邮件发送成功" : "Emails sent", snapshot.emailSent] as [string, number],
+      [zh ? "伙伴已确认" : "Partner acknowledged", snapshot.partnerAcknowledged] as [string, number],
+      [zh ? "伙伴待响应" : "Partner pending", snapshot.partnerPending] as [string, number],
+    ] : [
+      [zh ? "伙伴推送" : "Partner updates", snapshot.partnerPushes] as [string, number],
+      [zh ? "伙伴已确认" : "Partner acknowledged", snapshot.partnerAcknowledged] as [string, number],
+    ]),
+  ];
+  const metricCells = metrics.map(([label, value]) => `<td style="padding:12px;border:1px solid #dce7e5;background:#f6faf9;font:12px Arial;color:#5b7078">${safe(label)}<br><strong style="font-size:22px;color:#123746">${value}</strong></td>`).join("");
+  const projectRows = snapshot.topOpportunities.map(item => `<tr><td style="padding:12px;border-bottom:1px solid #e5ecea;font:14px Arial;color:#173c49"><strong>${safe(item.title)}</strong><br><span style="font-size:12px;color:#63777e">${safe(item.country)} · ${safe(item.industry)} · ${safe(item.stage)}</span><br><span style="font-size:13px">${safe(item.summary)}</span></td></tr>`).join("");
+  const html = `<!doctype html><html><head><meta charset="utf-8"></head><body style="margin:0;background:#f3f6f5;padding:24px"><table role="presentation" width="100%" style="max-width:760px;margin:auto;background:#fff;border-collapse:collapse"><tr><td style="padding:28px;background:#0b2738;color:#fff;font-family:Arial"><div style="font-size:11px;letter-spacing:2px;color:#8ddbd1">IRAQ MTL · WEEKLY OPERATIONS</div><h1 style="font-size:26px;margin:10px 0">${zh ? "伊拉克市场机会运营周报" : "Iraq Market Opportunity Weekly Report"}</h1><div style="font-size:13px;color:#d4e2e5">${safe(input.weekStart)} – ${safe(input.weekEnd)}</div></td></tr><tr><td style="padding:20px 22px 8px;font:14px Arial;color:#294b56">${zh ? "本周运营概览" : "Weekly Operations Overview"}</td></tr><tr><td style="padding:0 20px 18px"><table role="presentation" width="100%" cellspacing="6"><tr>${metricCells}</tr></table></td></tr><tr><td style="padding:18px 22px 8px;font:bold 13px Arial;color:#0f827b">${zh ? "本周重点机会" : "Key Opportunities This Week"}</td></tr>${projectRows}<tr><td style="padding:24px 22px;font:11px Arial;color:#71848a">IRAQ MTL · ${input.audience === "internal" ? "Confidential · Huawei Internal Use" : "Partner-safe edition"}</td></tr></table></body></html>`;
+  const textBody = metrics.map(([label, value]) => `${label}: ${value}`).join("\\n") + "\\n\\n" + snapshot.topOpportunities.map(item => `${item.title} — ${item.country}, ${item.industry}\\n${item.summary}`).join("\\n\\n");
+  const subject = zh ? `伊拉克市场机会运营周报｜${input.weekStart} – ${input.weekEnd}` : `Iraq Market Opportunity Weekly Report | ${input.weekStart} – ${input.weekEnd}`;
+  const delivery = await deliverWeeklyReportEmail({ recipients: recipients.join(","), audience: input.audience, subject, language: input.language, html, text: textBody });
+  const id = crypto.randomUUID();
+  await db.insert(weeklyReports).values({
+    id, weekStart: input.weekStart, weekEnd: input.weekEnd, audience: input.audience,
+    language: input.language, reportData: JSON.stringify(snapshot), sendStatus: "sent",
+    recipients: JSON.stringify(recipients), providerMessageIds: JSON.stringify(delivery.messageIds),
+    createdBy: profile!.id, createdAt: new Date(),
+  });
+  await db.insert(auditLogs).values({
+    id: crypto.randomUUID(), actorId: profile!.id, action: "weekly_report.sent",
+    entityType: "weekly_report", entityId: id,
+    metadata: JSON.stringify({ audience: input.audience, recipients, provider: delivery.provider, messageIds: delivery.messageIds }),
+    createdAt: new Date(),
+  });
+  return { ok: true as const, id, delivery };
 }
 
 export async function getManualOpportunities() {
