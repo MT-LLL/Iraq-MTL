@@ -106,7 +106,7 @@ jobs:
             const changed = candidates.filter(r => r.priority !== r.gptPriority);
             const now = Date.now();
             if (changed.length) {
-              const sql = changed.map(r => "UPDATE opportunities SET priority = " + quote(r.gptPriority) + ", updated_at = " + now + " WHERE id = " + quote(r.id) + ";").join('\\n');
+              const sql = changed.map(r => "UPDATE opportunities SET priority = " + quote(r.gptPriority) + ", updated_at = " + now + " WHERE id = " + quote(r.id) + ";").join('\n');
               wrangler(sql, 'Synchronize opportunity priority to saved GPT analysis', true);
             }
             const verify = rowsOf(wrangler(
@@ -128,7 +128,7 @@ jobs:
             const priorityChanges = priorityCandidates.filter(r => r.priority !== r.gptPriority);
             const prioritySyncAt = Date.now();
             if (priorityChanges.length) {
-              const syncSql = priorityChanges.map(r => "UPDATE opportunities SET priority = " + quote(r.gptPriority) + ", updated_at = " + prioritySyncAt + " WHERE id = " + quote(r.id) + ";").join('\\n');
+              const syncSql = priorityChanges.map(r => "UPDATE opportunities SET priority = " + quote(r.gptPriority) + ", updated_at = " + prioritySyncAt + " WHERE id = " + quote(r.id) + ";").join('\n');
               wrangler(syncSql, 'Synchronize existing GPT priorities before fetching next batch', true);
             }
             const priorityReadback = rowsOf(wrangler(
