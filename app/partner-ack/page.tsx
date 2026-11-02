@@ -97,7 +97,7 @@ export default async function PartnerAckPage({ searchParams }: { searchParams?: 
       </div>
 
       <div className="ack-opportunity-list">
-        {data.opportunities.map((item, index) => <details className="ack-opportunity-card ack-opportunity-accordion" key={item.id} id={`opportunity-${item.id}`}>
+        {data.opportunities.map(item => <details className="ack-opportunity-card ack-opportunity-accordion" key={item.id} id={`opportunity-${item.id}`}>
           <summary className="ack-opportunity-summary">
             <span className="ack-opportunity-number">{String(index + 1).padStart(2, "0")}</span>
             <span className="ack-opportunity-summary-main"><strong>{item.title}</strong><small>{item.id} · {item.meta}</small></span>
