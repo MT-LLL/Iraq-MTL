@@ -18,6 +18,7 @@ export default async function PartnerAckPage({ searchParams }: { searchParams?: 
   const token = single(params.token);
   const confirm = single(params.confirm) === "1";
   const note = single(params.note);
+  const selectedOpportunityId = single(params.opportunity);
   let confirmed = single(params.confirmed) === "1";
   if (confirm && id && token) {
     try {
@@ -97,7 +98,7 @@ export default async function PartnerAckPage({ searchParams }: { searchParams?: 
       </div>
 
       <div className="ack-opportunity-list">
-        {data.opportunities.map((item, index) => <details className="ack-opportunity-card ack-opportunity-accordion" key={item.id} id={`opportunity-${item.id}`}>
+        {data.opportunities.map((item, index) => <details className="ack-opportunity-card ack-opportunity-accordion" key={item.id} id={`opportunity-${item.id}`} open={selectedOpportunityId === item.id}>
           <summary className="ack-opportunity-summary">
             <span className="ack-opportunity-number">{String(index + 1).padStart(2, "0")}</span>
             <span className="ack-opportunity-summary-main"><strong>{item.title}</strong><small>{item.id} · {item.meta}</small></span>
@@ -113,10 +114,18 @@ export default async function PartnerAckPage({ searchParams }: { searchParams?: 
             </div>
             <section className="ack-block"><strong>{tr(lang, "项目背景与介绍", "Project background and introduction")}</strong><p>{item.background}</p></section>
             <section className="ack-block">
-              <strong>{tr(lang, "匹配的华为方案", "Huawei solution fit")}</strong>
-              <div className="ack-product-list">{item.solutions.map(solution => <div key={`${item.id}-${solution.name}`}>
+              <strong>{tr(lang, "GPT核心推断", "GPT core assessment")}</strong>
+              <p>{item.analysis.demandSummary || item.insight}</p>
+              {item.analysis.factsVsInference ? <p><b>{tr(lang, "事实与推断：", "Facts vs. inference: ")}</b>{item.analysis.factsVsInference}</p> : null}
+              {item.analysis.scoreRationale ? <p><b>{tr(lang, "匹配依据：", "Fit rationale: ")}</b>{item.analysis.scoreRationale}</p> : null}
+            </section>
+            <section className="ack-block">
+              <strong>{tr(lang, "GPT推荐的华为方案", "Huawei solutions recommended by GPT")}</strong>
+              {item.analysis.recommendedHuaweiSolutions.length ? <ul>{item.analysis.recommendedHuaweiSolutions.map((solution, solutionIndex) => <li key={item.id + "-gpt-" + solutionIndex}>{solution}</li>)}</ul> : <div className="ack-product-list">{item.solutions.map(solution => <div key={item.id + "-" + solution.name}>
                 <span>{solution.domain}</span><b>{solution.name}</b><em>{solution.fit}%</em><small>{solution.role}</small>
-              </div>)}</div>
+              </div>)}</div>}
+              {item.analysis.risks.length ? <p><b>{tr(lang, "风险与待核实事项：", "Risks and items to verify: ")}</b>{item.analysis.risks.join(lang === "zh" ? "；" : "; ")}</p> : null}
+              {item.analysis.nextActions.length ? <p><b>{tr(lang, "建议下一步：", "Recommended next actions: ")}</b>{item.analysis.nextActions.join(lang === "zh" ? "；" : "; ")}</p> : null}
             </section>
             <section className="ack-block contact">
               <strong>{tr(lang, "联系人信息与采购入口", "Contacts and procurement entry")}</strong>
