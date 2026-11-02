@@ -1496,9 +1496,9 @@ export function OpsConsole({ authUser, initialProfile, initialPending, initialMa
       return (trackingFilter === "all" || status === trackingFilter) && (country==='全部国家'||item.country===country) && (priority==='全部优先级'||item.priority===priority) && (industry==='全部行业'||industryFilterMatches(item,industry)) && (!search||`${item.title}${item.titleEn}${item.industry}`.toLowerCase().includes(search.toLowerCase()));
     });
     const addressableNumber = (value: string) => {
-      const matches = [...String(value || "").matchAll(/\\d+(?:,\\d{3})*(?:\\.\\d+)?/g)].map(match => Number(match[0].replace(/,/g, "")));
+      const matches = [...String(value || "").matchAll(/\d+(?:,\d{3})*(?:\\.\d+)?/g)].map(match => Number(match[0].replace(/,/g, "")));
       if (!matches.length) return null;
-      const unit = String(value).match(/\\b(B|M|K)\\b/i)?.[1]?.toUpperCase();
+      const unit = String(value).match(/\b(B|M|K)\b/i)?.[1]?.toUpperCase();
       const multiplier = unit === "B" ? 1_000_000_000 : unit === "M" ? 1_000_000 : unit === "K" ? 1_000 : 1;
       const amount = matches.length > 1 ? (matches[0] + matches[1]) / 2 : matches[0];
       return amount * multiplier;
