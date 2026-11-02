@@ -258,8 +258,8 @@ export async function POST(request: Request) {
     };
     const nextValue = JSON.stringify({ ...merged, opportunityAnalysis: savedAnalysis });
     await auth.db.batch([
-      auth.db.prepare("UPDATE opportunities SET priority = ?, solution_matches = ?, updated_at = ? WHERE id = ?")
-        .bind(analysis.priority, nextValue, now, id),
+      auth.db.prepare("UPDATE opportunities SET priority = ?, score = ?, solution_matches = ?, updated_at = ? WHERE id = ?")
+        .bind(analysis.priority, analysis.fitScore, nextValue, now, id),
       auth.db.prepare("INSERT INTO audit_logs (id, actor_id, action, entity_type, entity_id, metadata, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
         .bind(
           crypto.randomUUID(),
