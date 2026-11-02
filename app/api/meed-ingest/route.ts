@@ -433,7 +433,7 @@ export async function POST(request: Request) {
       ? `GitHub Actions MEED采集部分完成（结果不作为完整对比）：暂新增${inserted}条，检测到变化${updated}条，跳过${skipped}条。`
       : `GitHub Actions MEED清单刷新完成：新增${inserted}条，实际变化${updated}条，跳过${skipped}条；源文件${stats.sourceRows ?? records.length}条，候选${stats.promotedCount ?? records.length}条；AI方案分析改为机会详情页按需触发。`;
 
-  await db.prepare("INSERT INTO source_scan_runs (id, trigger, status, source_count, new_lead_count, updated_lead_count, promoted_count, summary, metadata, started_at, finished_at, next_run_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+  await db.prepare("INSERT INTO source_scan_runs (id, trigger, status, source_count, new_lead_count, updated_lead_count, promoted_count, summary, metadata, started_at, finished_at, next_run_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET trigger = excluded.trigger, status = excluded.status, source_count = excluded.source_count, new_lead_count = excluded.new_lead_count, updated_lead_count = excluded.updated_lead_count, promoted_count = excluded.promoted_count, summary = excluded.summary, metadata = excluded.metadata, started_at = MIN(source_scan_runs.started_at, excluded.started_at), finished_at = excluded.finished_at, next_run_at = excluded.next_run_at")
     .bind(runId, "github_actions", status, sourceCount, inserted, updated, stats.promotedCount ?? opportunityIds.length, summary, metadata, now, finishedAt, nextRunAt)
     .run();
   await db.prepare("INSERT INTO audit_logs (id, actor_id, action, entity_type, entity_id, metadata, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
@@ -445,7 +445,6 @@ export async function POST(request: Request) {
     runId, inserted, updated, skipped, mergedParentChildCount,
     readbackVerified: readbackFailures.length === 0,
     readbackFailureCount: readbackFailures.length, readbackFailures,
-    aiAnalysisConfigured: Boolean(aiConfig.MOONSHOT_API_KEY || aiConfig.ZHIPU_API_KEY),
     aiAnalysisDeferred: true,
     opportunityIds, status,
   }, readbackFailures.length === 0 ? 200 : 500);
