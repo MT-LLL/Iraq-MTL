@@ -97,40 +97,49 @@ export default async function PartnerAckPage({ searchParams }: { searchParams?: 
       </div>
 
       <div className="ack-opportunity-list">
-        {data.opportunities.map(item => <article className="ack-opportunity-card" key={item.id}>
-          <header>
-            <span>{item.id}</span>
-            <div><h2>{item.title}</h2><p>{item.meta}</p></div>
-          </header>
-          <div className="ack-facts">
-            <div><small>{tr(lang, "项目金额", "Project value")}</small><strong>{item.value}</strong></div>
-            <div><small>{tr(lang, "关键节点", "Key milestone")}</small><strong>{item.deadline}</strong></div>
-            <div><small>{tr(lang, "资金状态", "Funding")}</small><strong>{item.funding}</strong></div>
-            <div><small>{tr(lang, "来源", "Source")}</small><strong>{item.source}</strong></div>
-          </div>
-          <section className="ack-block"><strong>{tr(lang, "项目摘要", "Project summary")}</strong><p>{item.insight}</p></section>
-          <section className="ack-block">
-            <strong>{tr(lang, "关联华为产品 / 方案", "Related Huawei products / solutions")}</strong>
-            <div className="ack-product-list">{item.solutions.map(solution => <div key={`${item.id}-${solution.name}`}>
-              <span>{solution.domain}</span><b>{solution.name}</b><em>{solution.fit}%</em><small>{solution.role}</small>
-            </div>)}</div>
-          </section>
-          <section className="ack-block contact">
-            <strong>{tr(lang, "联系人 / 采购入口", "Contact / procurement entry")}</strong>
-            <div className="ack-contact-primary"><small>{tr(lang, "首选触达方式", "Preferred contact method")}</small><b>{item.contact.preferredMethodLabel} · {item.contact.preferredMethod}</b><em>{item.contact.contactCompleteness}</em></div>
-            <div className="ack-contact-grid">
-              <span><small>{tr(lang, "联系人", "Contact")}</small><b>{item.contact.name}</b></span>
-              <span><small>{tr(lang, "职位", "Title")}</small><b>{item.contact.title}</b></span>
-              <span><small>{tr(lang, "公司", "Company")}</small><b>{item.contact.company}</b></span>
-              <span><small>{tr(lang, "邮箱", "Email")}</small><b>{item.contact.email}</b></span>
-              <span><small>{tr(lang, "手机号", "Mobile")}</small><b>{item.contact.phone}</b></span>
-              <span><small>{tr(lang, "机构电话", "Institution phone")}</small><b>{item.contact.companyPhone}</b></span>
+        {data.opportunities.map((item, index) => <details className="ack-opportunity-card ack-opportunity-accordion" key={item.id} id={`opportunity-${item.id}`} open={index === 0}>
+          <summary className="ack-opportunity-summary">
+            <span className="ack-opportunity-number">{String(index + 1).padStart(2, "0")}</span>
+            <span className="ack-opportunity-summary-main"><strong>{item.title}</strong><small>{item.id} · {item.meta}</small></span>
+            <span className="ack-opportunity-summary-value">{item.value}</span>
+            <span className="ack-opportunity-expand">{tr(lang, "展开详情", "Expand details")}⌄</span>
+          </summary>
+          <div className="ack-opportunity-detail">
+            <div className="ack-facts">
+              <div><small>{tr(lang, "项目金额", "Project value")}</small><strong>{item.value}</strong></div>
+              <div><small>{tr(lang, "关键节点", "Key milestone")}</small><strong>{item.deadline}</strong></div>
+              <div><small>{tr(lang, "资金状态", "Funding")}</small><strong>{item.funding}</strong></div>
+              <div><small>{tr(lang, "来源", "Source")}</small><strong>{item.source}</strong></div>
             </div>
-            <p>{item.contact.status}</p>
-            <p><b>{tr(lang, "补齐动作：", "Completion action: ")}</b>{item.contact.completionAction}</p>
-          </section>
-          <section className="ack-block muted"><strong>{tr(lang, "伙伴下一步", "Partner next steps")}</strong><p>{item.strategy}</p><p>{item.risk}</p></section>
-        </article>)}
+            <section className="ack-block"><strong>{tr(lang, "项目背景与介绍", "Project background and introduction")}</strong><p>{item.background}</p></section>
+            <section className="ack-block"><strong>{tr(lang, "项目范围 / Scope", "Project scope")}</strong><ul>{item.scope.map((entry, scopeIndex) => <li key={scopeIndex}>{entry}</li>)}</ul></section>
+            <section className="ack-block">
+              <strong>{tr(lang, "匹配的华为方案", "Huawei solution fit")}</strong>
+              <div className="ack-product-list">{item.solutions.map(solution => <div key={`${item.id}-${solution.name}`}>
+                <span>{solution.domain}</span><b>{solution.name}</b><em>{solution.fit}%</em><small>{solution.role}</small>
+              </div>)}</div>
+            </section>
+            <section className="ack-block contact">
+              <strong>{tr(lang, "联系人信息与采购入口", "Contacts and procurement entry")}</strong>
+              <div className="ack-contact-primary"><small>{tr(lang, "首选触达方式", "Preferred contact method")}</small><b>{item.contact.preferredMethodLabel} · {item.contact.preferredMethod}</b><em>{item.contact.contactCompleteness}</em></div>
+              <div className="ack-contact-grid">
+                <span><small>{tr(lang, "联系人", "Contact")}</small><b>{item.contact.name}</b></span>
+                <span><small>{tr(lang, "职位", "Title")}</small><b>{item.contact.title}</b></span>
+                <span><small>{tr(lang, "公司", "Company")}</small><b>{item.contact.company}</b></span>
+                <span><small>{tr(lang, "邮箱", "Email")}</small><b>{item.contact.email}</b></span>
+                <span><small>{tr(lang, "手机号", "Mobile")}</small><b>{item.contact.phone}</b></span>
+                <span><small>{tr(lang, "机构电话", "Institution phone")}</small><b>{item.contact.companyPhone}</b></span>
+              </div>
+              <p>{item.contact.status}</p>
+              <p><b>{tr(lang, "采购入口：", "Procurement entry: ")}</b>{item.contact.procurementEntry}</p>
+              <p><b>{tr(lang, "补齐动作：", "Completion action: ")}</b>{item.contact.completionAction}</p>
+            </section>
+            <section className="ack-block"><strong>{tr(lang, "项目进展与里程碑", "Project progress and milestones")}</strong><p>{item.milestones}</p></section>
+            <section className="ack-block"><strong>{tr(lang, "新闻与进展更新", "News and progress updates")}</strong><p>{item.progress}</p></section>
+            <section className="ack-block"><strong>{tr(lang, "最新新闻", "Latest news")}</strong><p>{item.latestNews}</p></section>
+            <section className="ack-block muted"><strong>{tr(lang, "伙伴下一步", "Partner next steps")}</strong><p>{item.strategy}</p><p>{item.risk}</p></section>
+          </div>
+        </details>)}
       </div>
 
       {alreadyConfirmed ? <div className="ack-success-banner">
