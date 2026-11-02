@@ -456,8 +456,13 @@ function DetailPanel({ item, lang, canInternal, onShare, onDispatch, onGolden, o
       </div>}
 
       {canInternal && tab === "score" && <div className="tab-content score-view">
-        <div className="score-explainer"><ScoreRing value={item.score} size="large"/><div><h3>{item.priority} · {item.priority === "P0" ? tr(lang,"重点经营","Key engagement") : item.priority === "P1" ? tr(lang,"优先培育","Priority nurture") : tr(lang,"选择性跟踪","Selective watch")}</h3><p>{tr(lang,`基础维度合计 ${item.score + item.risk} 分，风险扣减 ${item.risk} 分。P0 需同时满足四项硬门槛。`,`Base score ${item.score + item.risk}, risk deduction ${item.risk}. P0 opportunities must pass all four hard gates.`)}</p></div></div>
-        <div className="score-bars">{item.scoreParts.map(part => <div key={part.label}><span>{localTerm(lang,part.label)}</span><div><i style={{width:`${part.value / part.total * 100}%`}}></i></div><strong>{part.value}/{part.total}</strong>{part.rationale ? <small className="score-rationale">{exportText(lang,part.rationale)}</small> : null}</div>)}</div>
+        {item.opportunityAnalysis ? <>
+          <div className="score-explainer"><ScoreRing value={item.score} size="large"/><div><h3>{tr(lang,"GPT 统一评分 · 项目范围与华为方案匹配度","Single GPT score · Project-to-Huawei solution fit")}</h3><p>{tr(lang,"列表、排序、评分环和本页统一采用已保存的 GPT fitScore。该分数衡量项目范围与华为方案的匹配程度，不代表中标概率或项目总金额。","Lists, sorting, score rings and this view all use the saved GPT fitScore. It measures project-scope fit with Huawei solutions, not win probability or total project value.")}</p></div></div>
+          <div className="saved-analysis-subsection"><strong>{tr(lang,"统一评分依据","Authoritative score rationale")}</strong><p>{exportText(lang,displayedAnalysis!.scoreRationale)}</p></div>
+        </> : <>
+          <div className="score-explainer"><ScoreRing value={item.score} size="large"/><div><h3>{item.priority} · {item.priority === "P0" ? tr(lang,"重点经营","Key engagement") : item.priority === "P1" ? tr(lang,"优先培育","Priority nurture") : tr(lang,"选择性跟踪","Selective watch")}</h3><p>{tr(lang,`基础维度合计 ${item.score + item.risk} 分，风险扣减 ${item.risk} 分。P0 需同时满足四项硬门槛。`,`Base score ${item.score + item.risk}, risk deduction ${item.risk}. P0 opportunities must pass all four hard gates.`)}</p></div></div>
+          <div className="score-bars">{item.scoreParts.map(part => <div key={part.label}><span>{localTerm(lang,part.label)}</span><div><i style={{width:`${part.value / part.total * 100}%`}}></i></div><strong>{part.value}/{part.total}</strong>{part.rationale ? <small className="score-rationale">{exportText(lang,part.rationale)}</small> : null}</div>)}</div>
+        </>}
       </div>}
 
       {tab === "contacts" && <div className="tab-content contact-view">
