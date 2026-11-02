@@ -882,3 +882,17 @@ body { font-size: 15px; line-height: 1.55; }
 .weekly-report-editor-compact{min-height:92px}
 .weekly-report-risk-title{margin-top:20px!important;color:#a65f2b!important}
 .weekly-report-risk-editor{border-color:#e7d8cb;background:#fffdfb}
+
+
+/* Weekly report manual Top 5 search and selection */
+.weekly-report-search-results{display:grid;gap:6px;margin:8px 0 14px;padding:8px;border:1px solid #d9e5e7;border-radius:12px;background:#f7fafb}
+.weekly-report-search-results button{display:flex;flex-direction:column;gap:4px;text-align:left;padding:10px 12px;border:1px solid #e0e9eb;border-radius:8px;background:#fff;color:#173c49;cursor:pointer}
+.weekly-report-search-results button:hover{border-color:#0f827b;background:#f0f8f7}
+.weekly-report-search-results button b{font-size:13px;font-weight:750}
+.weekly-report-search-results button small,.weekly-report-selected-opportunity small{font-size:11px;line-height:1.5;color:#607780}
+.weekly-report-selected-opportunity{display:grid;gap:6px;margin:10px 0;padding:12px 14px;border:1px solid #dbe7e7;border-left:3px solid #0f827b;border-radius:10px;background:#f7faf9}
+.weekly-report-selected-opportunity>b{font-size:14px;font-weight:800;color:#123746}
+.weekly-report-selected-opportunity p{margin:2px 0;font-size:12px;line-height:1.65;color:#38545d}
+.weekly-report-clear-selection{justify-self:start;padding:5px 9px;border:1px solid #d7e2e3;border-radius:7px;background:#fff;color:#6a4a42;font-size:11px;cursor:pointer}
+.weekly-report-empty-slot{display:block;margin:12px 0;color:#84969b;font-size:12px}
+.weekly-report-opportunity-content>label input{width:100%;min-width:0}
