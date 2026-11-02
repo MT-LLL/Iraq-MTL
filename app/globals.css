@@ -870,3 +870,6 @@ body { font-size: 15px; line-height: 1.55; }
 .weekly-report-opportunity-content>label input{max-width:310px}
 .weekly-report-editor{display:block;min-height:120px;resize:vertical;font-size:13px;line-height:1.7}
 @media(max-width:540px){.weekly-report-top5>article{grid-template-columns:30px minmax(0,1fr);gap:10px}.weekly-report-opportunity-content>label{align-items:stretch;flex-direction:column}.weekly-report-opportunity-content>label input{max-width:none}}
+
+.weekly-report-edit-field{display:flex;flex-direction:column;align-items:stretch!important;gap:5px!important;max-width:none!important;font-size:10px!important;color:#526b73!important}
+.weekly-report-edit-field textarea{width:100%;min-height:48px;resize:vertical;border:1px solid #d9e5e1;border-radius:7px;padding:7px 9px;background:#fbfdfc;color:#193c47;font:11px/1.55 inherit;font-size:11px;line-height:1.55}
