@@ -10,7 +10,8 @@ export function WeeklyReportView({lang,emailReady,onToast}:Props){
  const [weekEnd,setWeekEnd]=useState(()=>{const d=new Date();d.setDate(d.getDate()-((d.getDay()+6)%7)-1);return date(d)});
  const [snapshot,setSnapshot]=useState<WeeklyReportSnapshot|null>(null),[recipients,setRecipients]=useState("");
  const [history,setHistory]=useState<Array<{id:string;weekStart:string;weekEnd:string;audience:string;language:string;sendStatus:string;createdAt:string}>>([]);
- const [busy,setBusy]=useState(false),[sending,setSending]=useState(false),[saving,setSaving]=useState(false);\n const [searchQueries,setSearchQueries]=useState<Record<number,string>>({}),[searchResults,setSearchResults]=useState<Record<number,Array<any>>>({}),[searchingSlot,setSearchingSlot]=useState<number|null>(null);
+ const [busy,setBusy]=useState(false),[sending,setSending]=useState(false),[saving,setSaving]=useState(false);
+ const [searchQueries,setSearchQueries]=useState<Record<number,string>>({}),[searchResults,setSearchResults]=useState<Record<number,Array<any>>>({}),[searchingSlot,setSearchingSlot]=useState<number|null>(null);
  const t=(zh:string,en:string)=>language==="zh"?zh:en;
  const metrics:Array<[string,number]>=snapshot?[
   [t("机会库总数","Active opportunities"),snapshot.totalOpportunities],[t("本周新增","New this week"),snapshot.newOpportunities],[t("新增关键机会","New key opportunities"),snapshot.newKeyOpportunities],
