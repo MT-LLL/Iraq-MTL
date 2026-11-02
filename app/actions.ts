@@ -235,7 +235,10 @@ function toClientOpportunity(row: StoredOpportunity, ownerName = "Manual Import"
     city: row.city || "待核实",
     industry: row.industry,
     stage: row.stage,
-    priority: scoring.priority,
+    // GPT analysis is the authoritative opportunity priority once bilingual analysis exists.
+    priority: opportunityAnalysis && ["P0", "P1", "P2", "WATCH"].includes(opportunityAnalysis.priority)
+      ? opportunityAnalysis.priority
+      : scoring.priority,
     score: scoring.score,
     confidence: scoring.confidence,
     value: row.projectValue == null ? "未披露" : `${row.currency || "USD"} ${row.projectValue.toLocaleString()}M`,
