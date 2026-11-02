@@ -296,7 +296,7 @@ function outlookOpportunityCard(item: Opportunity, audience: Audience, lang: Lan
     ${outlookSectionTitle(tr(lang, "下一步动作", "Next actions"))}${outlookBulletRows(analysisActions.length ? analysisActions : brief.nextActions)}
     ${internalRows}${partnerCta}`;
   const summary = `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;background:#fff;border:1px solid #d8e6e2"><tr><td width="34" style="padding:12px 8px;text-align:center;font-size:12px;color:#0f827b;font-weight:bold">${escapeHtml(item.priority)}</td><td style="padding:12px 8px;font-size:13px;line-height:19px;color:#143946"><b>${escapeHtml(title)}</b><br/><span style="font-size:11px;color:#637a80">${escapeHtml(brief.meta)} · ${tr(lang, "金额", "Value")}: ${escapeHtml(brief.value)} · ${tr(lang, "节点", "Milestone")}: ${escapeHtml(brief.deadline)}</span></td><td width="86" style="padding:12px 8px;text-align:right;font-size:11px;color:#0f827b;font-weight:bold">${tr(lang, "展开详情", "Expand")}&nbsp;⌄</td></tr></table>`;
-  const detailUrl = audience === "partner" ? `${ackUrl}&opportunity=${encodeURIComponent(item.id)}` : `${siteUrl}/opportunity-detail?id=${encodeURIComponent(item.id)}&lang=${lang}`;
+  const detailUrl = audience === "partner" ? `${ackUrl}&opportunity=${encodeURIComponent(item.id)}#opportunity-${encodeURIComponent(item.id)}` : `${siteUrl}/opportunity-detail?id=${encodeURIComponent(item.id)}&lang=${lang}`;
   return `<a href="${escapeHtml(detailUrl)}" style="display:block;margin:0 0 8px;padding:12px 14px;border:1px solid #d8e6e2;background:#fff;color:#143946;text-decoration:none"><span style="display:inline-block;width:30px;color:#0f827b;font-weight:bold">${escapeHtml(item.priority)}</span><b>${escapeHtml(title)}</b><br/><span style="padding-left:30px;font-size:11px;line-height:18px;color:#637a80">${escapeHtml(brief.meta)} · ${tr(lang, "金额", "Value")}: ${escapeHtml(brief.value)} · ${tr(lang, "节点", "Milestone")}: ${escapeHtml(brief.deadline)} · ${tr(lang, "点击查看详情", "Click to view details")} ›</span></a>`;
 }
 
@@ -393,7 +393,7 @@ export function buildContent(opportunities: Opportunity[], audience: Audience, a
   const textRows = opportunities.map((item, index) => {
     const brief = buildOpportunityBrief(item, lang);
     const contact = brief.contactDetails;
-    const detailsUrl = audience === "partner" ? ackUrl : siteUrl;
+    const detailsUrl = audience === "partner" ? `${ackUrl}&opportunity=${encodeURIComponent(item.id)}#opportunity-${encodeURIComponent(item.id)}` : `${siteUrl}/opportunity-detail?id=${encodeURIComponent(item.id)}&lang=${lang}`;
     const internal = audience === "internal" ? `\n${tr(lang, "内部评分", "Internal score")}${colon}${item.score}/100 · ${item.priority}\n${tr(lang, "负责人", "Owner")}${colon}${item.owner}` : "";
     return `${index + 1}. ${brief.title} [${item.id}]\n${brief.meta}\n${tr(lang, "项目金额", "Project value")}${colon}${brief.value} · ${tr(lang, "关键节点", "Key milestone")}${colon}${brief.deadline}\n${tr(lang, "项目背景", "Project background")}${colon}${cleanLocalizedText(lang, item.summary, "To be completed")}\n${tr(lang, "华为匹配方案", "Huawei solution fit")}${colon}${brief.solutions}\n${tr(lang, "联系人", "Contact")}${colon}${contact.name} · ${contact.email} · ${contact.phone}\n${tr(lang, "项目里程碑", "Project milestones")}${colon}${cleanLocalizedText(lang, item.keyProjectMilestones || item.deadline, "To be confirmed")}\n${tr(lang, "查看完整详情", "View full details")}${colon}${detailsUrl}${internal}`;
   });
