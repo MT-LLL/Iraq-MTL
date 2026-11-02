@@ -667,7 +667,7 @@ export async function getWeeklyReportSnapshot(weekStart: string, weekEnd: string
     catch { return row.status === "acknowledged"; }
   }).length;
   const returned = distributions.filter(row => row.requestedAt.getTime() >= start && row.requestedAt.getTime() <= end && row.status === "returned").length;
-  const displayRows = added;
+  const displayRows = active;
   return {
     weekStart, weekEnd,
     totalOpportunities: active.length,
