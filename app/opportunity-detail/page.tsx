@@ -15,7 +15,7 @@ export default async function OpportunityDetailPage({ searchParams }: { searchPa
   const params = await Promise.resolve(searchParams ?? {});
   const id = single(params.id);
   const lang: Lang = single(params.lang) === "en" ? "en" : "zh";
-  let item;
+  let item: Awaited<ReturnType<typeof getInternalOpportunityDetail>>;
   try {
     item = await getInternalOpportunityDetail(id);
   } catch {
