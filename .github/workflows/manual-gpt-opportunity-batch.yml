@@ -100,43 +100,43 @@ jobs:
 
           if (input.mode === 'sync-priorities') {
             const candidates = rowsOf(wrangler(
-              "SELECT id, priority, json_extract(solution_matches, '$.opportunityAnalysis.priority') AS gptPriority FROM opportunities WHERE json_valid(solution_matches) = 1 AND json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis.zh.demandSummary') IS NOT NULL AND json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis.en.demandSummary') IS NOT NULL AND json_extract(solution_matches, '$.opportunityAnalysis.priority') IN ('P0','P1','P2','WATCH')",
+              "SELECT id, priority, score, json_extract(solution_matches, '$.opportunityAnalysis.priority') AS gptPriority, json_extract(solution_matches, '$.opportunityAnalysis.fitScore') AS gptFitScore FROM opportunities WHERE json_valid(solution_matches) = 1 AND json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis.zh.demandSummary') IS NOT NULL AND json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis.en.demandSummary') IS NOT NULL AND json_extract(solution_matches, '$.opportunityAnalysis.priority') IN ('P0','P1','P2','WATCH') AND CAST(json_extract(solution_matches, '$.opportunityAnalysis.fitScore') AS INTEGER) BETWEEN 0 AND 100",
               'Read fully analyzed opportunities for one-time GPT priority synchronization'
             ));
-            const changed = candidates.filter(r => r.priority !== r.gptPriority);
+            const changed = candidates.filter(r => r.priority !== r.gptPriority || Number(r.score) !== Number(r.gptFitScore));
             const now = Date.now();
             if (changed.length) {
-              const sql = changed.map(r => "UPDATE opportunities SET priority = " + quote(r.gptPriority) + ", updated_at = " + now + " WHERE id = " + quote(r.id) + ";").join('\n');
-              wrangler(sql, 'Synchronize opportunity priority to saved GPT analysis', true);
+              const sql = changed.map(r => "UPDATE opportunities SET priority = " + quote(r.gptPriority) + ", score = " + Number(r.gptFitScore) + ", updated_at = " + now + " WHERE id = " + quote(r.id) + ";").join('\n');
+              wrangler(sql, 'Synchronize canonical GPT priority and score to saved GPT analysis', true);
             }
             const verify = rowsOf(wrangler(
-              "SELECT id, priority, json_extract(solution_matches, '$.opportunityAnalysis.priority') AS gptPriority FROM opportunities WHERE json_valid(solution_matches) = 1 AND json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis.zh.demandSummary') IS NOT NULL AND json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis.en.demandSummary') IS NOT NULL AND json_extract(solution_matches, '$.opportunityAnalysis.priority') IN ('P0','P1','P2','WATCH')",
-              'Verify synchronized GPT opportunity priorities'
+              "SELECT id, priority, score, json_extract(solution_matches, '$.opportunityAnalysis.priority') AS gptPriority, json_extract(solution_matches, '$.opportunityAnalysis.fitScore') AS gptFitScore FROM opportunities WHERE json_valid(solution_matches) = 1 AND json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis.zh.demandSummary') IS NOT NULL AND json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis.en.demandSummary') IS NOT NULL AND json_extract(solution_matches, '$.opportunityAnalysis.priority') IN ('P0','P1','P2','WATCH') AND CAST(json_extract(solution_matches, '$.opportunityAnalysis.fitScore') AS INTEGER) BETWEEN 0 AND 100",
+              'Verify synchronized GPT opportunity priorities and scores'
             ));
-            const mismatches = verify.filter(r => r.priority !== r.gptPriority);
+            const mismatches = verify.filter(r => r.priority !== r.gptPriority || Number(r.score) !== Number(r.gptFitScore));
             if (mismatches.length) throw new Error('Priority synchronization readback failed for: ' + mismatches.map(r => r.id).join(', '));
-            console.log(JSON.stringify({result:'gpt-priorities-synchronized',eligible:verify.length,updated:changed.length,verified:verify.length,mismatches:0,priorityDistribution:verify.reduce((a,r)=>(a[r.gptPriority]=(a[r.gptPriority]||0)+1,a),{})}, null, 2));
+            console.log(JSON.stringify({result:'gpt-priorities-and-scores-synchronized',eligible:verify.length,updated:changed.length,verified:verify.length,mismatches:0,priorityDistribution:verify.reduce((a,r)=>(a[r.gptPriority]=(a[r.gptPriority]||0)+1,a),{})}, null, 2));
             process.exit(0);
           }
 
           if (input.mode === 'fetch') {
             // Keep the canonical opportunities.priority column aligned with every completed bilingual GPT analysis.
             const priorityCandidates = rowsOf(wrangler(
-              "SELECT id, priority, json_extract(solution_matches, '$.opportunityAnalysis.priority') AS gptPriority FROM opportunities WHERE json_valid(solution_matches) = 1 AND json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis.zh.demandSummary') IS NOT NULL AND json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis.en.demandSummary') IS NOT NULL AND json_extract(solution_matches, '$.opportunityAnalysis.priority') IN ('P0','P1','P2','WATCH')",
+              "SELECT id, priority, score, json_extract(solution_matches, '$.opportunityAnalysis.priority') AS gptPriority, json_extract(solution_matches, '$.opportunityAnalysis.fitScore') AS gptFitScore FROM opportunities WHERE json_valid(solution_matches) = 1 AND json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis.zh.demandSummary') IS NOT NULL AND json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis.en.demandSummary') IS NOT NULL AND json_extract(solution_matches, '$.opportunityAnalysis.priority') IN ('P0','P1','P2','WATCH') AND CAST(json_extract(solution_matches, '$.opportunityAnalysis.fitScore') AS INTEGER) BETWEEN 0 AND 100",
               'Read completed bilingual GPT priorities before fetching the next batch'
             ));
-            const priorityChanges = priorityCandidates.filter(r => r.priority !== r.gptPriority);
+            const priorityChanges = priorityCandidates.filter(r => r.priority !== r.gptPriority || Number(r.score) !== Number(r.gptFitScore));
             const prioritySyncAt = Date.now();
             if (priorityChanges.length) {
               const syncSql = priorityChanges.map(r => "UPDATE opportunities SET priority = " + quote(r.gptPriority) + ", updated_at = " + prioritySyncAt + " WHERE id = " + quote(r.id) + ";").join('\n');
-              wrangler(syncSql, 'Synchronize existing GPT priorities before fetching next batch', true);
+              wrangler(syncSql, 'Synchronize existing GPT priorities and scores before fetching next batch', true);
             }
             const priorityReadback = rowsOf(wrangler(
-              "SELECT id, priority, json_extract(solution_matches, '$.opportunityAnalysis.priority') AS gptPriority FROM opportunities WHERE json_valid(solution_matches) = 1 AND json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis.zh.demandSummary') IS NOT NULL AND json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis.en.demandSummary') IS NOT NULL AND json_extract(solution_matches, '$.opportunityAnalysis.priority') IN ('P0','P1','P2','WATCH')",
-              'Verify canonical GPT priorities before fetching the next batch'
+              "SELECT id, priority, score, json_extract(solution_matches, '$.opportunityAnalysis.priority') AS gptPriority, json_extract(solution_matches, '$.opportunityAnalysis.fitScore') AS gptFitScore FROM opportunities WHERE json_valid(solution_matches) = 1 AND json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis.zh.demandSummary') IS NOT NULL AND json_extract(solution_matches, '$.opportunityAnalysis.bilingualAnalysis.en.demandSummary') IS NOT NULL AND json_extract(solution_matches, '$.opportunityAnalysis.priority') IN ('P0','P1','P2','WATCH') AND CAST(json_extract(solution_matches, '$.opportunityAnalysis.fitScore') AS INTEGER) BETWEEN 0 AND 100",
+              'Verify canonical GPT priorities and scores before fetching the next batch'
             ));
-            const priorityMismatches = priorityReadback.filter(r => r.priority !== r.gptPriority);
-            if (priorityMismatches.length) throw new Error('GPT priority synchronization failed for: ' + priorityMismatches.map(r => r.id).join(', '));
+            const priorityMismatches = priorityReadback.filter(r => r.priority !== r.gptPriority || Number(r.score) !== Number(r.gptFitScore));
+            if (priorityMismatches.length) throw new Error('GPT priority/score synchronization failed for: ' + priorityMismatches.map(r => r.id).join(', '));
             console.log('GPT_PRIORITY_SYNC_JSON_BEGIN');
             console.log(JSON.stringify({eligible:priorityReadback.length,updated:priorityChanges.length,verified:priorityReadback.length,mismatches:0,priorityDistribution:priorityReadback.reduce((a,r)=>(a[r.gptPriority]=(a[r.gptPriority]||0)+1,a),{})}, null, 2));
             console.log('GPT_PRIORITY_SYNC_JSON_END');
@@ -221,18 +221,21 @@ jobs:
             };
             const effectivePriority = analysis.priority;
             if (!['P0','P1','P2','WATCH'].includes(effectivePriority)) throw new Error('Invalid effective GPT priority for ' + a.opportunityId + '; no records changed.');
-            statements.push("UPDATE opportunities SET priority = " + quote(effectivePriority) + ", solution_matches = " + quote(JSON.stringify({...previous, opportunityAnalysis:analysis})) + ", updated_at = " + now + " WHERE id = " + quote(a.opportunityId) + ";");
+            const effectiveScore = analysis.fitScore;
+            if (!Number.isInteger(effectiveScore) || effectiveScore < 0 || effectiveScore > 100) throw new Error('Invalid effective GPT fitScore for ' + a.opportunityId + '; no records changed.');
+            statements.push("UPDATE opportunities SET priority = " + quote(effectivePriority) + ", score = " + effectiveScore + ", solution_matches = " + quote(JSON.stringify({...previous, opportunityAnalysis:analysis})) + ", updated_at = " + now + " WHERE id = " + quote(a.opportunityId) + ";");
             const metadata = JSON.stringify({promptVersion:analysis.promptVersion,fitScore:analysis.fitScore,priority:analysis.priority,analyzedAt:analysis.analyzedAt,source:analysis.source});
             statements.push("INSERT INTO audit_logs (id, actor_id, action, entity_type, entity_id, metadata, created_at) VALUES (" + [crypto.randomUUID(),'service:Manual ChatGPT Opportunity Analysis','opportunity.scope_fit_analysis_saved','opportunity',a.opportunityId,metadata,now].map(quote).join(', ') + ");");
           }
           wrangler(statements.join('\n'), 'Write analysis batch', true);
-          const verify = rowsOf(wrangler("SELECT id, priority, solution_matches AS solutionMatches FROM opportunities WHERE id IN (" + ids.map(quote).join(',') + ")", 'Readback verification'));
-          const check = new Map(verify.map(r => [String(r.id), {priority:r.priority, analysis:parseObject(parseObject(r.solutionMatches).opportunityAnalysis)}]));
+          const verify = rowsOf(wrangler("SELECT id, priority, score, solution_matches AS solutionMatches FROM opportunities WHERE id IN (" + ids.map(quote).join(',') + ")", 'Readback verification'));
+          const check = new Map(verify.map(r => [String(r.id), {priority:r.priority, score:Number(r.score), analysis:parseObject(parseObject(r.solutionMatches).opportunityAnalysis)}]));
           const failed = input.analyses.filter(a => {
             const saved = check.get(String(a.opportunityId));
             const x = saved?.analysis;
             const expectedPriority = a.preserveExistingChinese ? parseObject(parseObject(existing.get(String(a.opportunityId)).solutionMatches).opportunityAnalysis).priority : a.priority;
-            return !saved || saved.priority !== expectedPriority || !x || x.promptVersion !== 'manual-chatgpt-scope-fit-bilingual-v2' || x.fitScore !== (a.preserveExistingChinese ? parseObject(parseObject(existing.get(String(a.opportunityId)).solutionMatches).opportunityAnalysis).fitScore : a.fitScore) || x.priority !== expectedPriority || !x.bilingualAnalysis?.zh || !x.bilingualAnalysis?.en || !x.bilingualAnalysis.en.demandSummary || !Array.isArray(x.bilingualAnalysis.en.recommendedHuaweiSolutions);
+            const expectedScore = a.preserveExistingChinese ? parseObject(parseObject(existing.get(String(a.opportunityId)).solutionMatches).opportunityAnalysis).fitScore : a.fitScore;
+            return !saved || saved.priority !== expectedPriority || saved.score !== expectedScore || !x || x.promptVersion !== 'manual-chatgpt-scope-fit-bilingual-v2' || x.fitScore !== expectedScore || x.priority !== expectedPriority || !x.bilingualAnalysis?.zh || !x.bilingualAnalysis?.en || !x.bilingualAnalysis.en.demandSummary || !Array.isArray(x.bilingualAnalysis.en.recommendedHuaweiSolutions);
           }).map(a => a.opportunityId);
           if (failed.length) throw new Error('D1 readback verification failed for IDs: ' + failed.join(', '));
           console.log(JSON.stringify({result:'saved-and-readback-verified',saved:input.analyses.length,readbackVerified:verify.length,ids}, null, 2));
