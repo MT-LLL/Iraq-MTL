@@ -856,3 +856,17 @@ body { font-size: 15px; line-height: 1.55; }
 .weekly-report-history{padding:18px;background:#fff;border:1px solid #e4ece9;border-radius:14px}.weekly-report-history>div{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.weekly-report-history article{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid #edf1ef}.weekly-report-history article small{color:#71848a;font-size:11px}
 @media(max-width:850px){.weekly-report-controls{grid-template-columns:1fr 1fr}.weekly-report-controls>label:first-child{grid-column:1/-1}.weekly-report-send{grid-template-columns:1fr}.weekly-report-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:540px){.weekly-report-paper{padding:18px}.weekly-report-paper>header{margin:-18px -18px 20px;padding:20px 18px}.weekly-report-paper>header h2{font-size:20px}.weekly-report-controls{grid-template-columns:1fr}.weekly-report-controls>label:first-child{grid-column:auto}.weekly-report-history article{flex-direction:column}}
+
+.weekly-report-top5{display:flex;flex-direction:column;gap:10px}
+.weekly-report-top5>article{display:grid;grid-template-columns:42px minmax(0,1fr);gap:14px;padding:16px;border:1px solid #e1ebe7;border-radius:12px;background:linear-gradient(110deg,#f8fbfa,#fff)}
+.weekly-report-rank{display:flex;align-items:flex-start;justify-content:center;padding-top:2px;color:#0f827b;font-size:22px;font-weight:850;letter-spacing:-1px}
+.weekly-report-opportunity-content{display:flex;flex-direction:column;gap:7px;min-width:0}
+.weekly-report-opportunity-content>b{font-size:14px;line-height:1.5;color:#173c49}
+.weekly-report-opportunity-content>small{font-size:11px;color:#70848a}
+.weekly-report-opportunity-content>p{margin:0;color:#4f6870;font-size:12px;line-height:1.6}
+.weekly-report-opportunity-content>p strong{color:#244751}
+.weekly-report-opportunity-content>label{display:flex;align-items:center;gap:10px;max-width:520px;font-size:11px;font-weight:750;color:#46616a}
+.weekly-report-opportunity-content>label input,.weekly-report-editor{width:100%;min-width:0;border:1px solid #d9e5e1;border-radius:8px;padding:10px 12px;background:#fbfdfc;color:#193c47;font:inherit}
+.weekly-report-opportunity-content>label input{max-width:310px}
+.weekly-report-editor{display:block;min-height:120px;resize:vertical;font-size:13px;line-height:1.7}
+@media(max-width:540px){.weekly-report-top5>article{grid-template-columns:30px minmax(0,1fr);gap:10px}.weekly-report-opportunity-content>label{align-items:stretch;flex-direction:column}.weekly-report-opportunity-content>label input{max-width:none}}
