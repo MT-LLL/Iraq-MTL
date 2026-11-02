@@ -124,6 +124,11 @@ export type PartnerPushConfirmationView = {
     funding: string;
     source: string;
     insight: string;
+    background: string;
+    scope: string[];
+    milestones: string;
+    progress: string;
+    latestNews: string;
     solutions: ReturnType<typeof opportunityBrief>["solutionItems"];
     contact: ReturnType<typeof opportunityBrief>["contactDetails"];
     strategy: string;
@@ -1009,6 +1014,11 @@ export async function getPartnerPushConfirmation(input: { id: string; token: str
         funding: brief.funding,
         source: brief.source,
         insight: partnerSafeInsight(item, lang),
+        background: item.summary || (lang === "zh" ? "项目背景待补充。" : "Project background to be completed."),
+        scope: item.evidence.slice(0, 5).map(value => localText(lang, value, "Scope to be verified")),
+        milestones: localText(lang, item.keyProjectMilestones || item.deadline, "Milestones to be confirmed"),
+        progress: localText(lang, item.newsAndUpdates || "", lang === "zh" ? "暂无已记录的项目进展。" : "No project updates recorded."),
+        latestNews: localText(lang, item.latestNews || "", lang === "zh" ? "暂无最新新闻。" : "No latest news recorded."),
         solutions: brief.solutionItems,
         contact: brief.contactDetails,
         strategy: brief.strategy,
